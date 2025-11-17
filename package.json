@@ -1,0 +1,10 @@
+{
+  "name": "fondocreativo",
+  "version": "1.0.0",
+  "description": "Gestión de pedidos con Netlify y Google Sheets",
+  "main": "index.html",
+  "type": "module",
+  "dependencies": {
+    "googleapis": "^118.0.0"
+  }
+}
