@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 export async function handler(event) {
   const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";
   const API_KEY = process.env.GOOGLE_SHEETS_API_KEY;
@@ -11,8 +9,9 @@ export async function handler(event) {
   }
 
   try {
-    // 1️⃣ leer los datos actuales
+    // Leer datos actuales
     const readUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+
     const res = await fetch(readUrl);
     const data = await res.json();
 
@@ -27,28 +26,30 @@ export async function handler(event) {
     const indexEstado = headers.indexOf("estado");
     const indexFecha = headers.indexOf("fecha");
 
-    // 2️⃣ buscar la fila del pedido
+    // 2️Buscar fila con ese ID
     const rowIndex = filas.findIndex(r => r[indexId] === pedidoId);
 
     if (rowIndex === -1) {
       return { statusCode: 404, body: JSON.stringify({ error: "ID no encontrado" }) };
     }
 
-    // 3️⃣ modificar valores
+    // 3️Actualizar valores
     const newEstado = "Enviado";
     const nuevaFecha = new Date().toLocaleString("es-PE");
 
     filas[rowIndex][indexEstado] = newEstado;
     filas[rowIndex][indexFecha] = nuevaFecha;
 
-    // 4️⃣ escribir de vuelta
+    // 4️Escribir de vuelta toda la tabla
     const updateUrl =
       `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?valueInputOption=RAW&key=${API_KEY}`;
 
+    const bodyData = { values: filas };
+
     await fetch(updateUrl, {
       method: "PUT",
-      body: JSON.stringify({ values: filas }),
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyData)
     });
 
     return {
