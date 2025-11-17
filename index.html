@@ -61,15 +61,18 @@
       historyContainer.innerHTML = '';
 
       lista.forEach(p => {
-        if (p.estado === 'pendiente') {
-          pendingContainer.innerHTML += generateCard(p);
-        } else {
-          historyContainer.innerHTML += `<li class='p-3 bg-white rounded-lg shadow flex justify-between'>
-            <span>${p.cliente} - ${p.fecha}</span>
-            <span class='text-gray-500'>${p.agencia}</span>
-          </li>`;
-        }
-      });
+  const estado = (p.estado || "").trim().toLowerCase();
+
+  if (estado === 'pendiente') {
+    pendingContainer.innerHTML += generateCard(p);
+  } else {
+    historyContainer.innerHTML += `
+      <li class='p-3 bg-white rounded-lg shadow flex justify-between'>
+        <span>${p.cliente} - ${p.fecha}</span>
+        <span class='text-gray-500'>${p.agencia}</span>
+      </li>`;
+  }
+});
     }
 
     function generateCard(p) {
