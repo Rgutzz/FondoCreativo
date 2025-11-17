@@ -72,8 +72,8 @@
       <span class="font-medium">${p.cliente}</span>
       ${getEstadoBadge(p.estado)}
     </div>
-
-    <p class="text-xs text-gray-600"><strong>Fecha:</strong> ${p.fecha}</p>
+    <p class="text-xs text-gray-600"><strong>Fecha Pedido:</strong> ${p.fecha}</p>
+    <p class="text-xs text-gray-600"><strong>Fecha Envio:</strong> ${p.fechaenvio}</p>
     <p class="text-xs text-gray-600"><strong>DNI:</strong> ${p.dni || ''}</p>
     <p class="text-xs text-gray-600"><strong>Agencia:</strong> ${p.agencia}</p>
   </li>`;
@@ -110,6 +110,7 @@
 
         ${getEstadoBadge(p.estado)}
 
+        <p class="text-sm text-gray-700"><strong>Fecha Pedido:</strong> ${p.fecha}</p>
         <p class="text-sm text-gray-700"><strong>DNI:</strong> ${p.dni}</p>
         <p class="text-sm text-gray-700"><strong>Teléfono:</strong> ${p.telefono}</p>
         <p class="text-sm text-gray-700"><strong>Dirección:</strong> ${p.direccion}</p>
