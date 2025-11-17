@@ -1,87 +1,62 @@
-// netlify/functions/updatePedido.js
+import fetch from 'node-fetch';
 
 export async function handler(event) {
   const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";
   const API_KEY = process.env.GOOGLE_SHEETS_API_KEY;
-  const RANGE = "FondoCreativo!A:J"; 
+  const RANGE = "FondoCreativo!A:J";
+  const pedidoId = event.queryStringParameters?.id;
 
-   const id = event.queryStringParameters?.id?.trim();
-  if (!id) {
+  if (!pedidoId) {
     return { statusCode: 400, body: JSON.stringify({ error: "ID faltante" }) };
   }
 
   try {
-    // 1) Leer la hoja completa
+    // 1️⃣ leer los datos actuales
     const readUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
-    const readRes = await fetch(readUrl);
+    const res = await fetch(readUrl);
+    const data = await res.json();
 
-    if (!readRes.ok) {
-      return { statusCode: readRes.status, body: JSON.stringify({ error: "Error al leer la hoja" }) };
+    if (!data.values) {
+      return { statusCode: 500, body: JSON.stringify({ error: "No se pudo leer la hoja" }) };
     }
 
-    const data = await readRes.json();
-    const rows = data.values;
-    const headers = rows.shift();
+    const filas = data.values;
+    const headers = filas[0];
 
-    const iCodigo = headers.indexOf("id");
-    const iEstado = headers.indexOf("estado");
-    const iFecha = headers.indexOf("fecha");
+    const indexId = headers.indexOf("id");
+    const indexEstado = headers.indexOf("estado");
+    const indexFecha = headers.indexOf("fecha");
 
-    if (iCodigo === -1 || iEstado === -1) {
-      return { statusCode: 500, body: JSON.stringify({ error: "Columnas 'id' o 'estado' no existen" }) };
-    }
-
-    const rowIndex = rows.findIndex(r => (r[iCodigo] || "").trim() === id);
+    // 2️⃣ buscar la fila del pedido
+    const rowIndex = filas.findIndex(r => r[indexId] === pedidoId);
 
     if (rowIndex === -1) {
-      return { statusCode: 404, body: JSON.stringify({ error: "Código no encontrado" }) };
+      return { statusCode: 404, body: JSON.stringify({ error: "ID no encontrado" }) };
     }
 
-    const sheetRow = rowIndex + 2;
+    // 3️⃣ modificar valores
+    const newEstado = "Enviado";
+    const nuevaFecha = new Date().toLocaleString("es-PE");
 
-    const now = new Date().toLocaleString("es-PE", { timeZone: "America/Lima" });
+    filas[rowIndex][indexEstado] = newEstado;
+    filas[rowIndex][indexFecha] = nuevaFecha;
 
-    const updateBody = {
-      valueInputOption: "USER_ENTERED",
-      data: [
-        {
-          range: `Fondo Creativo!${col(iEstado)}${sheetRow}`,
-          values: [["Enviado"]]
-        },
-        {
-          range: `Fondo Creativo!${col(iFecha)}${sheetRow}`,
-          values: [[now]]
-        }
-      ]
-    };
+    // 4️⃣ escribir de vuelta
+    const updateUrl =
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?valueInputOption=RAW&key=${API_KEY}`;
 
-    const writeUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values:batchUpdate?key=${API_KEY}`;
-    const writeRes = await fetch(writeUrl, {
-      method: "POST",
-      body: JSON.stringify(updateBody)
+    await fetch(updateUrl, {
+      method: "PUT",
+      body: JSON.stringify({ values: filas }),
+      headers: { "Content-Type": "application/json" }
     });
-
-    if (!writeRes.ok) {
-      return { statusCode: writeRes.status, body: JSON.stringify({ error: "Error al actualizar hoja" }) };
-    }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true, message: "Pedido actualizado a Enviado" })
+      body: JSON.stringify({ ok: true, estado: newEstado, fecha: nuevaFecha })
     };
 
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
-}
-
-function col(n) {
-  let s = "";
-  n++;
-  while (n > 0) {
-    let r = (n - 1) % 26;
-    s = String.fromCharCode(65 + r) + s;
-    n = Math.floor((n - r - 1) / 26);
-  }
-  return s;
 }
