@@ -1,4 +1,4 @@
-// netlify/functions/getPedido.js
+// netlify/functions/getPedidos.js
 
 export async function handler(event) {
   const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";

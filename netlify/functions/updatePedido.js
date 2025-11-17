@@ -1,9 +1,9 @@
-// netlify/functions/getPuntos.js
+// netlify/functions/updatePedido.js
 
 export async function handler(event) {
   const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";
   const API_KEY = process.env.GOOGLE_SHEETS_API_KEY;
-  const RANGE = "FondoCreativo!A:J"; // hoja "Puntos"
+  const RANGE = "FondoCreativo!A:J"; 
 
    const id = event.queryStringParameters?.id?.trim();
   if (!id) {
