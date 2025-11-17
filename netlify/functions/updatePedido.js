@@ -1,76 +1,84 @@
-import { google } from 'googleapis';
+import { google } from "googleapis";
 
 export async function handler(event) {
-  try {
-    const id = event.queryStringParameters.id;
-    if (!id) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "ID faltante" })
-      };
-    }
+  const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";
+  const RANGE = "FondoCreativo!A:L";
+  const pedidoId = event.queryStringParameters?.id;
 
-    // Cargar credenciales del Service Account
-    const creds = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
-    const jwt = new google.auth.JWT(
-      creds.client_email,
+  if (!pedidoId) {
+    return { statusCode: 400, body: JSON.stringify({ error: "ID faltante" }) };
+  }
+
+  try {
+    // Leer credenciales del env var
+    const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+
+    const jwtClient = new google.auth.JWT(
+      credentials.client_email,
       null,
-      creds.private_key,
+      credentials.private_key,
       ["https://www.googleapis.com/auth/spreadsheets"]
     );
 
-    const sheets = google.sheets({ version: "v4", auth: jwt });
+    const sheets = google.sheets({ version: "v4", auth: jwtClient });
 
-    const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";
-    const RANGE = "FondoCreativo!A:L";
-
-    // 1. Leer todas las filas
+    // 1. Leer toda la hoja
     const readRes = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
       range: RANGE,
     });
 
-    const rows = readRes.data.values;
-    const headers = rows[0];
-    const idIndex = headers.indexOf("id");
-    const estadoIndex = headers.indexOf("estado");
-    const fechaEnvioIndex = headers.indexOf("fechaenvio");
+    const filas = readRes.data.values;
+    const headers = filas[0];
 
-    // Buscar la fila correcta
-    const rowIndex = rows.findIndex(r => (r[idIndex] || "").trim() === id);
+    // Indices de columnas
+    const indexId = headers.indexOf("id");
+    const indexEstado = headers.indexOf("estado");
+    const indexFechaEnvio = headers.indexOf("fechaenvio");
 
-    if (rowIndex === -1) {
+    if (indexId === -1 || indexEstado === -1 || indexFechaEnvio === -1) {
       return {
-        statusCode: 404,
-        body: JSON.stringify({ error: "Pedido no encontrado." })
+        statusCode: 500,
+        body: JSON.stringify({ error: "Faltan columnas en Google Sheets" })
       };
     }
 
-    // Actualizar estado y fecha de envío
-    const now = new Date();
-    const fechaEnvio = now.toLocaleString("es-PE", { timeZone: "America/Lima" });
+    // 2. Buscar fila por ID
+    const rowIndex = filas.findIndex(r => (r[indexId] || "").trim() === pedidoId);
 
-    // Actualizar valores
-    rows[rowIndex][estadoIndex] = "Enviado";
-    rows[rowIndex][fechaEnvioIndex] = fechaEnvio;
+    if (rowIndex === -1) {
+      return { statusCode: 404, body: JSON.stringify({ error: "Pedido no encontrado" }) };
+    }
 
-    // 3. Subir la fila actualizada
+    // 3. Actualizar solo estado y fechaenvio
+    const nuevaFechaEnvio = new Date().toLocaleString("es-PE", { timeZone: "America/Lima" });
+
+    filas[rowIndex][indexEstado] = "Enviado";
+    filas[rowIndex][indexFechaEnvio] = nuevaFechaEnvio;
+
+    // 4. Actualizar solo esa fila (más eficiente)
     await sheets.spreadsheets.values.update({
       spreadsheetId: SHEET_ID,
       range: `FondoCreativo!A${rowIndex + 1}:L${rowIndex + 1}`,
       valueInputOption: "RAW",
-      requestBody: { values: [rows[rowIndex]] }
+      requestBody: {
+        values: [filas[rowIndex]]
+      }
     });
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true })
+      body: JSON.stringify({
+        ok: true,
+        estado: "Enviado",
+        fechaenvio: nuevaFechaEnvio
+      }),
     };
 
-  } catch (err) {
+  } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message })
+      body: JSON.stringify({ error: error.message }),
     };
   }
 }
