@@ -2,7 +2,7 @@ import { google } from "googleapis";
 
 export async function handler(event) {
   const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";
-  const RANGE = "FondoCreativo!A:J";
+  const RANGE = "FondoCreativo!A:K";
   const pedidoId = event.queryStringParameters?.id;
 
   if (!pedidoId) {

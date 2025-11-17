@@ -68,7 +68,7 @@
   } else {
     historyContainer.innerHTML += `
       <li class='p-3 bg-white rounded-lg shadow flex justify-between'>
-        <span>${p.cliente} - ${p.fecha}</span>
+        <span>${p.cliente} - ${p.fecha} - ${p.dni || '' }</span>
         <span class='text-gray-500'>${p.agencia}</span>
       </li>`;
   }
@@ -85,6 +85,7 @@
         <p class="text-sm text-gray-700"><strong>DNI:</strong> ${p.dni}</p>
         <p class="text-sm text-gray-700"><strong>Teléfono:</strong> ${p.telefono}</p>
         <p class="text-sm text-gray-700"><strong>Dirección:</strong> ${p.direccion}</p>
+        <p class="text-sm text-gray-700"><strong>Medida:</strong> ${p.medida || '—'}</p>
         <p class="text-sm text-gray-700"><strong>Agencia:</strong> ${p.agencia}</p>
         <p class="text-sm text-gray-700"><strong>Comentario:</strong> ${p.comentario || '—'}</p>
       </div>
