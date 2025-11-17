@@ -25,7 +25,7 @@
     <!-- HISTORIAL -->
     <section>
       <h2 class="text-lg font-bold mt-10 mb-4">Historial de pedidos enviados</h2>
-      <ul id="historyContainer" class="space-y-2 text-sm"></ul>
+      <ul id="historyContainer" class="space-y-2 text-sm flex flex-col items-start"></ul>
     </section>
   </main>
 
@@ -67,10 +67,16 @@
     pendingContainer.innerHTML += generateCard(p);
   } else {
     historyContainer.innerHTML += `
-      <li class='p-3 bg-white rounded-lg shadow flex justify-between'>
-        <span>${p.cliente} - ${p.fecha} - ${p.dni || '' }</span>
-        <span class='text-gray-500'>${p.agencia}</span>
-      </li>`;
+  <li class="p-3 bg-white rounded-lg shadow w-[380px] border border-gray-200">
+    <div class="flex justify-between items-center mb-1">
+      <span class="font-medium">${p.cliente}</span>
+      ${getEstadoBadge(p.estado)}
+    </div>
+
+    <p class="text-xs text-gray-600"><strong>Fecha:</strong> ${p.fecha}</p>
+    <p class="text-xs text-gray-600"><strong>DNI:</strong> ${p.dni || ''}</p>
+    <p class="text-xs text-gray-600"><strong>Agencia:</strong> ${p.agencia}</p>
+  </li>`;
   }
 });
     }
