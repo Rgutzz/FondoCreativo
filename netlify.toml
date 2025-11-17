@@ -1,0 +1,6 @@
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = []
+
+[functions]
+  runtime = "nodejs18.x"
