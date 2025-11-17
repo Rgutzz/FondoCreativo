@@ -1,3 +1,5 @@
 [functions]
-node_bundler = "esbuild"
-runtime = "nodejs18.x"
+  node_bundler = "esbuild"
+
+[functions.runtime]
+  engine = "nodejs18.x"
