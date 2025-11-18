@@ -200,33 +200,55 @@
   </script>
 
   <script>
-  const PIN_CORRECTO = "0324";
+const PIN_CORRECTO = "0324";
+const CADUCIDAD_HORAS = 24; // 24 horas
 
-  function validarPIN() {
-    const input = document.getElementById("pinInput").value.trim();
-    const error = document.getElementById("pinError");
+function validarPIN() {
+  const input = document.getElementById("pinInput").value.trim();
+  const error = document.getElementById("pinError");
 
-    if (input === PIN_CORRECTO) {
+  if (input === PIN_CORRECTO) {
+    // Guardar PIN + timestamp
+    const ahora = Date.now();
+    localStorage.setItem("pin_ok", "true");
+    localStorage.setItem("pin_time", ahora);
+    document.getElementById("pinOverlay").style.display = "none";
+  } else {
+    error.classList.remove("hidden");
+  }
+}
+
+function comprobarPIN() {
+  const autorizado = localStorage.getItem("pin_ok");
+  const tiempo = parseInt(localStorage.getItem("pin_time"), 10);
+  const ahora = Date.now();
+
+  if (autorizado === "true" && tiempo) {
+    const horasPasadas = (ahora - tiempo) / (1000 * 60 * 60);
+    if (horasPasadas < CADUCIDAD_HORAS) {
       document.getElementById("pinOverlay").style.display = "none";
-    } else {
-      error.classList.remove("hidden");
+      return;
     }
   }
 
-  // Permitir ENTER desde teclado móvil
-  document.getElementById("pinInput").addEventListener("keyup", function(e) {
-    if (e.key === "Enter") {
-      validarPIN();
-    }
-  });
+  // Si no está autorizado o caducó, mostrar PIN
+  document.getElementById("pinOverlay").style.display = "flex";
+}
 
-  // window.addEventListener("DOMContentLoaded", () => {
-  //   const autorizado = localStorage.getItem("pin_ok");
-  //   if (autorizado === "true") {
-  //     document.getElementById("pinOverlay").style.display = "none";
-  //   }
-  // }); 
+// Comprobar al cargar
+window.addEventListener("DOMContentLoaded", comprobarPIN);
+
+// Permitir ENTER desde teclado
+document.getElementById("pinInput").addEventListener("keyup", function(e) {
+  if (e.key === "Enter") validarPIN();
+});
+
+// Ocultar error al escribir
+document.getElementById("pinInput").addEventListener("input", () => {
+  document.getElementById("pinError").classList.add("hidden");
+});
 </script>
+
 
 
 <!-- MODAL DE CARGA -->
