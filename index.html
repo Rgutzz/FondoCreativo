@@ -11,8 +11,8 @@
 </head>
 <body class="bg-gray-100 min-h-screen font-sans">
 <!-- PANTALLA DE PIN -->
-<div id="pinOverlay" class="fixed inset-0 bg-gray-100 flex items-center justify-center z-[100]">
-  <div class="bg-white shadow-xl rounded-2xl p-6 w-80 text-center">
+<div id="pinOverlay" class="fixed inset-0 bg-gray-100 flex items-start justify-center pt-20 z-[100] overflow-auto">
+  <div class="bg-white shadow-xl rounded-2xl p-6 w-80 text-center mt-10 mb-10">
     <h2 class="text-xl font-semibold mb-4">Acceso restringido</h2>
 
     <p class="text-sm text-gray-600 mb-3">Ingrese su PIN de 4 dígitos</p>
@@ -32,6 +32,7 @@
     <p id="pinError" class="text-red-500 text-sm mt-3 hidden">PIN incorrecto</p>
   </div>
 </div>
+
 
 
   <header class="bg-black text-white p-4 text-center text-xl font-semibold">
@@ -199,25 +200,26 @@
   </script>
 
   <script>
-  // Cambia este PIN por el que quieras
-  const PIN_CORRECTO = "0324";  // <-- tu PIN fijo
+  const PIN_CORRECTO = "0324";
 
   function validarPIN() {
     const input = document.getElementById("pinInput").value.trim();
     const error = document.getElementById("pinError");
 
     if (input === PIN_CORRECTO) {
-      // Guardar acceso para no pedir PIN otra vez
-      localStorage.setItem("pin_ok", "true");
-
-      // Ocultar pantalla de PIN
       document.getElementById("pinOverlay").style.display = "none";
     } else {
       error.classList.remove("hidden");
     }
   }
 
- 
+  // Permitir ENTER desde teclado móvil
+  document.getElementById("pinInput").addEventListener("keyup", function(e) {
+    if (e.key === "Enter") {
+      validarPIN();
+    }
+  });
+
   // window.addEventListener("DOMContentLoaded", () => {
   //   const autorizado = localStorage.getItem("pin_ok");
   //   if (autorizado === "true") {
