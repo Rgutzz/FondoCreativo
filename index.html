@@ -213,8 +213,9 @@ function renderPendientes(lista) {
         div.innerHTML = `
             <img src="${p.Imagen}">
 
+            <div class="item"><span class="titulo">Pedido:</span> ${p.NoPedido}</div>
             <div class="item"><span class="titulo">Medidas:</span> ${p.Ancho} x ${p.Alto} cm</div>
-            <div class="item"><span class="titulo">Fecha:</span> ${p.Fecha}</div>
+            <div class="item"><span class="titulo">Fecha Pedido:</span> ${p.Fecha}</div>
 
             <div class="item">
                 <span class="titulo">Correo:</span>
@@ -245,7 +246,7 @@ function renderPendientes(lista) {
             </div>
 
             <div class="item"><span class="titulo">Nombre:</span> ${p.Nombre}</div>
-            <div class="item"><span class="titulo">DNI:</span> ${p.Dni}</div>
+            <div class="item"><span class="titulo">DNI/RUC:</span> ${p.Dni}</div>
             <div class="item"><span class="titulo">Teléfono:</span> ${p.Telefono}</div>
             <div class="item"><span class="titulo">Dirección:</span> ${p.Direccion}</div>
             <div class="item"><span class="titulo">Agencia:</span> ${p.Agencia}</div>
@@ -308,7 +309,7 @@ function renderHistorial(lista) {
             <div class="mini-info">
                 <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
                 <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
-                <div><span class="mini-label">Fecha:</span> ${p.FechaEntrega}</div>
+                <div><span class="mini-label">Fecha Entrega:</span> ${p.FechaEntrega}</div>
                 <div><span class="estado ${getColorClase(p.Entrega, "Entrega")}">${p.Entrega}</span></div>
             </div>
         `;
