@@ -247,36 +247,7 @@ function renderGraficos(datos) {
         data:{labels:labelsMes,datasets:[{label:"Ventas por mes",data:dataMes,backgroundColor:"#4e73df"}]},
         options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
     });
-
-    // Top artículos
-    const topArt = {};
-    datos.forEach(d=>{
-        const art = d.ARTICULO;
-        topArt[art] = (topArt[art]||0) + parseFloat(d.CANTIDAD||0);
-    });
-    const sortedArt = Object.entries(topArt).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    if(chartTopArticulos) chartTopArticulos.destroy();
-    const ctx2 = document.getElementById("chartTopArticulos").getContext("2d");
-    chartTopArticulos = new Chart(ctx2,{
-        type:"bar",
-        data:{labels: sortedArt.map(e=>e[0]), datasets:[{label:"Cantidad vendida", data:sortedArt.map(e=>e[1]), backgroundColor:"#1cc88a"}]},
-        options:{responsive:true,plugins:{legend:{display:false}},indexAxis:"y",scales:{x:{beginAtZero:true}}}
-    });
-
-    // Medio de venta
-    const medios = {};
-    datos.forEach(d=>{
-        const m = d.MEDIO_DE_VENTA;
-        medios[m] = (medios[m]||0) + parseFloat(d["PRECIO FINAL"]||0);
-    });
-    if(chartMedioVenta) chartMedioVenta.destroy();
-    const ctx3 = document.getElementById("chartMedioVenta").getContext("2d");
-    chartMedioVenta = new Chart(ctx3,{
-        type:"doughnut",
-        data:{labels:Object.keys(medios),datasets:[{data:Object.values(medios),backgroundColor:["#4e73df","#1cc88a","#f6c23e","#e74a3b"]}]},
-        options:{responsive:true,plugins:{legend:{position:"bottom"}}}
-    });
-}
+        }
 
 // Orden natural de pedidos
 function sortPedidos(a,b){
