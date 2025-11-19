@@ -307,8 +307,8 @@ async function cargarPedidos() {
     const res = await fetch(API_GET);
     pedidosGlobal = await res.json();
 
-    const pendientes = pedidosGlobal.filter(p => p.Entrega !== "ENTREGADO" && p.Entrega !== "ANULADO");
-    const historial = pedidosGlobal.filter(p => p.Entrega === "ENTREGADO" || p.Entrega === "ANULADO");
+    const pendientes = pedidosGlobal.filter(p => p.Estado !== "ENTREGADO" && p.Estado !== "ANULADO");
+    const historial = pedidosGlobal.filter(p => p.Estado === "ENTREGADO" || p.Estado === "ANULADO");
 
     renderPendientes(pendientes);
     renderHistorial(historial);
@@ -345,10 +345,7 @@ function renderPendientes(lista) {
                 
                 <div class="info-item long"><span class="label">Especif.:</span><span class="value">${p.Especificaciones}</span></div>
 
-                <div class="info-item"><span class="label">Correo:</span><span class="value estado ${getColorClase(p.CorreoEnviado,"CorreoEnviado")}">${p.CorreoEnviado}</span></div>
-                <div class="info-item"><span class="label">Sublimado:</span><span class="value estado ${getColorClase(p.Sublimado,"Sublimado")}">${p.Sublimado}</span></div>
-                <div class="info-item"><span class="label">Costura:</span><span class="value estado ${getColorClase(p.Costura,"Costura")}">${p.Costura}</span></div>
-                <div class="info-item"><span class="label">Entrega:</span><span class="value estado ${getColorClase(p.Entrega,"Entrega")}">${p.Entrega}</span></div>
+                <div class="info-item"><span class="label">Estado:</span><span class="value estado ${getColorClase(p.Estado,"Entrega")}">${p.Estado}</span></div>
                 <div class="info-item"><span class="label">Observaciones:</span><span class="value">${p.Observaciones}</span></div>
             </div>
         `;
