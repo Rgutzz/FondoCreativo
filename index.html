@@ -211,57 +211,47 @@ h1 {
 /* ===================== */
 /*        MENÚ TOP       */
 /* ===================== */
-.top-menu {
-    width: 100%;
-    background: #222;
-    color: white;
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-    position: sticky;
-    top: 0;
-    z-index: 9000; /* menos que el PIN (9999) */
-}
 
-.top-menu a {
-    color: #4db8ff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.top-menu a:hover {
-    text-decoration: underline;
-}
+/* Barra superior que ocupa todo el ancho */
 .top-menu-wrapper {
     width: 100%;
+    padding: 12px 0;
     display: flex;
-    justify-content: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 9000;
-    padding: 10px 0;
-    background: transparent; /* No ocupa pantalla */
+    justify-content: center; /* ← centra el menú */
+    border-bottom: 1px solid #334155;
+    position: static; /* no flotante */
 }
 
+/* Menú centrado dentro de la barra */
 .top-menu {
-    width: 50%; /* ← solo mitad de la pantalla */
-    max-width: 600px; /* evita que sea demasiado ancho en pantallas grandes */
+    width: 50%;              /* ← ocupa solo la mitad */
+    max-width: 600px;        /* límite para pantallas grandes */
+    min-width: 260px;        /* para que no se achique demasiado en móviles */
     background: #222;
     color: white;
     padding: 10px 20px;
     border-radius: 12px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* centra el contenido */
     align-items: center;
     font-size: 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
+/* Estilo de los links */
+.top-menu a {
+    color: #4db8ff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.top-menu a:hover {
+    text-decoration: underline;
+}
+
+/* Para que el menú no tape nada */
 body {
-    padding-top: 80px; /* espacio para que no tape el contenido */
+    padding-top: 80px;
 }
 
 
