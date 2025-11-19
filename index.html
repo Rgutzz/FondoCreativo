@@ -44,7 +44,7 @@ h1 {
 
 .tarjeta img {
     width: 100%;
-    height: 220px;
+    height: 380px;
     object-fit: contain;
     background: #eaeaea;
     border-radius: 6px;
@@ -261,6 +261,21 @@ function renderPendientes(lista) {
 /* ---------------------- */
 /* HISTORIAL CON FILTRO   */
 /* ---------------------- */
+function normalizarFechaLatina(fechaStr) {
+    if (!fechaStr) return null;
+
+    fechaStr = fechaStr.trim();
+
+    // Detecta formato DD/MM/YYYY
+    if (fechaStr.includes("/")) {
+        const [d, m, y] = fechaStr.split("/");
+        return `${y}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
+    }
+
+    // Si ya es ISO, cortar a 10 caracteres
+    return fechaStr.substring(0, 10);
+}
+
 function renderHistorial(lista) {
     const cont = document.getElementById("historialLista");
     cont.innerHTML = "";
@@ -268,11 +283,21 @@ function renderHistorial(lista) {
     const mes = document.getElementById("filtroMes").value;
 
     const filtrado = lista.filter(p => {
-        if (mes === "all") return true;
-        if (!p.FechaEntrega) return false;
-        const m = new Date(p.FechaEntrega).getMonth() + 1;
-        return m == mes;
-    });
+    if (mes === "all") return true;
+    if (!p.FechaEntrega) return false;
+
+    // Normalizar
+    const fechaISO = normalizarFechaLatina(p.FechaEntrega);
+
+    if (!fechaISO) return false;
+
+    const fechaObj = new Date(fechaISO);
+
+    if (isNaN(fechaObj)) return false;
+
+    const m = fechaObj.getMonth() + 1;
+    return m == mes;
+});
 
     filtrado.forEach(p => {
         const div = document.createElement("div");
