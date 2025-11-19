@@ -229,25 +229,43 @@ let chartVentasMes;
 function renderGraficos(datos) {
     // Ventas por mes
     const ventasMes = {};
-    datos.forEach(d=>{
+    datos.forEach(d => {
         const key = `${d.MES}-${d.AÑO}`;
-        ventasMes[key] = (ventasMes[key]||0) + parseFloat(d["PRECIO FINAL"]||0);
+        ventasMes[key] = (ventasMes[key] || 0) + parseFloat(d["PRECIO FINAL"] || 0);
     });
-    const labelsMes = Object.keys(ventasMes).sort((a,b)=>{
-        const [ma,aa] = a.split("-").map(Number);
-        const [mb,ab] = b.split("-").map(Number);
+
+    const labelsMes = Object.keys(ventasMes).sort((a, b) => {
+        const [ma, aa] = a.split("-").map(Number);
+        const [mb, ab] = b.split("-").map(Number);
         return aa - ab || ma - mb;
     });
-    const dataMes = labelsMes.map(l=>ventasMes[l]);
 
-    if(chartVentasMes) chartVentasMes.destroy();
+    const dataMes = labelsMes.map(l => ventasMes[l]);
+
+    if (chartVentasMes) chartVentasMes.destroy();
+
     const ctx1 = document.getElementById("chartVentasMes").getContext("2d");
-    chartVentasMes = new Chart(ctx1,{
-        type:"bar",
-        data:{labels:labelsMes,datasets:[{label:"Ventas por mes",data:dataMes,backgroundColor:"#4e73df"}]},
-        options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-    });
+
+    chartVentasMes = new Chart(ctx1, {
+        type: "bar",
+        data: {
+            labels: labelsMes,
+            datasets: [{
+                label: "Ventas por mes",
+                data: dataMes,
+                backgroundColor: "#4e73df"
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true }
+            }
         }
+    });
+}
+
 
 // Orden natural de pedidos
 function sortPedidos(a,b){
