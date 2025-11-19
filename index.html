@@ -334,6 +334,7 @@ function renderPendientes(lista) {
                 <span class="label">Medida:</span>
                 <span class="value">Anch. ${p.Ancho} x Alt. ${p.Alto}</span>
             </div>
+              <div class="info-item"><span class="label">Fecha Pedido:</span><span class="value">${p.Fecha}</span></div>
                 <div class="info-item"><span class="label">Nombre:</span><span class="value">${p.Nombre}</span></div>
                 <div class="info-item"><span class="label">DNI/RUC:</span><span class="value">${p.Dni}</span></div>
                 <div class="info-item"><span class="label">Telefono:</span><span class="value">${p.Telefono}</span></div>
@@ -348,6 +349,7 @@ function renderPendientes(lista) {
                 <div class="info-item"><span class="label">Sublimado:</span><span class="value estado ${getColorClase(p.Sublimado,"Sublimado")}">${p.Sublimado}</span></div>
                 <div class="info-item"><span class="label">Costura:</span><span class="value estado ${getColorClase(p.Costura,"Costura")}">${p.Costura}</span></div>
                 <div class="info-item"><span class="label">Entrega:</span><span class="value estado ${getColorClase(p.Entrega,"Entrega")}">${p.Entrega}</span></div>
+                <div class="info-item"><span class="label">Observaciones:</span><span class="value">${p.Observaciones}</span></div>
             </div>
         `;
 
