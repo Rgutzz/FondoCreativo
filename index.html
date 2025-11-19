@@ -13,6 +13,64 @@ body {
     padding: 20px;
 }
 
+/* ========================================= */
+/* =========== OVERLAY DEL PIN ============= */
+/* ========================================= */
+#pinOverlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #f3f3f3;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 60px;
+    z-index: 9999;
+    overflow-y: auto;
+}
+
+.pin-box {
+    background: white;
+    width: 90%;
+    max-width: 320px;
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+    text-align: center;
+}
+
+.pin-input {
+    width: 100%;
+    text-align: center;
+    font-size: 28px;
+    padding: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    margin-bottom: 14px;
+}
+
+.pin-btn {
+    width: 100%;
+    background: #000;
+    color: white;
+    padding: 10px 0;
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.pin-error {
+    color: #d9534f;
+    font-size: 14px;
+    margin-top: 8px;
+    display: none;
+}
+
+/* ========================================= */
+/* =========== TARJETAS NORMALES =========== */
+/* ========================================= */
+
 h1 {
     text-align: center;
     margin-bottom: 25px;
@@ -26,9 +84,7 @@ h1 {
     gap: 40px;
 }
 
-/* ================================ */
-/* CINTA COLOR POR NÚMERO DE PEDIDO */
-/* ================================ */
+/* Cinta superior */
 .pedido-banner {
     font-size: 14px;
     font-weight: bold;
@@ -36,11 +92,6 @@ h1 {
     padding: 6px 10px;
     text-align: center;
     border-radius: 10px 10px 0 0;
-}
-
-/* GENERADOR DE COLORES SUAVES */
-[class*="pedido-color-"] {
-    background: #777;
 }
 
 .card {
@@ -61,18 +112,16 @@ h1 {
     padding: 12px 15px;
 }
 
-/* ================================ */
-/* CAMPOS ALINEADOS                 */
-/* ================================ */
+/* Campos alineados */
 .info-item {
     display: flex;
     gap: 8px;
-    margin: 6px 0;
+    margin: 8px 0;
     font-size: 14px;
 }
 
-.info-item.long {
-    align-items: flex-start;
+.info-item.long .value {
+    margin-top: 2px;
 }
 
 .label {
@@ -83,10 +132,10 @@ h1 {
 
 .value {
     flex: 1;
-    line-height: 1.3em;
+    line-height: 1.35em;
 }
 
-/* BADGES DE ESTADO */
+/* BADGES */
 .estado {
     padding: 2px 6px;
     font-size: 11px;
@@ -100,18 +149,14 @@ h1 {
 .rojo { background: #d9534f; color: white; }
 .gris { background: #777; color: white; }
 
-/* ================================ */
-/* LISTA DE PENDIENTES              */
-/* ================================ */
+/* Pendientes */
 .lista-pendientes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 18px;
 }
 
-/* ================================ */
-/* HISTORIAL MINI TARJETAS          */
-/* ================================ */
+/* Historial */
 .lista-historial {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -147,22 +192,38 @@ h1 {
     font-size: 11px;
 }
 
-.pedido-mini {
-    font-size: 11px;
-    font-weight: bold;
-    padding: 2px 6px;
-    border-radius: 6px;
-    background: #ddd;
-    margin-bottom: 4px;
-}
-
 .filtro {
     margin-bottom: 10px;
 }
+
 </style>
 </head>
 
 <body>
+
+<!-- ===================== -->
+<!--   PANTALLA DE PIN     -->
+<!-- ===================== -->
+<div id="pinOverlay">
+  <div class="pin-box">
+      <h2 class="text-xl font-semibold mb-4">Acceso restringido</h2>
+
+      <p class="text-sm text-gray-600 mb-3">Ingrese su PIN de 4 dígitos</p>
+
+      <input id="pinInput" 
+             type="password" 
+             maxlength="4"
+             inputmode="numeric"
+             class="pin-input"
+             placeholder="••••">
+
+      <button id="pinBtn" class="pin-btn">
+          Acceder
+      </button>
+
+      <p id="pinError" class="pin-error">PIN incorrecto</p>
+  </div>
+</div>
 
 <h1>Pedidos Fondo Creativo</h1>
 
@@ -226,7 +287,7 @@ function getColorClase(estado, tipo) {
     return "rojo";
 }
 
-/* CARGAR TODO */
+/* Cargar pedidos */
 let pedidosGlobal = [];
 
 async function cargarPedidos() {
@@ -240,91 +301,37 @@ async function cargarPedidos() {
     renderHistorial(historial);
 }
 
-/* =============================== */
-/* PENDIENTES                      */
-/* =============================== */
+/* Pendientes */
 function renderPendientes(lista) {
     const cont = document.getElementById("pendientesLista");
     cont.innerHTML = "";
 
     lista.forEach(p => {
-        const hue = (p.NoPedido * 25) % 360;
-
         const div = document.createElement("div");
         div.className = "card";
-        div.style.setProperty("--hue", hue);
 
         div.innerHTML = `
-            <div class="pedido-banner pedido-color-${p.NoPedido}">
+            <div class="pedido-banner" style="background:hsl(${(p.NoPedido*25)%360},65%,55%)">
                 Pedido Nº ${p.NoPedido}
             </div>
 
             <img src="${p.Imagen}" class="card-img">
 
             <div class="card-info">
+                <div class="info-item"><span class="label">Nombre:</span><span class="value">${p.Nombre}</span></div>
+                <div class="info-item"><span class="label">DNI/RUC:</span><span class="value">${p.Dni}</span></div>
+                <div class="info-item"><span class="label">Telefono:</span><span class="value">${p.Telefono}</span></div>
+                <div class="info-item"><span class="label">Agencia:</span><span class="value">${p.Agencia}</span></div>
 
-                <div class="info-item">
-                    <span class="label">Nombre:</span>
-                    <span class="value">${p.Nombre}</span>
-                </div>
+                <div class="info-item"><span class="label">Dirección:</span><span class="value">${p.Direccion}</span></div>
 
-                <div class="info-item">
-                    <span class="label">DNI/RUC:</span>
-                    <span class="value">${p.Dni}</span>
-                </div>
+                <div class="info-item long"><span class="label">Medida:</span><span class="value">${p.medida}</span></div>
+                <div class="info-item long"><span class="label">Especificaciones:</span><span class="value">${p.Especificaciones}</span></div>
 
-                <div class="info-item">
-                    <span class="label">Telefono:</span>
-                    <span class="value">${p.Telefono}</span>
-                </div>
-
-                <div class="info-item">
-                    <span class="label">Agencia:</span>
-                    <span class="value">${p.Agencia}</span>
-                </div>
-
-                <div class="info-item">
-                    <span class="label">Dirección:</span>
-                    <span class="value">${p.Direccion}</span>
-                </div>
-
-                <div class="info-item long">
-                    <span class="label">Medida:</span>
-                    <span class="value">${p.medida}</span>
-                </div>
-
-                <div class="info-item long">
-                    <span class="label">Especificaciones:</span>
-                    <span class="value">${p.Especificaciones}</span>
-                </div>
-
-                <div class="info-item">
-                    <span class="label">Correo:</span>
-                    <span class="value estado ${getColorClase(p.CorreoEnviado,"CorreoEnviado")}">
-                        ${p.CorreoEnviado}
-                    </span>
-                </div>
-
-                <div class="info-item">
-                    <span class="label">Sublimado:</span>
-                    <span class="value estado ${getColorClase(p.Sublimado,"Sublimado")}">
-                        ${p.Sublimado}
-                    </span>
-                </div>
-
-                <div class="info-item">
-                    <span class="label">Costura:</span>
-                    <span class="value estado ${getColorClase(p.Costura,"Costura")}">
-                        ${p.Costura}
-                    </span>
-                </div>
-
-                <div class="info-item">
-                    <span class="label">Entrega:</span>
-                    <span class="value estado ${getColorClase(p.Entrega,"Entrega")}">
-                        ${p.Entrega}
-                    </span>
-                </div>
+                <div class="info-item"><span class="label">Correo:</span><span class="value estado ${getColorClase(p.CorreoEnviado,"CorreoEnviado")}">${p.CorreoEnviado}</span></div>
+                <div class="info-item"><span class="label">Sublimado:</span><span class="value estado ${getColorClase(p.Sublimado,"Sublimado")}">${p.Sublimado}</span></div>
+                <div class="info-item"><span class="label">Costura:</span><span class="value estado ${getColorClase(p.Costura,"Costura")}">${p.Costura}</span></div>
+                <div class="info-item"><span class="label">Entrega:</span><span class="value estado ${getColorClase(p.Entrega,"Entrega")}">${p.Entrega}</span></div>
             </div>
         `;
 
@@ -332,9 +339,7 @@ function renderPendientes(lista) {
     });
 }
 
-/* =============================== */
-/* HISTORIAL                       */
-/* =============================== */
+/* Historial */
 function normalizarFechaLatina(f) {
     if (!f) return null;
     f = f.trim();
@@ -365,24 +370,17 @@ function renderHistorial(lista) {
     });
 
     filtrado.forEach(p => {
-        const hue = (p.NoPedido * 25) % 360;
-
         const div = document.createElement("div");
         div.className = "mini-card";
-        div.style.setProperty("--hue", hue);
 
         div.innerHTML = `
-             <img src="${p.Imagen}" class="mini-img">
+            <img src="${p.Imagen}" class="mini-img">
             <div class="mini-info">
-                <div><span class="mini-label">Nombre:</span> ${p.NoPedido}</div>
+                <div><span class="mini-label">Pedido:</span> ${p.NoPedido}</div>
                 <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
                 <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
                 <div><span class="mini-label">Fecha:</span> ${p.FechaEntrega}</div>
-                <div>
-                    <span class="estado ${getColorClase(p.Entrega,"Entrega")}">
-                        ${p.Entrega}
-                    </span>
-                </div>
+                <span class="estado ${getColorClase(p.Entrega,"Entrega")}">${p.Entrega}</span>
             </div>
         `;
 
@@ -397,7 +395,54 @@ document.getElementById("filtroMes").addEventListener("change", () => {
     renderHistorial(historial);
 });
 
-cargarPedidos();
+/* =================== */
+/*   LÓGICA DEL PIN    */
+/* =================== */
+
+const PIN_CORRECTO = "0324";
+const CADUCIDAD_HORAS = 24;
+
+function validarPIN() {
+    const input = document.getElementById("pinInput").value.trim();
+    const error = document.getElementById("pinError");
+
+    if (input === PIN_CORRECTO) {
+        localStorage.setItem("pin_ok", "true");
+        localStorage.setItem("pin_time", Date.now().toString());
+        document.getElementById("pinOverlay").style.display = "none";
+        error.style.display = "none";
+    } else {
+        error.style.display = "block";
+    }
+}
+
+function comprobarPIN() {
+    const ok = localStorage.getItem("pin_ok");
+    const time = Number(localStorage.getItem("pin_time") || 0);
+    const ahora = Date.now();
+
+    if (ok === "true" && time) {
+        const horas = (ahora - time) / (1000 * 60 * 60);
+        if (horas < CADUCIDAD_HORAS) {
+            document.getElementById("pinOverlay").style.display = "none";
+            return;
+        }
+    }
+
+    document.getElementById("pinOverlay").style.display = "flex";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    comprobarPIN();
+
+    document.getElementById("pinBtn").addEventListener("click", validarPIN);
+
+    document.getElementById("pinInput").addEventListener("keyup", e => {
+        if (e.key === "Enter") validarPIN();
+    });
+
+    cargarPedidos();
+});
 </script>
 
 </body>
