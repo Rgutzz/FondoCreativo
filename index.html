@@ -88,7 +88,7 @@ h1 {
 .pedido-banner {
     font-size: 14px;
     font-weight: bold;
-    color: rgb(110, 110, 110);
+    color: rgb(255, 255, 255);
     padding: 6px 10px;
     text-align: center;
     border-radius: 10px 10px 0 0;
@@ -324,9 +324,9 @@ function renderPendientes(lista) {
         div.className = "card";
 
         div.innerHTML = `
-            <div class="pedido-banner" style="background:hsl(${(p.NoPedido*25)%360},65%,55%)">
-                Pedido Nº ${p.NoPedido}
-            </div>
+            <div class="pedido-banner" style="background:#3a3a3a;">
+            Pedido Nº ${p.NoPedido}
+             </div>
 
             <img src="${p.Imagen}" class="card-img">
 
