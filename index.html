@@ -208,12 +208,75 @@ h1 {
 .filtro {
     margin-bottom: 10px;
 }
+/* ===================== */
+/*        MENÚ TOP       */
+/* ===================== */
+.top-menu {
+    width: 100%;
+    background: #222;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 9000; /* menos que el PIN (9999) */
+}
+
+.top-menu a {
+    color: #4db8ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.top-menu a:hover {
+    text-decoration: underline;
+}
+.top-menu-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9000;
+    padding: 10px 0;
+    background: transparent; /* No ocupa pantalla */
+}
+
+.top-menu {
+    width: 50%; /* ← solo mitad de la pantalla */
+    max-width: 600px; /* evita que sea demasiado ancho en pantallas grandes */
+    background: #222;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+body {
+    padding-top: 80px; /* espacio para que no tape el contenido */
+}
+
 
 </style>
 </head>
 
 <body>
-
+<!-- MENÚ SUPERIOR (oculto hasta validar PIN) -->
+<div class="top-menu-wrapper">
+    <nav class="top-menu">
+         <a href="https://fondocreativo.netlify.app/ventas" style="color:white; text-decoration:none; font-weight:600;">
+            Ir a Ventas
+        </a>
+    </nav>
+</div>
 <!-- ===================== -->
 <!--   PANTALLA DE PIN     -->
 <!-- ===================== -->
@@ -237,6 +300,8 @@ h1 {
       <p id="pinError" class="pin-error">PIN incorrecto</p>
   </div>
 </div>
+
+
 
 <h1>Pedidos Fondo Creativo</h1>
 
@@ -496,6 +561,8 @@ function validarPIN() {
         localStorage.setItem("pin_ok", "true");
         localStorage.setItem("pin_time", Date.now().toString());
         document.getElementById("pinOverlay").style.display = "none";
+         // ← mostrar menú
+        document.getElementById("topMenu").style.display = "flex";
         error.style.display = "none";
     } else {
         error.style.display = "block";
@@ -511,6 +578,8 @@ function comprobarPIN() {
         const horas = (ahora - time) / (1000 * 60 * 60);
         if (horas < CADUCIDAD_HORAS) {
             document.getElementById("pinOverlay").style.display = "none";
+            // ← mostrar menú si el PIN sigue válido
+        document.getElementById("topMenu").style.display = "flex";
             return;
         }
     }
