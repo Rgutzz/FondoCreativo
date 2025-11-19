@@ -2,7 +2,7 @@ import { google } from "googleapis";
 
 export async function handler(event) {
   const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";
-  const RANGE = "FondoCreativo!A:L";
+  const RANGE = "FondoCreativo!A:AB";
   const pedidoId = event.queryStringParameters?.id;
 
   if (!pedidoId) {
@@ -10,7 +10,7 @@ export async function handler(event) {
   }
 
   try {
-    // Leer credenciales del env var
+    // Leer credenciales desde el env var
     const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
 
     const jwtClient = new google.auth.JWT(
@@ -22,7 +22,7 @@ export async function handler(event) {
 
     const sheets = google.sheets({ version: "v4", auth: jwtClient });
 
-    // 1. Leer toda la hoja
+    // 1. Leer todas las filas de la hoja
     const readRes = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
       range: RANGE,
@@ -31,15 +31,14 @@ export async function handler(event) {
     const filas = readRes.data.values;
     const headers = filas[0];
 
-    // Indices de columnas
-    const indexId = headers.indexOf("id");
-    const indexEstado = headers.indexOf("estado");
-    const indexFechaEnvio = headers.indexOf("fechaenvio");
+    // Buscar columnas claves
+    const indexId = headers.indexOf("Id");
+    const indexEntrega = headers.indexOf("Entrega");
 
-    if (indexId === -1 || indexEstado === -1 || indexFechaEnvio === -1) {
+    if (indexId === -1 || indexEntrega === -1) {
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: "Faltan columnas en Google Sheets" })
+        body: JSON.stringify({ error: "Faltan columnas Id o Entrega en Google Sheets" })
       };
     }
 
@@ -50,16 +49,13 @@ export async function handler(event) {
       return { statusCode: 404, body: JSON.stringify({ error: "Pedido no encontrado" }) };
     }
 
-    // 3. Actualizar solo estado y fechaenvio
-    const nuevaFechaEnvio = new Date().toLocaleString("es-PE", { timeZone: "America/Lima" });
+    // 3. Cambiar estado → ENTREGADO
+    filas[rowIndex][indexEntrega] = "ENTREGADO";
 
-    filas[rowIndex][indexEstado] = "Enviado";
-    filas[rowIndex][indexFechaEnvio] = nuevaFechaEnvio;
-
-    // 4. Actualizar solo esa fila (más eficiente)
+    // 4. Actualizar SOLO esa fila exacta
     await sheets.spreadsheets.values.update({
       spreadsheetId: SHEET_ID,
-      range: `FondoCreativo!A${rowIndex + 1}:L${rowIndex + 1}`,
+      range: `FondoCreativo!A${rowIndex + 1}:AB${rowIndex + 1}`,
       valueInputOption: "RAW",
       requestBody: {
         values: [filas[rowIndex]]
@@ -70,8 +66,8 @@ export async function handler(event) {
       statusCode: 200,
       body: JSON.stringify({
         ok: true,
-        estado: "Enviado",
-        fechaenvio: nuevaFechaEnvio
+        id: pedidoId,
+        entrega: "ENTREGADO"
       }),
     };
 
