@@ -25,6 +25,16 @@ h1 {
     flex-direction: column;
     gap: 40px;
 }
+.pedido-tag {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 4px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    text-align: center;
+    width: 100%;
+}
 
 /* ------------------------------- */
 /* TARJETAS PENDIENTES (compactas) */
@@ -184,6 +194,14 @@ function getColorClase(estado, tipo) {
 
     return "rojo";
 }
+function getColorForPedido(noPedido) {
+    let hash = 0;
+    for (let i = 0; i < noPedido.length; i++) {
+        hash = noPedido.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash) % 360;
+    return `hsl(${hue}, 70%, 90%)`; // color suave
+}
 
 /* CARGAR TODO */
 let pedidosGlobal = [];
@@ -210,10 +228,16 @@ function renderPendientes(lista) {
         const div = document.createElement("div");
         div.className = "tarjeta";
 
+        // ⭐ Color suave único por pedido
+        const pedidoColor = getColorForPedido(p.NoPedido);
+        div.style.backgroundColor = pedidoColor;
+
         div.innerHTML = `
+            <!-- ⭐ Cinta superior -->
+            <div class="pedido-tag">Pedido #${p.NoPedido}</div>
+
             <img src="${p.Imagen}">
 
-            <div class="item"><span class="titulo">Pedido:</span> ${p.NoPedido}</div>
             <div class="item"><span class="titulo">Medidas AnchxAlt:</span> ${p.Ancho} x ${p.Alto} cm</div>
             <div class="item"><span class="titulo">Fecha Pedido:</span> ${p.Fecha}</div>
 
@@ -259,6 +283,7 @@ function renderPendientes(lista) {
     });
 }
 
+
 /* ---------------------- */
 /* HISTORIAL CON FILTRO   */
 /* ---------------------- */
@@ -301,21 +326,27 @@ function renderHistorial(lista) {
 });
 
     filtrado.forEach(p => {
-        const div = document.createElement("div");
-        div.className = "mini-card";
+    const div = document.createElement("div");
+    div.className = "mini-card";
 
-        div.innerHTML = `
-            <img src="${p.Imagen}" class="mini-img">
-            <div class="mini-info">
-                <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
-                <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
-                <div><span class="mini-label">Fecha Entrega:</span> ${p.FechaEntrega}</div>
-                <div><span class="estado ${getColorClase(p.Entrega, "Entrega")}">${p.Entrega}</span></div>
-            </div>
-        `;
+    // Color para el pedido
+    const pedidoColor = getColorForPedido(p.NoPedido);
+    div.style.backgroundColor = pedidoColor;
 
-        cont.appendChild(div);
-    });
+    div.innerHTML = `
+        <div class="pedido-tag">Pedido #${p.NoPedido}</div>
+        <img src="${p.Imagen}" class="mini-img">
+        <div class="mini-info">
+            <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
+            <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
+            <div><span class="mini-label">Fecha:</span> ${p.FechaEntrega}</div>
+            <div><span class="estado ${getColorClase(p.Entrega, "Entrega")}">${p.Entrega}</span></div>
+        </div>
+    `;
+
+    cont.appendChild(div);
+});
+
 }
 
 document.getElementById("filtroMes").addEventListener("change", () => {
