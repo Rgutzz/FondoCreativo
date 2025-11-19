@@ -66,7 +66,7 @@ h1 {
 /* ------------------------------- */
 .item {
     display: flex;
-    align-items: flex-start;
+    align-items: center; /* <-- Mantiene alineado el badge con el titulo */
     gap: 4px;
     width: 100%;
     font-size: 13px;
@@ -96,14 +96,16 @@ h1 {
     padding: 2px 6px;
     font-size: 11px;
     font-weight: bold;
-    border-radius: 5px;
-    color: white;
+    border-radius: 4px;
+    display: inline-block;
+    line-height: 14px;
+    white-space: nowrap;
 }
 
-.rojo { background: #d9534f; }
+.rojo { background: #d9534f; color: white; }
 .amarillo { background: #f0ad4e; color: black; }
-.verde { background: #5cb85c; }
-.gris { background: #777; }
+.verde { background: #5cb85c; color: white; }
+.gris { background: #777; color: white; }
 
 /* ------------------------------- */
 /* HISTORIAL (mini cards)          */
