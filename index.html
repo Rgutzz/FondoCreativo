@@ -40,7 +40,7 @@ h1 {
 
 /* GENERADOR DE COLORES SUAVES */
 [class*="pedido-color-"] {
-    background: hsl(calc(var(--hue) * 1deg), 60%, 60%);
+    background: #777;
 }
 
 .card {
@@ -363,8 +363,7 @@ function renderHistorial(lista) {
         div.style.setProperty("--hue", hue);
 
         div.innerHTML = `
-            <div class="pedido-mini">Pedido Nº ${p.NoPedido}</div>
-            <img src="${p.Imagen}" class="mini-img">
+             <img src="${p.Imagen}" class="mini-img">
             <div class="mini-info">
                 <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
                 <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
