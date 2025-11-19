@@ -135,15 +135,22 @@ h1 {
     line-height: 1.35em;
 }
 
+/* Para que los badges NO se estiren dentro del flex */
+.value.estado {
+    flex: 0 !important;
+    width: auto !important;
+}
+
+
 /* BADGES */
 .estado {
-    display: inline-block;   /* <--- SOLO OCUPA SU TEXTO */
-    padding: 3px 8px;
+    display: inline-block;
+    padding: 4px 8px;
     border-radius: 6px;
     font-size: 0.82rem;
     font-weight: 600;
-    line-height: 1;
-    width: auto !important; /* fuerza a NO ocupar todo el ancho */
+    white-space: nowrap; /* evita que se rompa en 2 líneas */
+    width: auto !important;
 }
 
 .verde { background: #5cb85c; color: white; }
