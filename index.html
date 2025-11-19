@@ -25,6 +25,16 @@ h1 {
     flex-direction: column;
     gap: 40px;
 }
+.pedido-tag {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 4px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    text-align: center;
+    width: 100%;
+}
 
 /* ------------------------------- */
 /* TARJETAS PENDIENTES (compactas) */
@@ -218,10 +228,6 @@ function renderPendientes(lista) {
         const div = document.createElement("div");
         div.className = "tarjeta";
 
-        // ⭐ Color suave único por pedido
-        const pedidoColor = getColorForPedido(p.NoPedido);
-        div.style.backgroundColor = pedidoColor;
-
         div.innerHTML = `
             <!-- ⭐ Cinta superior -->
             <div class="pedido-tag">Pedido #${p.NoPedido}</div>
@@ -319,10 +325,7 @@ function renderHistorial(lista) {
     const div = document.createElement("div");
     div.className = "mini-card";
 
-    // Color para el pedido
-    const pedidoColor = getColorForPedido(p.NoPedido);
-    div.style.backgroundColor = pedidoColor;
-
+  
     div.innerHTML = `
         <div class="pedido-tag">Pedido #${p.NoPedido}</div>
         <img src="${p.Imagen}" class="mini-img">
