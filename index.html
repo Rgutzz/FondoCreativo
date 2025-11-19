@@ -6,129 +6,118 @@
 <title>Pedidos Fondo Creativo</title>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f5f5f5;
-        margin: 0;
-        padding: 20px;
-    }
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+}
 
-    h1 {
-        text-align: center;
-        margin-bottom: 25px;
-    }
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+}
 
-    .contenedor {
-        max-width: 1100px;
-        margin: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 40px;
-    }
+.contenedor {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
 
-    /* ------------------------------------ */
-    /* TARJETAS DE PENDIENTES (GRANDES)     */
-    /* ------------------------------------ */
-    .lista-pendientes {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-        gap: 20px;
-    }
+/* ------------------------------- */
+/* TARJETAS PENDIENTES (compactas) */
+/* ------------------------------- */
+.lista-pendientes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 18px;
+}
 
-    .tarjeta {
-        background: white;
-        padding: 12px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
+.tarjeta {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
 
-    .tarjeta img {
-        width: 380px;
-        height: 250px;
-        object-fit: cover; /* menos agresivo que antes */
-        border-radius: 8px;
-    }
+.tarjeta img {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    background: #eaeaea;
+    border-radius: 6px;
+}
 
-    .item {
-        width: 100%;
-        font-size: 14px;
-        line-height: 1.3;
-    }
+.item {
+    width: 100%;
+    font-size: 13px;
+    margin-top: 4px;
+}
 
-    .titulo {
-        font-weight: bold;
-        display: inline-block;
-        width: 110px;
-    }
+.titulo {
+    font-weight: bold;
+    width: 105px;
+    display: inline-block;
+}
 
-    .estado {
-        padding: 3px 8px;
-        border-radius: 6px;
-        color: white;
-        font-weight: bold;
-        font-size: 12px;
-    }
+/* ESTADOS */
+.estado {
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 5px;
+    color: white;
+}
 
-    .rojo { background: #d9534f; }
-    .amarillo { background: #f0ad4e; }
-    .verde { background: #5cb85c; }
+.rojo { background: #d9534f; }
+.amarillo { background: #f0ad4e; color: black; }
+.verde { background: #5cb85c; }
+.gris { background: #777; }
 
-    .btn-entregar {
-        background: #0275d8;
-        color: white;
-        width: 100%;
-        padding: 10px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        font-size: 15px;
-        margin-top: 5px;
-    }
+/* ------------------------------- */
+/* HISTORIAL (mini cards)          */
+/* ------------------------------- */
+.lista-historial {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
 
-    .btn-entregar:hover { background: #025aa5; }
+.mini-card {
+    background: white;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+}
 
-    /* ------------------------------------ */
-    /* TARJETAS DEL HISTORIAL (MINI)        */
-    /* ------------------------------------ */
-    .lista-historial {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-        gap: 15px;
-    }
+.mini-img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    background: #eee;
+    border-radius: 5px;
+}
 
-    .mini-card {
-        background: white;
-        padding: 10px;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 13px;
-    }
+.mini-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
 
-    .mini-img {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 6px;
-    }
+.mini-label {
+    font-weight: bold;
+    font-size: 11px;
+}
 
-    .mini-info {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    .mini-label {
-        font-weight: bold;
-        font-size: 12px;
-    }
-
+.filtro {
+    margin-bottom: 10px;
+}
 </style>
 </head>
 
@@ -146,7 +135,24 @@
 
     <!-- HISTORIAL -->
     <section>
-        <h2>Historial Entregados</h2>
+        <h2>Historial</h2>
+
+        <select id="filtroMes" class="filtro">
+            <option value="all">Ver todo</option>
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+        </select>
+
         <div id="historialLista" class="lista-historial"></div>
     </section>
 
@@ -154,7 +160,6 @@
 
 <script>
 const API_GET = "/.netlify/functions/getPedidos";
-const API_UPDATE = "/.netlify/functions/updatePedido";
 
 /* COLORES */
 function getColorClase(estado, tipo) {
@@ -173,22 +178,25 @@ function getColorClase(estado, tipo) {
     if (tipo === "Entrega") {
         if (estado === "ENTREGADO") return "verde";
         if (estado === "MOTORIZADO SOLICITADO" || estado === "EN RUTA") return "amarillo";
+        if (estado === "ANULADO") return "gris";
         return "rojo";
     }
 
     return "rojo";
 }
 
-/* CARGAR */
+/* CARGAR TODO */
+let pedidosGlobal = [];
+
 async function cargarPedidos() {
     const res = await fetch(API_GET);
-    const data = await res.json();
+    pedidosGlobal = await res.json();
 
-    const pendientes = data.filter(p => p.Entrega !== "ENTREGADO");
-    const entregados = data.filter(p => p.Entrega === "ENTREGADO");
+    const pendientes = pedidosGlobal.filter(p => p.Entrega !== "ENTREGADO" && p.Entrega !== "ANULADO");
+    const historial = pedidosGlobal.filter(p => p.Entrega === "ENTREGADO" || p.Entrega === "ANULADO");
 
     renderPendientes(pendientes);
-    renderHistorial(entregados);
+    renderHistorial(historial);
 }
 
 /* ---------------------- */
@@ -204,6 +212,7 @@ function renderPendientes(lista) {
 
         div.innerHTML = `
             <img src="${p.Imagen}">
+
             <div class="item"><span class="titulo">Medidas:</span> ${p.Ancho} x ${p.Alto} cm</div>
             <div class="item"><span class="titulo">Fecha:</span> ${p.Fecha}</div>
 
@@ -245,28 +254,27 @@ function renderPendientes(lista) {
             <div class="item"><span class="titulo">Observaciones:</span> ${p.Observaciones}</div>
         `;
 
-        const btn = document.createElement("button");
-        btn.className = "btn-entregar";
-        btn.textContent = "Marcar como ENTREGADO";
-
-        btn.onclick = async () => {
-            await marcarEntregado(p.Id);
-            cargarPedidos();
-        };
-
-        div.appendChild(btn);
         cont.appendChild(div);
     });
 }
 
 /* ---------------------- */
-/* TARJETAS HISTORIAL     */
+/* HISTORIAL CON FILTRO   */
 /* ---------------------- */
 function renderHistorial(lista) {
     const cont = document.getElementById("historialLista");
     cont.innerHTML = "";
 
-    lista.forEach(p => {
+    const mes = document.getElementById("filtroMes").value;
+
+    const filtrado = lista.filter(p => {
+        if (mes === "all") return true;
+        if (!p.FechaEntrega) return false;
+        const m = new Date(p.FechaEntrega).getMonth() + 1;
+        return m == mes;
+    });
+
+    filtrado.forEach(p => {
         const div = document.createElement("div");
         div.className = "mini-card";
 
@@ -276,7 +284,7 @@ function renderHistorial(lista) {
                 <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
                 <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
                 <div><span class="mini-label">Fecha:</span> ${p.FechaEntrega}</div>
-                <div><span class="estado verde">ENTREGADO</span></div>
+                <div><span class="estado ${getColorClase(p.Entrega, "Entrega")}">${p.Entrega}</span></div>
             </div>
         `;
 
@@ -284,10 +292,12 @@ function renderHistorial(lista) {
     });
 }
 
-/* ---------------------- */
-async function marcarEntregado(id) {
-    await fetch(`${API_UPDATE}?id=${encodeURIComponent(id)}`);
-}
+document.getElementById("filtroMes").addEventListener("change", () => {
+    const historial = pedidosGlobal.filter(p =>
+        p.Entrega === "ENTREGADO" || p.Entrega === "ANULADO"
+    );
+    renderHistorial(historial);
+});
 
 /* ---------------------- */
 cargarPedidos();
