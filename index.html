@@ -274,6 +274,11 @@ function renderPendientes(lista) {
                 </div>
 
                 <div class="info-item">
+                    <span class="label">Telefono:</span>
+                    <span class="value">${p.Telefono}</span>
+                </div>
+
+                <div class="info-item">
                     <span class="label">Agencia:</span>
                     <span class="value">${p.Agencia}</span>
                 </div>
@@ -281,6 +286,11 @@ function renderPendientes(lista) {
                 <div class="info-item">
                     <span class="label">Dirección:</span>
                     <span class="value">${p.Direccion}</span>
+                </div>
+
+                <div class="info-item long">
+                    <span class="label">Medida:</span>
+                    <span class="value">${p.medida}</span>
                 </div>
 
                 <div class="info-item long">
@@ -315,12 +325,6 @@ function renderPendientes(lista) {
                         ${p.Entrega}
                     </span>
                 </div>
-
-                <div class="info-item">
-                    <span class="label">Fecha Entrega:</span>
-                    <span class="value">${p.FechaEntrega}</span>
-                </div>
-
             </div>
         `;
 
