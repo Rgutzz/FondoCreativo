@@ -269,6 +269,11 @@ function renderPendientes(lista) {
                 </div>
 
                 <div class="info-item">
+                    <span class="label">DNI/RUC:</span>
+                    <span class="value">${p.Dni}</span>
+                </div>
+
+                <div class="info-item">
                     <span class="label">Agencia:</span>
                     <span class="value">${p.Agencia}</span>
                 </div>
@@ -365,6 +370,7 @@ function renderHistorial(lista) {
         div.innerHTML = `
              <img src="${p.Imagen}" class="mini-img">
             <div class="mini-info">
+                <div><span class="mini-label">Nombre:</span> ${p.NoPedido}</div>
                 <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
                 <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
                 <div><span class="mini-label">Fecha:</span> ${p.FechaEntrega}</div>
