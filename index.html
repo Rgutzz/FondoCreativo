@@ -26,101 +26,111 @@ h1 {
     gap: 40px;
 }
 
-/* Etiqueta de pedido para tarjetas grandes */
-.pedido-tag {
-    background: rgba(0, 0, 0, 0.15);
-    padding: 4px 8px;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 8px;
-    margin-bottom: 6px;
+/* ================================ */
+/* CINTA COLOR POR NÚMERO DE PEDIDO */
+/* ================================ */
+.pedido-banner {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    padding: 6px 10px;
     text-align: center;
-    width: fit-content;
+    border-radius: 10px 10px 0 0;
 }
 
-/* ------------------------------- */
-/* TARJETAS PENDIENTES (compactas) */
-/* ------------------------------- */
+/* GENERADOR DE COLORES SUAVES */
+[class*="pedido-color-"] {
+    background: hsl(calc(var(--hue) * 1deg), 60%, 60%);
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card-img {
+    width: 100%;
+    height: 380px;
+    object-fit: contain;
+    background: #e9e9e9;
+}
+
+.card-info {
+    padding: 12px 15px;
+}
+
+/* ================================ */
+/* CAMPOS ALINEADOS                 */
+/* ================================ */
+.info-item {
+    display: flex;
+    gap: 8px;
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+.info-item.long {
+    align-items: flex-start;
+}
+
+.label {
+    width: 120px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.value {
+    flex: 1;
+    line-height: 1.3em;
+}
+
+/* BADGES DE ESTADO */
+.estado {
+    padding: 2px 6px;
+    font-size: 11px;
+    border-radius: 4px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.verde { background: #5cb85c; color: white; }
+.amarillo { background: #f0ad4e; color: black; }
+.rojo { background: #d9534f; color: white; }
+.gris { background: #777; color: white; }
+
+/* ================================ */
+/* LISTA DE PENDIENTES              */
+/* ================================ */
 .lista-pendientes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 18px;
 }
 
-.tarjeta {
-    background: white;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.tarjeta img {
-    width: 100%;
-    height: 380px;
-    object-fit: contain;
-    background: #eaeaea;
-    border-radius: 6px;
-}
-
-/* ------------------------------- */
-/* ALINEACIÓN DE CAMPOS            */
-/* ------------------------------- */
-.item {
-    display: flex;
-    align-items: center;
-    font-size: 13px;
-    margin-top: 4px;
-}
-
-.titulo {
-    font-weight: bold;
-    width: 105px;
-}
-
-/* Resaltar nombre */
-.nombre-resaltado {
-    font-size: 15px;
-    font-weight: 700;
-    color: #222;
-}
-
-/* ESTADOS - estilo botón */
-.estado {
-    padding: 3px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 6px;
-    display: inline-block;
-    white-space: nowrap;
-}
-
-.rojo { background: #d9534f; color: white; }
-.amarillo { background: #f0ad4e; color: black; }
-.verde { background: #5cb85c; color: white; }
-.gris { background: #777; color: white; }
-
-/* ------------------------------- */
-/* HISTORIAL (mini cards mejoradas)*/
-/* ------------------------------- */
+/* ================================ */
+/* HISTORIAL MINI TARJETAS          */
+/* ================================ */
 .lista-historial {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 12px;
 }
 
 .mini-card {
     background: white;
-    padding: 8px;
     border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 10px;
     display: flex;
-    gap: 8px;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     font-size: 12px;
 }
 
 .mini-img {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     object-fit: contain;
     background: #eee;
     border-radius: 5px;
@@ -132,15 +142,18 @@ h1 {
     gap: 2px;
 }
 
-.mini-pedido {
-    font-size: 11px;
-    font-weight: bold;
-    opacity: 0.7;
-}
-
 .mini-label {
     font-weight: bold;
     font-size: 11px;
+}
+
+.pedido-mini {
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #ddd;
+    margin-bottom: 4px;
 }
 
 .filtro {
@@ -197,7 +210,7 @@ function getColorClase(estado, tipo) {
         return "rojo";
     }
 
-    if (["Sublimado","Costura"].includes(tipo)) {
+    if (tipo === "Sublimado" || tipo === "Costura") {
         if (estado === "TERMINADO") return "verde";
         if (estado === "EN PROCESO") return "amarillo";
         return "rojo";
@@ -205,7 +218,7 @@ function getColorClase(estado, tipo) {
 
     if (tipo === "Entrega") {
         if (estado === "ENTREGADO") return "verde";
-        if (["MOTORIZADO SOLICITADO","EN RUTA"].includes(estado)) return "amarillo";
+        if (estado === "MOTORIZADO SOLICITADO" || estado === "EN RUTA") return "amarillo";
         if (estado === "ANULADO") return "gris";
         return "rojo";
     }
@@ -227,70 +240,100 @@ async function cargarPedidos() {
     renderHistorial(historial);
 }
 
-/* ---------------------- */
-/* TARJETAS PENDIENTES    */
-/* ---------------------- */
+/* =============================== */
+/* PENDIENTES                      */
+/* =============================== */
 function renderPendientes(lista) {
     const cont = document.getElementById("pendientesLista");
     cont.innerHTML = "";
 
     lista.forEach(p => {
+        const hue = (p.NoPedido * 25) % 360;
+
         const div = document.createElement("div");
-        div.className = "tarjeta";
+        div.className = "card";
+        div.style.setProperty("--hue", hue);
 
         div.innerHTML = `
-            <div class="pedido-tag">Pedido #${p.NoPedido}</div>
-
-            <img src="${p.Imagen}">
-
-            <div class="item"><span class="titulo">Medidas AnchxAlt:</span> ${p.Ancho} x ${p.Alto} cm</div>
-            <div class="item"><span class="titulo">Fecha Pedido:</span> ${p.Fecha}</div>
-
-            <div class="item"><span class="titulo">Nombre:</span> <span class="nombre-resaltado">${p.Nombre}</span></div>
-
-            <div class="item"><span class="titulo">DNI/RUC:</span> ${p.Dni}</div>
-            <div class="item"><span class="titulo">Teléfono:</span> ${p.Telefono}</div>
-            <div class="item"><span class="titulo">Dirección:</span> ${p.Direccion}</div>
-            <div class="item"><span class="titulo">Agencia:</span> ${p.Agencia}</div>
-
-            <div class="item"><span class="titulo">Correo:</span>
-                <span class="estado ${getColorClase(p.CorreoEnviado,'CorreoEnviado')}">${p.CorreoEnviado}</span>
+            <div class="pedido-banner pedido-color-${p.NoPedido}">
+                Pedido Nº ${p.NoPedido}
             </div>
 
-            <div class="item"><span class="titulo">Sublimado:</span>
-                <span class="estado ${getColorClase(p.Sublimado,'Sublimado')}">${p.Sublimado}</span>
-            </div>
+            <img src="${p.Imagen}" class="card-img">
 
-            <div class="item"><span class="titulo">Costura:</span>
-                <span class="estado ${getColorClase(p.Costura,'Costura')}">${p.Costura}</span>
-            </div>
+            <div class="card-info">
 
-            <div class="item"><span class="titulo">Entrega:</span>
-                <span class="estado ${getColorClase(p.Entrega,'Entrega')}">${p.Entrega}</span>
-            </div>
+                <div class="info-item">
+                    <span class="label">Nombre:</span>
+                    <span class="value">${p.Nombre}</span>
+                </div>
 
-            <div class="item"><span class="titulo">Especificaciones:</span> ${p.Especificaciones}</div>
-            <div class="item"><span class="titulo">Observaciones:</span> ${p.Observaciones}</div>
+                <div class="info-item">
+                    <span class="label">Agencia:</span>
+                    <span class="value">${p.Agencia}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">Dirección:</span>
+                    <span class="value">${p.Direccion}</span>
+                </div>
+
+                <div class="info-item long">
+                    <span class="label">Especificaciones:</span>
+                    <span class="value">${p.Especificaciones}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">Correo:</span>
+                    <span class="value estado ${getColorClase(p.CorreoEnviado,"CorreoEnviado")}">
+                        ${p.CorreoEnviado}
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">Sublimado:</span>
+                    <span class="value estado ${getColorClase(p.Sublimado,"Sublimado")}">
+                        ${p.Sublimado}
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">Costura:</span>
+                    <span class="value estado ${getColorClase(p.Costura,"Costura")}">
+                        ${p.Costura}
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">Entrega:</span>
+                    <span class="value estado ${getColorClase(p.Entrega,"Entrega")}">
+                        ${p.Entrega}
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span class="label">Fecha Entrega:</span>
+                    <span class="value">${p.FechaEntrega}</span>
+                </div>
+
+            </div>
         `;
 
         cont.appendChild(div);
     });
 }
 
-/* ---------------------- */
-/* HISTORIAL CON FILTRO   */
-/* ---------------------- */
-function normalizarFechaLatina(fechaStr) {
-    if (!fechaStr) return null;
-
-    fechaStr = fechaStr.trim();
-
-    if (fechaStr.includes("/")) {
-        const [d, m, y] = fechaStr.split("/");
-        return `${y}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
+/* =============================== */
+/* HISTORIAL                       */
+/* =============================== */
+function normalizarFechaLatina(f) {
+    if (!f) return null;
+    f = f.trim();
+    if (f.includes("/")) {
+        const [d,m,a] = f.split("/");
+        return `${a}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
     }
-
-    return fechaStr.substring(0, 10);
+    return f.substring(0,10);
 }
 
 function renderHistorial(lista) {
@@ -306,21 +349,31 @@ function renderHistorial(lista) {
         const iso = normalizarFechaLatina(p.FechaEntrega);
         if (!iso) return false;
 
-        return new Date(iso).getMonth() + 1 == mes;
+        const fecha = new Date(iso);
+        if (isNaN(fecha)) return false;
+
+        return fecha.getMonth() + 1 == mes;
     });
 
     filtrado.forEach(p => {
+        const hue = (p.NoPedido * 25) % 360;
+
         const div = document.createElement("div");
         div.className = "mini-card";
+        div.style.setProperty("--hue", hue);
 
         div.innerHTML = `
+            <div class="pedido-mini">Pedido Nº ${p.NoPedido}</div>
             <img src="${p.Imagen}" class="mini-img">
             <div class="mini-info">
-                <div class="mini-pedido">Pedido #${p.NoPedido}</div>
                 <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
                 <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
                 <div><span class="mini-label">Fecha:</span> ${p.FechaEntrega}</div>
-                <span class="estado ${getColorClase(p.Entrega,'Entrega')}">${p.Entrega}</span>
+                <div>
+                    <span class="estado ${getColorClase(p.Entrega,"Entrega")}">
+                        ${p.Entrega}
+                    </span>
+                </div>
             </div>
         `;
 
@@ -329,8 +382,10 @@ function renderHistorial(lista) {
 }
 
 document.getElementById("filtroMes").addEventListener("change", () => {
-    const lista = pedidosGlobal.filter(p => p.Entrega === "ENTREGADO" || p.Entrega === "ANULADO");
-    renderHistorial(lista);
+    const historial = pedidosGlobal.filter(
+        p => p.Entrega === "ENTREGADO" || p.Entrega === "ANULADO"
+    );
+    renderHistorial(historial);
 });
 
 cargarPedidos();
