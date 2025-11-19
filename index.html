@@ -109,7 +109,7 @@ h1 {
 }
 
 .card-info {
-    padding: 12px 15px;
+    padding: 14px 16px;
 }
 
 /* Campos alineados */
@@ -137,11 +137,13 @@ h1 {
 
 /* BADGES */
 .estado {
-    padding: 2px 6px;
-    font-size: 11px;
-    border-radius: 4px;
-    font-weight: bold;
-    white-space: nowrap;
+    display: inline-block;   /* <--- SOLO OCUPA SU TEXTO */
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1;
+    width: auto !important; /* fuerza a NO ocupar todo el ancho */
 }
 
 .verde { background: #5cb85c; color: white; }
