@@ -13,18 +13,89 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <style>
-body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
-h1 { text-align: center; margin-bottom: 30px; }
-.dashboard { max-width: 1200px; margin: auto; display: flex; flex-direction: column; gap: 30px; }
-.cards { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; }
-.card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); flex: 1 1 200px; min-width: 180px; text-align: center; }
-.card h3 { margin: 0; font-size: 18px; color: #555; }
-.card p { font-size: 22px; font-weight: bold; margin: 10px 0 0; }
-.filters { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
-.filters select { padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
-.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-canvas { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-.table-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.dashboard {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    flex: 1 1 200px;
+    min-width: 180px;
+    text-align: center;
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #555;
+}
+
+.card p {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 10px 0 0;
+}
+
+.filters {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.filters select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+canvas {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    max-height: 400px;
+}
+
+.table-container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
 </style>
 </head>
 <body>
@@ -34,14 +105,27 @@ canvas { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4p
 <div class="dashboard">
 
     <!-- Resumen tarjetas -->
-    <div class="cards" id="cardsResumen"></div>
+    <div class="cards" id="cardsResumen">
+        <!-- Dinámico -->
+    </div>
 
     <!-- Filtros -->
     <div class="filters">
-        <select id="filterMes"><option value="all">Todos los meses</option></select>
-        <select id="filterAno"><option value="all">Todos los años</option></select>
-        <select id="filterTipologia"><option value="all">Todas las tipologías</option></select>
-        <select id="filterMedio"><option value="all">Todos los medios</option></select>
+        <select id="filterMes">
+            <option value="all">Todos los meses</option>
+        </select>
+
+        <select id="filterAno">
+            <option value="all">Todos los años</option>
+        </select>
+
+        <select id="filterTipologia">
+            <option value="all">Todas las tipologías</option>
+        </select>
+
+        <select id="filterMedio">
+            <option value="all">Todos los medios</option>
+        </select>
     </div>
 
     <!-- Gráficos -->
@@ -49,8 +133,6 @@ canvas { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4p
         <canvas id="chartVentasMes"></canvas>
         <canvas id="chartTopArticulos"></canvas>
         <canvas id="chartMedioVenta"></canvas>
-        <canvas id="chartDescuentos"></canvas>
-        <canvas id="chartTopPedidos"></canvas>
     </div>
 
     <!-- Tabla detalle -->
@@ -65,7 +147,6 @@ canvas { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4p
                     <th>Tamaño</th>
                     <th>Cantidad</th>
                     <th>Precio Final</th>
-                    <th>Descuento S/.</th>
                     <th>Medio de venta</th>
                     <th>Fecha</th>
                     <th>Nombre</th>
@@ -84,31 +165,25 @@ canvas { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4p
 const API_GET = "/.netlify/functions/getVentas";
 let datosGlobal = [];
 
-// ---------- UTILIDADES ----------
-function limpiarNumero(str){
-    if(!str) return 0;
-    return parseFloat(str.toString().replace(/[^\d.-]/g,"")) || 0;
+// Formatear monto
+function formatMoney(n) {
+    return "S/. " + parseFloat(n || 0).toLocaleString("es-PE",{minimumFractionDigits:2,maximumFractionDigits:2});
 }
-function formatMoney(num){ return "S/. " + limpiarNumero(num).toLocaleString("es-PE",{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function numeroPedido(str){ const match = str.match(/-(\d+)$/); return match ? parseInt(match[1]) : 0; }
-function formatFechaOrden(str){ if(!str) return ""; const parts = str.split("/"); if(parts.length!==3) return str; return `${parts[2]}-${parts[1].padStart(2,"0")}-${parts[0].padStart(2,"0")}`; }
 
-// ---------- FILTROS ----------
+// Llenar filtros
 function llenarFiltros() {
     const meses = [...new Set(datosGlobal.map(d=>d.MES).filter(m=>m))].sort((a,b)=>a-b);
     const anos = [...new Set(datosGlobal.map(d=>d.AÑO).filter(a=>a))].sort((a,b)=>a-b);
     const tipologias = [...new Set(datosGlobal.map(d=>d.TIPOLOGIA).filter(t=>t))].sort();
     const medios = [...new Set(datosGlobal.map(d=>d.MEDIO_DE_VENTA).filter(m=>m))].sort();
 
-    const selectMes = document.getElementById("filterMes");
-    meses.forEach(m=> selectMes.innerHTML += `<option value="${m}">${m}</option>`);
-    const selectAno = document.getElementById("filterAno");
-    anos.forEach(a=> selectAno.innerHTML += `<option value="${a}">${a}</option>`);
-    const selectTip = document.getElementById("filterTipologia");
-    tipologias.forEach(t=> selectTip.innerHTML += `<option value="${t}">${t}</option>`);
-    const selectMedio = document.getElementById("filterMedio");
-    medios.forEach(m=> selectMedio.innerHTML += `<option value="${m}">${m}</option>`);
+    meses.forEach(m=> document.getElementById("filterMes").innerHTML += `<option value="${m}">${m}</option>`);
+    anos.forEach(a=> document.getElementById("filterAno").innerHTML += `<option value="${a}">${a}</option>`);
+    tipologias.forEach(t=> document.getElementById("filterTipologia").innerHTML += `<option value="${t}">${t}</option>`);
+    medios.forEach(m=> document.getElementById("filterMedio").innerHTML += `<option value="${m}">${m}</option>`);
 }
+
+// Filtrar datos
 function filtrarDatos() {
     const mes = document.getElementById("filterMes").value;
     const ano = document.getElementById("filterAno").value;
@@ -123,130 +198,157 @@ function filtrarDatos() {
     );
 }
 
-// ---------- RESUMEN TARJETAS ----------
+// Crear resumen
 function renderResumen(datos) {
-    const cont = document.getElementById("cardsResumen"); cont.innerHTML="";
-    const totalVentas = datos.reduce((sum,d)=>sum+limpiarNumero(d["PRECIO FINAL"]),0);
-    const totalCantidad = datos.reduce((sum,d)=>sum+limpiarNumero(d.CANTIDAD),0);
+    const cont = document.getElementById("cardsResumen");
+    cont.innerHTML = "";
+
+    const totalVentas = datos.reduce((sum,d)=>sum+parseFloat(d["PRECIO FINAL"]||0),0);
+    const totalCantidad = datos.reduce((sum,d)=>sum+parseFloat(d.CANTIDAD||0),0);
     const pedidosUnicos = [...new Set(datos.map(d=>d.PEDIDO))].length;
     const promedioPorPedido = pedidosUnicos ? totalVentas/pedidosUnicos : 0;
-    const totalDescuento = datos.reduce((sum,d)=>sum+limpiarNumero(d["DESCUENTO S/."]),0);
 
     const cards = [
         {title:"Ventas totales", value:formatMoney(totalVentas)},
         {title:"Cantidad vendida", value:totalCantidad},
         {title:"Pedidos únicos", value:pedidosUnicos},
-        {title:"Promedio por pedido", value:formatMoney(promedioPorPedido)},
-        {title:"Descuento total", value:formatMoney(totalDescuento)}
+        {title:"Promedio por pedido", value:formatMoney(promedioPorPedido)}
     ];
+
     cards.forEach(c=>{
         const div = document.createElement("div");
-        div.className="card";
-        div.innerHTML=`<h3>${c.title}</h3><p>${c.value}</p>`;
+        div.className = "card";
+        div.innerHTML = `<h3>${c.title}</h3><p>${c.value}</p>`;
         cont.appendChild(div);
     });
 }
 
-// ---------- GRÁFICOS ----------
-let chartVentasMes, chartTopArticulos, chartMedioVenta, chartDescuentos, chartTopPedidos;
+// Crear gráficos
+let chartVentasMes, chartTopArticulos, chartMedioVenta;
+
 function renderGraficos(datos) {
     // Ventas por mes
-    const ventasMes={};
-    datos.forEach(d=>{ const key=d.MES+"-"+d.AÑO; ventasMes[key]=(ventasMes[key]||0)+limpiarNumero(d["PRECIO FINAL"]); });
-    const labelsMes=Object.keys(ventasMes).sort();
-    const dataMes=Object.values(ventasMes);
+    const ventasMes = {};
+    datos.forEach(d=>{
+        const key = `${d.MES}-${d.AÑO}`;
+        ventasMes[key] = (ventasMes[key]||0) + parseFloat(d["PRECIO FINAL"]||0);
+    });
+    const labelsMes = Object.keys(ventasMes).sort((a,b)=>{
+        const [ma,aa] = a.split("-").map(Number);
+        const [mb,ab] = b.split("-").map(Number);
+        return aa - ab || ma - mb;
+    });
+    const dataMes = labelsMes.map(l=>ventasMes[l]);
+
     if(chartVentasMes) chartVentasMes.destroy();
-    chartVentasMes = new Chart(document.getElementById("chartVentasMes").getContext("2d"),{
+    const ctx1 = document.getElementById("chartVentasMes").getContext("2d");
+    chartVentasMes = new Chart(ctx1,{
         type:"bar",
         data:{labels:labelsMes,datasets:[{label:"Ventas por mes",data:dataMes,backgroundColor:"#4e73df"}]},
         options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
     });
 
     // Top artículos
-    const topArt={};
-    datos.forEach(d=>{ const art=d.ARTICULO; topArt[art]=(topArt[art]||0)+limpiarNumero(d.CANTIDAD); });
-    const sortedArt=Object.entries(topArt).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const topArt = {};
+    datos.forEach(d=>{
+        const art = d.ARTICULO;
+        topArt[art] = (topArt[art]||0) + parseFloat(d.CANTIDAD||0);
+    });
+    const sortedArt = Object.entries(topArt).sort((a,b)=>b[1]-a[1]).slice(0,10);
     if(chartTopArticulos) chartTopArticulos.destroy();
-    chartTopArticulos = new Chart(document.getElementById("chartTopArticulos").getContext("2d"),{
+    const ctx2 = document.getElementById("chartTopArticulos").getContext("2d");
+    chartTopArticulos = new Chart(ctx2,{
         type:"bar",
-        data:{labels:sortedArt.map(e=>e[0]),datasets:[{label:"Cantidad vendida",data:sortedArt.map(e=>e[1]),backgroundColor:"#1cc88a"}]},
+        data:{labels: sortedArt.map(e=>e[0]), datasets:[{label:"Cantidad vendida", data:sortedArt.map(e=>e[1]), backgroundColor:"#1cc88a"}]},
         options:{responsive:true,plugins:{legend:{display:false}},indexAxis:"y",scales:{x:{beginAtZero:true}}}
     });
 
     // Medio de venta
-    const medios={};
-    datos.forEach(d=>{ const m=d.MEDIO_DE_VENTA; medios[m]=(medios[m]||0)+limpiarNumero(d["PRECIO FINAL"]); });
+    const medios = {};
+    datos.forEach(d=>{
+        const m = d.MEDIO_DE_VENTA;
+        medios[m] = (medios[m]||0) + parseFloat(d["PRECIO FINAL"]||0);
+    });
     if(chartMedioVenta) chartMedioVenta.destroy();
-    chartMedioVenta = new Chart(document.getElementById("chartMedioVenta").getContext("2d"),{
+    const ctx3 = document.getElementById("chartMedioVenta").getContext("2d");
+    chartMedioVenta = new Chart(ctx3,{
         type:"doughnut",
         data:{labels:Object.keys(medios),datasets:[{data:Object.values(medios),backgroundColor:["#4e73df","#1cc88a","#f6c23e","#e74a3b"]}]},
         options:{responsive:true,plugins:{legend:{position:"bottom"}}}
     });
-
-    // Descuentos por tipología
-    const descuentos={};
-    datos.forEach(d=>{ const t=d.TIPOLOGIA; descuentos[t]=(descuentos[t]||0)+limpiarNumero(d["DESCUENTO S/."]); });
-    if(chartDescuentos) chartDescuentos.destroy();
-    chartDescuentos = new Chart(document.getElementById("chartDescuentos").getContext("2d"),{
-        type:"bar",
-        data:{labels:Object.keys(descuentos),datasets:[{label:"Descuento S/.",data:Object.values(descuentos),backgroundColor:"#f6c23e"}]},
-        options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-    });
-
-    // Top pedidos
-    const pedidos={};
-    datos.forEach(d=>{ const p=d.PEDIDO; pedidos[p]=(pedidos[p]||0)+limpiarNumero(d["PRECIO FINAL"]); });
-    const sortedPedidos=Object.entries(pedidos).sort((a,b)=>numeroPedido(b[0])-numeroPedido(a[0])).slice(0,10);
-    if(chartTopPedidos) chartTopPedidos.destroy();
-    chartTopPedidos = new Chart(document.getElementById("chartTopPedidos").getContext("2d"),{
-        type:"bar",
-        data:{labels:sortedPedidos.map(e=>e[0]),datasets:[{label:"Ventas por pedido",data:sortedPedidos.map(e=>e[1]),backgroundColor:"#36b9cc"}]},
-        options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-    });
 }
 
-// ---------- TABLA ----------
+// Orden natural de pedidos
+function sortPedidos(a,b){
+    const regex = /^([A-Z]+)-(\d+)$/;
+    const ma = a.PEDIDO.match(regex);
+    const mb = b.PEDIDO.match(regex);
+    if(ma && mb){
+        const prefixCmp = ma[1].localeCompare(mb[1]);
+        if(prefixCmp !== 0) return prefixCmp;
+        return parseInt(ma[2]) - parseInt(mb[2]);
+    }
+    return a.PEDIDO.localeCompare(b.PEDIDO);
+}
+
+// Tabla
 let tablaDetalle;
-function renderTabla(datos){
-    const tbody=$("#tablaDetalle tbody"); tbody.empty();
-    datos.forEach(d=>{
-        tbody.append(`<tr>
-            <td>${d.PEDIDO}</td>
-            <td>${d.CODIGO}</td>
-            <td>${d.ARTICULO}</td>
-            <td>${d.TIPOLOGIA}</td>
-            <td>${d.TAMAÑO}</td>
-            <td>${d.CANTIDAD}</td>
-            <td>${formatMoney(d["PRECIO FINAL"])}</td>
-            <td>${formatMoney(d["DESCUENTO S/."])}</td>
-            <td>${d.MEDIO_DE_VENTA}</td>
-            <td>${d["FECHA VENTA"]}</td>
-            <td>${d.NOMBRE}</td>
-            <td>${d["DNI/RUC"]}</td>
-            <td>${d.Telefono}</td>
-            <td>${d.Dirección}</td>
-        </tr>`);
+function renderTabla(datos) {
+    const tbody = $("#tablaDetalle tbody");
+    tbody.empty();
+
+    const sorted = [...datos].sort(sortPedidos);
+
+    sorted.forEach(d=>{
+        tbody.append(`
+            <tr>
+                <td>${d.PEDIDO}</td>
+                <td>${d.CODIGO}</td>
+                <td>${d.ARTICULO}</td>
+                <td>${d.TIPOLOGIA}</td>
+                <td>${d.TAMAÑO}</td>
+                <td>${d.CANTIDAD}</td>
+                <td>${formatMoney(d["PRECIO FINAL"])}</td>
+                <td>${d.MEDIO_DE_VENTA}</td>
+                <td>${d["FECHA VENTA"]}</td>
+                <td>${d.NOMBRE}</td>
+                <td>${d["DNI/RUC"]}</td>
+                <td>${d.Telefono}</td>
+                <td>${d.Dirección}</td>
+            </tr>
+        `);
     });
-    if($.fn.DataTable.isDataTable("#tablaDetalle")) tablaDetalle.destroy();
-    tablaDetalle=$("#tablaDetalle").DataTable({responsive:true,pageLength:10});
+
+    if($.fn.DataTable.isDataTable("#tablaDetalle")){
+        tablaDetalle.destroy();
+    }
+    tablaDetalle = $("#tablaDetalle").DataTable({responsive:true, pageLength:10});
 }
 
-// ---------- CARGAR DASHBOARD ----------
-async function cargarDashboard(){
-    const res=await fetch(API_GET);
-    datosGlobal=await res.json();
+// Cargar datos y render
+async function cargarDashboard() {
+    const res = await fetch(API_GET);
+    datosGlobal = await res.json();
+
     llenarFiltros();
     actualizarDashboard();
 }
-function actualizarDashboard(){
-    const filtrados=filtrarDatos();
+
+// Actualizar según filtros
+function actualizarDashboard() {
+    const filtrados = filtrarDatos();
     renderResumen(filtrados);
     renderGraficos(filtrados);
     renderTabla(filtrados);
 }
-document.querySelectorAll(".filters select").forEach(sel=>{ sel.addEventListener("change", actualizarDashboard); });
+
+// Eventos filtros
+document.querySelectorAll(".filters select").forEach(sel=>{
+    sel.addEventListener("change", actualizarDashboard);
+});
+
+// Inicializar
 document.addEventListener("DOMContentLoaded", cargarDashboard);
 </script>
-
 </body>
 </html>
