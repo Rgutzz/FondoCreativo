@@ -242,11 +242,17 @@ h1 {
 
 <div class="contenedor">
 
-    <!-- PENDIENTES -->
-    <section>
-        <h2>Pendientes</h2>
-        <div id="pendientesLista" class="lista-pendientes"></div>
-    </section>
+    <!-- PENDIENTES DE ENVÍO -->
+<section>
+    <h2>Pendientes de Envío</h2>
+    <div id="envioLista" class="lista-pendientes"></div>
+</section>
+
+<!-- EN PROCESO DE PRODUCCIÓN / EN RUTA -->
+<section>
+    <h2>En Proceso de Producción - En Ruta</h2>
+    <div id="procesoLista" class="lista-pendientes"></div>
+</section>
 
     <!-- HISTORIAL -->
     <section>
@@ -307,11 +313,76 @@ async function cargarPedidos() {
     const res = await fetch(API_GET);
     pedidosGlobal = await res.json();
 
-    const pendientes = pedidosGlobal.filter(p => p.Estado !== "ENTREGADO" && p.Estado !== "ANULADO");
-    const historial = pedidosGlobal.filter(p => p.Estado === "ENTREGADO" || p.Estado === "ANULADO");
+    // Filtrar por grupos
+    const pendientesEnvio = pedidosGlobal.filter(
+        p => p.Estado === "ALMACEN"
+    );
 
-    renderPendientes(pendientes);
+    const enProceso = pedidosGlobal.filter(p =>
+        ["PRODUCCION", "SUBLIMADO", "COSTURA", "EN RUTA", "ENVIADO", "EN DESTINO"]
+        .includes(p.Estado)
+    );
+
+    const historial = pedidosGlobal.filter(
+        p => p.Estado === "ENTREGADO" || p.Estado === "ANULADO"
+    );
+
+    renderPendientesEnvio(pendientesEnvio);
+    renderProcesoProduccion(enProceso);
     renderHistorial(historial);
+}
+/* Tarjeta HTML reutilizada */
+function crearTarjetaPedido(p) {
+    return `
+        <div class="card">
+            <div class="pedido-banner" style="background:#3a3a3a;">
+                Pedido Nº ${p.NoPedido}
+            </div>
+
+            <img src="${p.Imagen}" class="card-img">
+
+            <div class="info-item">
+                <span class="label">Medida:</span>
+                <span class="value">Anch. ${p.Ancho} x Alt. ${p.Alto}</span>
+            </div>
+            <div class="info-item"><span class="label">Fecha Pedido:</span><span class="value">${p.Fecha}</span></div>
+            <div class="info-item"><span class="label">Nombre:</span><span class="value">${p.Nombre}</span></div>
+            <div class="info-item"><span class="label">DNI/RUC:</span><span class="value">${p.Dni}</span></div>
+            <div class="info-item"><span class="label">Telefono:</span><span class="value">${p.Telefono}</span></div>
+            <div class="info-item"><span class="label">Agencia:</span><span class="value">${p.Agencia}</span></div>
+            <div class="info-item"><span class="label">Dirección:</span><span class="value">${p.Direccion}</span></div>
+            <div class="info-item long"><span class="label">Especif.:</span><span class="value">${p.Especificaciones}</span></div>
+
+            <div class="info-item">
+                <span class="label">Estado:</span>
+                <span class="value estado ${getColorClase(p.Estado,"Entrega")}">${p.Estado}</span>
+            </div>
+
+            <div class="info-item"><span class="label">Observaciones:</span><span class="value">${p.Observaciones}</span></div>
+        </div>
+    `;
+}
+
+/* Render: Pendientes de Envío */
+function renderPendientesEnvio(lista) {
+    const cont = document.getElementById("envioLista");
+    cont.innerHTML = "";
+    lista.forEach(p => {
+        const div = document.createElement("div");
+        div.innerHTML = crearTarjetaPedido(p);
+        cont.appendChild(div.firstElementChild);
+    });
+}
+
+/* Render: En Proceso de Producción / En Ruta */
+function renderProcesoProduccion(lista) {
+    const cont = document.getElementById("procesoLista");
+    cont.innerHTML = "";
+    lista.forEach(p => {
+        const div = document.createElement("div");
+        div.innerHTML = crearTarjetaPedido(p);
+        cont.appendChild(div.firstElementChild);
+    });
 }
 
 /* Pendientes */
