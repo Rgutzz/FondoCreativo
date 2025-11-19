@@ -318,6 +318,10 @@ function renderPendientes(lista) {
             <img src="${p.Imagen}" class="card-img">
 
             <div class="card-info">
+                <div class="info-item">
+                    <span class="label">Medida:</span>
+                    <span class="value">${p.Ancho} x ${p.Alto}</span>
+                </div>
                 <div class="info-item"><span class="label">Nombre:</span><span class="value">${p.Nombre}</span></div>
                 <div class="info-item"><span class="label">DNI/RUC:</span><span class="value">${p.Dni}</span></div>
                 <div class="info-item"><span class="label">Telefono:</span><span class="value">${p.Telefono}</span></div>
@@ -325,7 +329,7 @@ function renderPendientes(lista) {
 
                 <div class="info-item"><span class="label">Dirección:</span><span class="value">${p.Direccion}</span></div>
 
-                <div class="info-item long"><span class="label">Medida:</span><span class="value">${p.medida}</span></div>
+                
                 <div class="info-item long"><span class="label">Especificaciones:</span><span class="value">${p.Especificaciones}</span></div>
 
                 <div class="info-item"><span class="label">Correo:</span><span class="value estado ${getColorClase(p.CorreoEnviado,"CorreoEnviado")}">${p.CorreoEnviado}</span></div>
