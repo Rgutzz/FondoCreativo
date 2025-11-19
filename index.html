@@ -374,12 +374,12 @@ async function cargarPedidos() {
     );
 
     const enProceso = pedidosGlobal.filter(p =>
-        ["PRODUCCION", "SUBLIMADO", "COSTURA", "EN RUTA", "ENVIADO", "EN DESTINO"]
+        ["PRODUCCION", "SUBLIMADO", "COSTURA", "EN RUTA", "EN DESTINO"]
         .includes(p.Estado)
     );
 
     const historial = pedidosGlobal.filter(
-        p => p.Estado === "ENTREGADO" || p.Estado === "ANULADO"
+        p => p.Estado === "ENTREGADO" || p.Estado === "ANULADO" || p.Estado === "ENVIADO"
     );
 
     renderPendientesEnvio(pendientesEnvio);
