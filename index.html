@@ -25,6 +25,7 @@ h1 {
     flex-direction: column;
     gap: 40px;
 }
+
 .pedido-tag {
     background: rgba(0, 0, 0, 0.15);
     padding: 4px 8px;
@@ -60,7 +61,13 @@ h1 {
     border-radius: 6px;
 }
 
+/* ------------------------------- */
+/* ALINEACIÓN PERFECTA DE CAMPOS   */
+/* ------------------------------- */
 .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
     width: 100%;
     font-size: 13px;
     margin-top: 4px;
@@ -69,7 +76,19 @@ h1 {
 .titulo {
     font-weight: bold;
     width: 105px;
-    display: inline-block;
+    flex-shrink: 0;
+}
+
+.item span:not(.titulo) {
+    flex: 1;
+    white-space: pre-line;
+}
+
+/* Resaltar nombre */
+.nombre-resaltado {
+    font-size: 15px;
+    font-weight: 700;
+    color: #222;
 }
 
 /* ESTADOS */
@@ -194,14 +213,6 @@ function getColorClase(estado, tipo) {
 
     return "rojo";
 }
-function getColorForPedido(noPedido) {
-    let hash = 0;
-    for (let i = 0; i < noPedido.length; i++) {
-        hash = noPedido.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const hue = Math.abs(hash) % 360;
-    return `hsl(${hue}, 70%, 90%)`; // color suave
-}
 
 /* CARGAR TODO */
 let pedidosGlobal = [];
@@ -229,17 +240,23 @@ function renderPendientes(lista) {
         div.className = "tarjeta";
 
         div.innerHTML = `
-            <!-- ⭐ Cinta superior -->
             <div class="pedido-tag">Pedido #${p.NoPedido}</div>
 
             <img src="${p.Imagen}">
 
             <div class="item"><span class="titulo">Medidas AnchxAlt:</span> ${p.Ancho} x ${p.Alto} cm</div>
             <div class="item"><span class="titulo">Fecha Pedido:</span> ${p.Fecha}</div>
-            <div class="item"><span class="titulo">Nombre:</span> ${p.Nombre}</div>
+
+            <div class="item">
+                <span class="titulo">Nombre:</span>
+                <span class="nombre-resaltado">${p.Nombre}</span>
+            </div>
+
             <div class="item"><span class="titulo">DNI/RUC:</span> ${p.Dni}</div>
             <div class="item"><span class="titulo">Teléfono:</span> ${p.Telefono}</div>
+
             <div class="item"><span class="titulo">Dirección:</span> ${p.Direccion}</div>
+
             <div class="item"><span class="titulo">Agencia:</span> ${p.Agencia}</div>
 
             <div class="item">
@@ -269,7 +286,7 @@ function renderPendientes(lista) {
                     ${p.Entrega}
                 </span>
             </div>
-           
+
             <div class="item"><span class="titulo">Especificaciones:</span> ${p.Especificaciones}</div>
             <div class="item"><span class="titulo">Observaciones:</span> ${p.Observaciones}</div>
         `;
@@ -277,7 +294,6 @@ function renderPendientes(lista) {
         cont.appendChild(div);
     });
 }
-
 
 /* ---------------------- */
 /* HISTORIAL CON FILTRO   */
@@ -287,13 +303,11 @@ function normalizarFechaLatina(fechaStr) {
 
     fechaStr = fechaStr.trim();
 
-    // Detecta formato DD/MM/YYYY
     if (fechaStr.includes("/")) {
         const [d, m, y] = fechaStr.split("/");
         return `${y}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
     }
 
-    // Si ya es ISO, cortar a 10 caracteres
     return fechaStr.substring(0, 10);
 }
 
@@ -304,51 +318,44 @@ function renderHistorial(lista) {
     const mes = document.getElementById("filtroMes").value;
 
     const filtrado = lista.filter(p => {
-    if (mes === "all") return true;
-    if (!p.FechaEntrega) return false;
+        if (mes === "all") return true;
+        if (!p.FechaEntrega) return false;
 
-    // Normalizar
-    const fechaISO = normalizarFechaLatina(p.FechaEntrega);
+        const fechaISO = normalizarFechaLatina(p.FechaEntrega);
+        if (!fechaISO) return false;
 
-    if (!fechaISO) return false;
+        const fechaObj = new Date(fechaISO);
+        if (isNaN(fechaObj)) return false;
 
-    const fechaObj = new Date(fechaISO);
-
-    if (isNaN(fechaObj)) return false;
-
-    const m = fechaObj.getMonth() + 1;
-    return m == mes;
-});
+        return fechaObj.getMonth() + 1 == mes;
+    });
 
     filtrado.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "mini-card";
+        const div = document.createElement("div");
+        div.className = "mini-card";
 
-  
-    div.innerHTML = `
-        <div class="pedido-tag">Pedido #${p.NoPedido}</div>
-        <img src="${p.Imagen}" class="mini-img">
-        <div class="mini-info">
-            <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
-            <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
-            <div><span class="mini-label">Fecha:</span> ${p.FechaEntrega}</div>
-            <div><span class="estado ${getColorClase(p.Entrega, "Entrega")}">${p.Entrega}</span></div>
-        </div>
-    `;
+        div.innerHTML = `
+            <div class="pedido-tag">Pedido #${p.NoPedido}</div>
+            <img src="${p.Imagen}" class="mini-img">
+            <div class="mini-info">
+                <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
+                <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
+                <div><span class="mini-label">Fecha:</span> ${p.FechaEntrega}</div>
+                <div><span class="estado ${getColorClase(p.Entrega, "Entrega")}">${p.Entrega}</span></div>
+            </div>
+        `;
 
-    cont.appendChild(div);
-});
-
+        cont.appendChild(div);
+    });
 }
 
 document.getElementById("filtroMes").addEventListener("change", () => {
-    const historial = pedidosGlobal.filter(p =>
-        p.Entrega === "ENTREGADO" || p.Entrega === "ANULADO"
+    const historial = pedidosGlobal.filter(
+        p => p.Entrega === "ENTREGADO" || p.Entrega === "ANULADO"
     );
     renderHistorial(historial);
 });
 
-/* ---------------------- */
 cargarPedidos();
 </script>
 
