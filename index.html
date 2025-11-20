@@ -353,7 +353,7 @@ function getColorClase(estado, tipo) {
 
     if (tipo === "Entrega") {
         if (estado === "ENTREGADO") return "verde";
-        if (estado === "SUBLIMADO" || estado === "ENVIADO") return "amarillo";
+        if (estado === "SUBLIMADO" || estado === "ENVIADO" || estado === "EN RUTA" || estado === "EN DESTINO") return "amarillo";
         if (estado === "ANULADO") return "gris";
         return "rojo";
     }
@@ -374,12 +374,12 @@ async function cargarPedidos() {
     );
 
     const enProceso = pedidosGlobal.filter(p =>
-        ["PRODUCCION", "SUBLIMADO", "COSTURA", "EN RUTA", "EN DESTINO"]
+        ["PRODUCCION", "SUBLIMADO", "COSTURA"]
         .includes(p.Estado)
     );
 
     const historial = pedidosGlobal.filter(
-        p => p.Estado === "ENTREGADO" || p.Estado === "ANULADO" || p.Estado === "ENVIADO"
+        p => p.Estado === "ENTREGADO" || p.Estado === "ANULADO" || p.Estado === "ENVIADO" || p.Estado === "EN RUTA" || p.Estado === "EN DESTINO"
     );
 
     renderPendientesEnvio(pendientesEnvio);
