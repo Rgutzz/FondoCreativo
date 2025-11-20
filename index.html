@@ -305,7 +305,7 @@ body {
 
 <!-- EN PROCESO DE PRODUCCIÓN / EN RUTA -->
 <section>
-    <h2>En Proceso de Producción - En Ruta</h2>
+    <h2>En Proceso de Producción</h2>
     <div id="procesoLista" class="lista-pendientes"></div>
 </section>
 
@@ -374,7 +374,7 @@ async function cargarPedidos() {
     );
 
     const enProceso = pedidosGlobal.filter(p =>
-        ["PRODUCCION", "SUBLIMADO", "COSTURA"]
+        ["PRODUCCIÓN", "SUBLIMADO", "COSTURA"]
         .includes(p.Estado)
     );
 
