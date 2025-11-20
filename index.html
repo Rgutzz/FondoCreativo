@@ -253,6 +253,53 @@ h1 {
 body {
     padding-top: 15px;
 }
+/* ===================== */
+/*       MODAL DETALLE   */
+/* ===================== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    padding: 20px;
+}
+
+.modal-box {
+    background: white;
+    width: 95%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.25);
+    animation: modalFade .25s ease-out;
+}
+
+.modal-cerrar {
+    font-size: 26px;
+    cursor: pointer;
+    float: right;
+    font-weight: bold;
+    color: #444;
+}
+
+@keyframes modalFade {
+    from { transform: scale(0.93); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+/* Para que se note que las mini-cards son clickeables */
+.mini-card {
+    cursor: pointer;
+    transition: transform .12s;
+}
+.mini-card:hover {
+    transform: scale(1.02);
+}
 
 
 </style>
@@ -511,22 +558,25 @@ function renderHistorial(lista) {
     });
 
     filtrado.forEach(p => {
-        const div = document.createElement("div");
-        div.className = "mini-card";
+    const div = document.createElement("div");
+    div.className = "mini-card";
 
-        div.innerHTML = `
-            <img src="${p.Imagen}" class="mini-img">
-            <div class="mini-info">
-                <div><span class="mini-label">Pedido:</span> ${p.NoPedido}</div>
-                <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
-                <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
-                <div><span class="mini-label">Fecha:</span> ${p.FechaEntrega}</div>
-                <span class="estado ${getColorClase(p.Estado,"Entrega")}">${p.Estado}</span>
-            </div>
-        `;
+    div.innerHTML = `
+        <img src="${p.Imagen}" class="mini-img">
+        <div class="mini-info">
+            <div><span class="mini-label">Pedido:</span> ${p.NoPedido}</div>
+            <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
+            <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
+            <div><span class="mini-label">Fecha:</span> ${p.FechaEntrega}</div>
+            <span class="estado ${getColorClase(p.Estado,"Entrega")}">${p.Estado}</span>
+        </div>
+    `;
 
-        cont.appendChild(div);
-    });
+    cont.appendChild(div);
+});
+
+// Activar modal con la misma lista filtrada
+activarModalHistorial(filtrado);
 }
 
 document.getElementById("filtroMes").addEventListener("change", () => {
@@ -588,7 +638,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cargarPedidos();
 });
+
+/* =============================== */
+/*   ABRIR MODAL CON MINI-CARD    */
+/* =============================== */
+
+function activarModalHistorial(listaOriginal) {
+    const historialDiv = document.getElementById("historialLista");
+
+    // Evento para cada mini-card
+    historialDiv.querySelectorAll(".mini-card").forEach((card, i) => {
+        card.addEventListener("click", () => {
+            const pedido = listaOriginal[i];
+
+            // Reutilizamos la tarjeta completa existente
+            const htmlCompleto = crearTarjetaPedido(pedido);
+
+            document.getElementById("modalContenido").innerHTML = htmlCompleto;
+            document.getElementById("modalOverlay").style.display = "flex";
+        });
+    });
+}
+
+// Cerrar modal
+document.getElementById("modalCerrar")?.addEventListener("click", () => {
+    document.getElementById("modalOverlay").style.display = "none";
+});
+
+// Cerrar tocando afuera
+document.getElementById("modalOverlay")?.addEventListener("click", e => {
+    if (e.target.id === "modalOverlay") {
+        document.getElementById("modalOverlay").style.display = "none";
+    }
+});
+
+
 </script>
+
+<!-- MODAL PARA DETALLE DEL PEDIDO -->
+<div id="modalOverlay" class="modal-overlay">
+    <div class="modal-box">
+        <span id="modalCerrar" class="modal-cerrar">×</span>
+        <div id="modalContenido"></div>
+    </div>
+</div>
 
 </body>
 </html>
