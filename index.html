@@ -587,6 +587,22 @@ document.getElementById("filtroMes").addEventListener("change", () => {
     renderHistorial(historial);
 });
 
+// Seleccionar mes actual por defecto
+window.addEventListener("DOMContentLoaded", () => {
+    const mesActual = new Date().getMonth() + 1; // 1-12
+    const filtro = document.getElementById("filtroMes");
+
+    if (filtro.querySelector(`option[value="${mesActual}"]`)) {
+        filtro.value = mesActual;
+    }
+
+    const historial = pedidosGlobal.filter(
+        p => p.Entrega === "ENTREGADO" || p.Entrega === "ANULADO"
+    );
+
+    renderHistorial(historial);
+});
+
 /* =================== */
 /*   LÓGICA DEL PIN    */
 /* =================== */
