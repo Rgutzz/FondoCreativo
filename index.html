@@ -547,9 +547,9 @@ function renderHistorial(lista) {
 
     const filtrado = lista.filter(p => {
         if (mes === "all") return true;
-        if (!p.FechaEntrega) return false;
+        if (!p.Fecha) return false;
 
-        const iso = normalizarFechaLatina(p.FechaEntrega);
+        const iso = normalizarFechaLatina(p.Fecha);
         if (!iso) return false;
 
         const fecha = new Date(iso);
