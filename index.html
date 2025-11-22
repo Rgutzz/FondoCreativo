@@ -162,6 +162,12 @@ h1 {
 .amarillo { background: #f0ad4e; color: black; }
 .rojo { background: #d9534f; color: white; }
 .gris { background: #777; color: white; }
+/* Nuevos colores */
+.morado { background: #8e44ad; color: white; }     /* morado elegante */
+.azul { background: #0275d8; color: white; }        /* azul fuerte */
+.celeste { background: #5bc0de; color: black; }     /* celeste suave */
+.rosado { background: #ff7eb9; color: black; }      /* rosado pastel */
+.fucsia { background: #ff007f; color: white; }      /* fucsia intenso */
 
 /* Pendientes */
 .lista-pendientes {
@@ -402,7 +408,9 @@ function getColorClase(estado, tipo) {
     if (tipo === "Entrega") {
         if (estado === "ENTREGADO") return "verde";
         if (estado === "PRODUCCIÓN") return "morado";
-        if (estado === "SUBLIMADO" || estado === "ENVIADO" || estado === "EN RUTA" || estado === "EN DESTINO") return "amarillo";
+        if (estado === "SUBLIMADO") return "rosado";
+        if (estado === "COSTURA") return "celeste";
+        if (estado === "ENVIADO" || estado === "EN RUTA" || estado === "EN DESTINO") return "amarillo";
         if (estado === "ANULADO") return "gris";
         return "rojo";
     }
