@@ -401,6 +401,7 @@ function getColorClase(estado, tipo) {
 
     if (tipo === "Entrega") {
         if (estado === "ENTREGADO") return "verde";
+        if (estado === "PRODUCCIÓN") return "morado";
         if (estado === "SUBLIMADO" || estado === "ENVIADO" || estado === "EN RUTA" || estado === "EN DESTINO") return "amarillo";
         if (estado === "ANULADO") return "gris";
         return "rojo";
