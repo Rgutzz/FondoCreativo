@@ -427,7 +427,7 @@ async function cargarPedidos() {
     );
 
     const historial = pedidosGlobal.filter(
-        p => p.Estado === "ENTREGADO" || p.Estado === "ANULADO" || p.Estado === "ENVIADO" || p.Estado === "EN RUTA" || p.Estado === "EN DESTINO"
+        p => ["ENTREGADO", "ANULADO", "ENVIADO", "EN RUTA", "EN DESTINO"].includes(p.Estado)
     );
 
     renderPendientesEnvio(pendientesEnvio);
@@ -582,7 +582,7 @@ activarModalHistorial(filtrado);
 
 document.getElementById("filtroMes").addEventListener("change", () => {
     const historial = pedidosGlobal.filter(
-        p => p.Entrega === "ENTREGADO" || p.Entrega === "ANULADO"
+        p => ["ENTREGADO", "ANULADO", "ENVIADO", "EN RUTA", "EN DESTINO"].includes(p.Estado)
     );
     renderHistorial(historial);
 });
@@ -597,7 +597,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     const historial = pedidosGlobal.filter(
-        p => p.Entrega === "ENTREGADO" || p.Entrega === "ANULADO"
+        p => ["ENTREGADO", "ANULADO", "ENVIADO", "EN RUTA", "EN DESTINO"].includes(p.Estado)
     );
 
     renderHistorial(historial);
