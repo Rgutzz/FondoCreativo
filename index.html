@@ -445,13 +445,22 @@ async function cargarPedidos() {
 }
 /* Tarjeta HTML reutilizada */
 function crearTarjetaPedido(p) {
+
+let img = p.Imagen ? p.Imagen.trim() : "";
+
+    if (img) {
+        // Si NO termina en .png, .jpg, .jpeg o .gif → agregar .png
+        if (!/\.(png|jpg|jpeg|gif)$/i.test(img)) {
+            img = img + ".png";
+        }
+    }
     return `
         <div class="card">
             <div class="pedido-banner" style="background:#3a3a3a;">
                 Pedido Nº ${p.NoPedido}
             </div>
 
-            <img src="${p.Imagen}" class="card-img">
+            <img src="${p.img}" class="card-img">
 
             <div class="info-item">
                 <span class="label">Medida:</span>
@@ -503,6 +512,15 @@ function renderPendientes(lista) {
     cont.innerHTML = "";
 
     lista.forEach(p => {
+    // --- AÑADIR .png AUTOMÁTICO A LA IMAGEN ---
+        let img = p.Imagen ? p.Imagen.trim() : "";
+
+        if (img) {
+            // Si NO termina en .png, .jpg, .jpeg o .gif → agregar .png
+            if (!/\.(png|jpg|jpeg|gif)$/i.test(img)) {
+                img = img + ".png";
+            }
+        }
         const div = document.createElement("div");
         div.className = "card";
 
@@ -511,7 +529,7 @@ function renderPendientes(lista) {
             Pedido Nº ${p.NoPedido}
              </div>
 
-            <img src="${p.Imagen}" class="card-img">
+            <img src="${p.img}" class="card-img">
 
             <div class="info-item">
                 <span class="label">Medida:</span>
