@@ -3,7 +3,7 @@
 export async function handler(event) {
   const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";
   const API_KEY = process.env.GOOGLE_SHEETS_API_KEY;
-  const RANGE = "FondoCreativo!A:AB";
+  const RANGE = "FondoCreativo!A:AE";
 
   try {
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;

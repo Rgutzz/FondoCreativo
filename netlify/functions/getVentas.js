@@ -1,4 +1,4 @@
-// netlify/functions/getPedidos.js
+// netlify/functions/getVentas.js
 
 export async function handler(event) {
   const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";
