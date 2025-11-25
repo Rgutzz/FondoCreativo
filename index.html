@@ -460,7 +460,7 @@ let img = p.Imagen ? p.Imagen.trim() : "";
                 Pedido Nº ${p.NoPedido}
             </div>
 
-            <img src="${p.img}" class="card-img">
+            <img src="${img}" class="card-img">
 
             <div class="info-item">
                 <span class="label">Medida:</span>
@@ -529,7 +529,7 @@ function renderPendientes(lista) {
             Pedido Nº ${p.NoPedido}
              </div>
 
-            <img src="${p.img}" class="card-img">
+            <img src="${img}" class="card-img">
 
             <div class="info-item">
                 <span class="label">Medida:</span>
@@ -588,9 +588,14 @@ function renderHistorial(lista) {
     filtrado.forEach(p => {
     const div = document.createElement("div");
     div.className = "mini-card";
+// === CORRECCIÓN IMAGEN ===
+        let img = p.Imagen ? p.Imagen.trim() : "";
+        if (img && !/\.(png|jpg|jpeg|gif)$/i.test(img)) {
+            img = img + ".png";
+        }
 
     div.innerHTML = `
-        <img src="${p.Imagen}" class="mini-img">
+        <img src="${img}" class="mini-img">
         <div class="mini-info">
             <div><span class="mini-label">Pedido:</span> ${p.NoPedido}</div>
             <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
