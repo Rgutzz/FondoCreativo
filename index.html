@@ -307,12 +307,52 @@ body {
 .mini-card:hover {
     transform: scale(1.02);
 }
+/* =============== LOADER =============== */
+.loader-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 99999;
+}
 
+.loader-box {
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Spinner */
+.spinner {
+    width: 45px;
+    height: 45px;
+    border: 5px solid #ccc;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
 
 </style>
 </head>
 
 <body>
+
+     <!-- 🔵 Loader (VA AQUÍ) -->
+    <div id="loader" class="loader-overlay" style="display:none;">
+        <div class="loader-box">
+            <div class="spinner"></div>
+            <p>Cargando pedidos…</p>
+        </div>
+    </div>
+
 <!-- MENÚ SUPERIOR (oculto hasta validar PIN) -->
 <div class="top-menu-wrapper" id="topMenu" style="display:none;">
     <nav class="top-menu">
@@ -422,6 +462,9 @@ function getColorClase(estado, tipo) {
 let pedidosGlobal = [];
 
 async function cargarPedidos() {
+   // 🔹 Mostrar loader ANTES de cargar Google Sheets
+    document.getElementById("loader").style.display = "flex";
+    
     const res = await fetch(API_GET);
     pedidosGlobal = await res.json();
 
@@ -442,6 +485,7 @@ async function cargarPedidos() {
     renderPendientesEnvio(pendientesEnvio);
     renderProcesoProduccion(enProceso);
     renderHistorial(historial);
+    document.getElementById("loader").style.display = "none";
 }
 /* Tarjeta HTML reutilizada */
 function crearTarjetaPedido(p) {
@@ -647,6 +691,7 @@ function validarPIN() {
     const error = document.getElementById("pinError");
 
     if (input === PIN_CORRECTO) {
+        document.getElementById("loader").style.display = "flex";
         localStorage.setItem("pin_ok", "true");
         localStorage.setItem("pin_time", Date.now().toString());
         document.getElementById("pinOverlay").style.display = "none";
@@ -669,7 +714,8 @@ function comprobarPIN() {
             document.getElementById("pinOverlay").style.display = "none";
             // ← mostrar menú si el PIN sigue válido
         document.getElementById("topMenu").style.display = "flex";
-            return;
+        document.getElementById("loader").style.display = "flex";
+                      return;
         }
     }
 
