@@ -685,18 +685,24 @@ window.addEventListener("DOMContentLoaded", () => {
 
 const PIN_CORRECTO = "0324";
 const CADUCIDAD_HORAS = 24;
+const loader = document.getElementById("loader");
+// Evita que el loader se muestre antes del PIN
+loader.style.display = "none";
 
 function validarPIN() {
     const input = document.getElementById("pinInput").value.trim();
     const error = document.getElementById("pinError");
 
     if (input === PIN_CORRECTO) {
-        document.getElementById("loader").style.display = "flex";
         localStorage.setItem("pin_ok", "true");
         localStorage.setItem("pin_time", Date.now().toString());
         document.getElementById("pinOverlay").style.display = "none";
          // ← mostrar menú
         document.getElementById("topMenu").style.display = "flex";
+         // Mostrar loader mientras carga pedidos
+        loader.style.display = "flex";
+        // Cargar pedidos AHORA recién
+        cargarPedidos();
         error.style.display = "none";
     } else {
         error.style.display = "block";
@@ -714,7 +720,9 @@ function comprobarPIN() {
             document.getElementById("pinOverlay").style.display = "none";
             // ← mostrar menú si el PIN sigue válido
         document.getElementById("topMenu").style.display = "flex";
-        document.getElementById("loader").style.display = "flex";
+          loader.style.display = "flex";
+           // Cargar pedidos
+            cargarPedidos();
                       return;
         }
     }
@@ -731,8 +739,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === "Enter") validarPIN();
     });
 
-    cargarPedidos();
-});
+   });
 
 /* =============================== */
 /*   ABRIR MODAL CON MINI-CARD    */
