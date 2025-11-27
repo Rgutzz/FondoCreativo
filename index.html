@@ -362,10 +362,7 @@ body {
     50%  { transform: translateX(60px); }
     100% { transform: translateX(-60px); }
 }
-
-
 </style>
-
 </head>
 
 <body>
@@ -541,6 +538,7 @@ let img = p.Imagen ? p.Imagen.trim() : "";
             <div class="info-item"><span class="label">Telefono:</span><span class="value">${p.Telefono}</span></div>
             <div class="info-item"><span class="label">Agencia:</span><span class="value">${p.Agencia}</span></div>
             <div class="info-item"><span class="label">Dirección:</span><span class="value">${p.Direccion}</span></div>
+            <div class="info-item"><span class="label">Clave Recojo:</span><span class="value">${p.Crecojo}</span></div>
             <div class="info-item long"><span class="label">Especif.:</span><span class="value">${p.Especificaciones}</span></div>
 
             <div class="info-item">
@@ -611,8 +609,7 @@ function renderPendientes(lista) {
                 <div class="info-item"><span class="label">Agencia:</span><span class="value">${p.Agencia}</span></div>
 
                 <div class="info-item"><span class="label">Dirección:</span><span class="value">${p.Direccion}</span></div>
-
-                
+                <div class="info-item"><span class="label">Clave Recojo:</span><span class="value">${p.Crecojo}</span></div>                
                 <div class="info-item long"><span class="label">Especif.:</span><span class="value">${p.Especificaciones}</span></div>
 
                 <div class="info-item"><span class="label">Estado:</span><span class="value estado ${getColorClase(p.Estado,"Entrega")}">${p.Estado}</span></div>
@@ -669,6 +666,7 @@ function renderHistorial(lista) {
             <div><span class="mini-label">Pedido:</span> ${p.NoPedido}</div>
             <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
             <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
+            <div><span class="mini-label">Clave:</span> ${p.Crecojo}</div>
             <div><span class="mini-label">Fecha Entrega:</span> ${p.FechaEntrega}</div>
             <span class="estado ${getColorClase(p.Estado,"Entrega")}">${p.Estado}</span>
         </div>
