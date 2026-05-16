@@ -754,12 +754,16 @@ function renderCards(containerId, pedidos) {
       ${img ? `<img src="${img}" class="order-image" onerror="this.style.display='none'">` : ''}
       <div class="order-body">
         <div class="order-row">
-          <span class="order-label">Fecha:</span>
+          <span class="order-label">Fecha Pedido:</span>
           <span class="order-value">${fechaFormato}</span>
         </div>
         <div class="order-row">
           <span class="order-label">Cliente:</span>
           <span class="order-value">${p.Nombre || '—'}</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">DNI:</span>
+          <span class="order-value">${p.Dni || '—'}</span>
         </div>
         <div class="order-row">
           <span class="order-label">Medidas:</span>
@@ -774,8 +778,8 @@ function renderCards(containerId, pedidos) {
           <span class="order-value">${p.Especificaciones || '—'}</span>
         </div>
         <div class="order-row">
-          <span class="order-label">DNI:</span>
-          <span class="order-value">${p.Dni || '—'}</span>
+          <span class="order-label">Agencia:</span>
+          <span class="order-value">${p.Agencia || '—'}</span>
         </div>
         <div class="order-row">
           <span class="order-label">Clave:</span>
@@ -784,6 +788,10 @@ function renderCards(containerId, pedidos) {
         <div class="order-row">
           <span class="order-label">Teléfono:</span>
           <span class="order-value">${p.Telefono || '—'}</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Observaciones:</span>
+          <span class="order-value">${p.Observaciones || '—'}</span>
         </div>
       </div>
     `;
