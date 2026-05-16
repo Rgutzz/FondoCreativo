@@ -1,833 +1,809 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Pedidos Fondo Creativo</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seguimiento de Pedidos — Fondo Creativo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    margin: 0;
-    padding: 20px;
-}
+  :root {
+    --bg:       #0f0e0c;
+    --surface:  #1a1815;
+    --card:     #211f1b;
+    --border:   #2e2b26;
+    --gold:     #c9a84c;
+    --gold-dim: #8a6e2f;
+    --cream:    #f2ead8;
+    --muted:    #7a7060;
+    --text:     #e8dfc8;
+    --accent:   #d4845a;
+    --green:    #6aaa7a;
+    --red:      #d46a6a;
+    --blue:     #5a9fd4;
+  }
 
-/* ========================================= */
-/* =========== OVERLAY DEL PIN ============= */
-/* ========================================= */
-#pinOverlay {
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── PIN OVERLAY ── */
+  #pinOverlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #f3f3f3;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 60px;
-    z-index: 9999;
-    overflow-y: auto;
-}
-
-.pin-box {
-    background: white;
-    width: 90%;
-    max-width: 320px;
-    padding: 20px;
-    border-radius: 18px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-    text-align: center;
-}
-
-.pin-input {
-    width: 100%;
-    text-align: center;
-    font-size: 28px;
-    padding: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    margin-bottom: 14px;
-}
-
-.pin-btn {
-    width: 100%;
-    background: #000;
-    color: white;
-    padding: 10px 0;
-    border-radius: 12px;
-    font-size: 18px;
-    cursor: pointer;
-}
-
-.pin-error {
-    color: #d9534f;
-    font-size: 14px;
-    margin-top: 8px;
-    display: none;
-}
-
-/* ========================================= */
-/* =========== TARJETAS NORMALES =========== */
-/* ========================================= */
-
-h1 {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.contenedor {
-    max-width: 1100px;
-    margin: auto;
+    inset: 0;
+    background: var(--bg);
     display: flex;
     flex-direction: column;
-    gap: 40px;
-}
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    gap: 20px;
+  }
 
-/* Cinta superior */
-.pedido-banner {
-    font-size: 14px;
-    font-weight: bold;
-    color: rgb(255, 255, 255);
-    padding: 6px 10px;
+  .pin-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    width: 90%;
+    max-width: 380px;
     text-align: center;
-    border-radius: 10px 10px 0 0;
-}
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  }
 
-.card {
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-/* Separación lateral para todos los items de información */
-.card .info-item {
-    padding-left: 10px;
-    padding-right: 10px;
-}
-.card-img {
+  .pin-icon { font-size: 48px; margin-bottom: 16px; }
+
+  .pin-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .pin-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  #pinInput {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 32px;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    letter-spacing: 8px;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color .2s;
+  }
+
+  #pinInput:focus { border-color: var(--gold); }
+
+  #pinBtn {
     width: 100%;
-    height: 380px;
-    object-fit: contain;
-    background: #e9e9e9;
-}
-
-.card-info {
-    padding: 14px 16px;
-}
-
-/* Campos alineados */
-.info-item {
-    display: flex;
-    gap: 8px;
-    margin: 8px 0;
-    font-size: 14px;
-}
-
-.info-item.long .value {
-    margin-top: 2px;
-}
-
-.label {
-    width: 120px;
-    font-weight: bold;
-    flex-shrink: 0;
-}
-
-.value {
-    flex: 1;
-    line-height: 1.35em;
-}
-
-/* Para que los badges NO se estiren dentro del flex */
-.value.estado {
-    flex: 0 !important;
-    width: auto !important;
-}
-
-
-/* BADGES */
-.estado {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.82rem;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    color: #0f0e0c;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 16px;
     font-weight: 600;
-    white-space: nowrap; /* evita que se rompa en 2 líneas */
-    width: auto !important;
-    max-width: fit-content;
-}
+    cursor: pointer;
+    transition: transform .2s;
+  }
 
-.verde { background: #5cb85c; color: white; }
-.amarillo { background: #f0ad4e; color: black; }
-.rojo { background: #d9534f; color: white; }
-.gris { background: #777; color: white; }
-/* Nuevos colores */
-.morado { background: #8e44ad; color: white; }     /* morado elegante */
-.azul { background: #0275d8; color: white; }        /* azul fuerte */
-.celeste { background: #5bc0de; color: black; }     /* celeste suave */
-.rosado { background: #ff7eb9; color: black; }      /* rosado pastel */
-.fucsia { background: #ff007f; color: white; }      /* fucsia intenso */
+  #pinBtn:hover { transform: translateY(-2px); }
 
-/* Pendientes */
-.lista-pendientes {
+  #pinError {
+    display: none;
+    color: var(--red);
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo h1 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--cream); }
+  .logo p  { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .search-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    outline: none;
+    width: 240px;
+    transition: border-color .2s;
+  }
+
+  .search-box:focus { border-color: var(--gold-dim); }
+
+  .logout-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ── MAIN ── */
+  main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; display: none; }
+
+  /* ── FILTROS ── */
+  .filter-bar {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .filter-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  select {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    transition: all .2s;
+  }
+
+  select:hover, select:focus { border-color: var(--gold-dim); }
+
+  /* ── SECCIONES ── */
+  .section {
+    margin-bottom: 40px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-badge {
+    background: var(--gold);
+    color: #0f0e0c;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  /* ── CARDS GRID ── */
+  .cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 18px;
-}
+  }
 
-/* Historial */
-.lista-historial {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 12px;
-}
-
-.mini-card {
-    background: white;
-    border-radius: 8px;
-    padding: 10px;
-    display: flex;
-    gap: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    font-size: 12px;
-}
-
-.mini-img {
-    width: 70px;
-    height: 70px;
-    object-fit: contain;
-    background: #eee;
-    border-radius: 5px;
-}
-
-.mini-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.mini-label {
-    font-weight: bold;
-    font-size: 11px;
-}
-
-.filtro {
-    margin-bottom: 10px;
-}
-/* ===================== */
-/*        MENÚ TOP       */
-/* ===================== */
-
-/* Barra superior que ocupa todo el ancho */
-.top-menu-wrapper {
-    width: 100%;
-    padding: 12px 0;
-    display: flex;
-    justify-content: center; /* ← centra el menú */
-    border-bottom: 1px solid #334155;
-    position: static; /* no flotante */
-}
-
-/* Menú centrado dentro de la barra */
-.top-menu {
-    width: 50%;              /* ← ocupa solo la mitad */
-    max-width: 600px;        /* límite para pantallas grandes */
-    min-width: 260px;        /* para que no se achique demasiado en móviles */
-    background: #222;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: center; /* centra el contenido */
-    align-items: center;
-    font-size: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
-
-/* Estilo de los links */
-.top-menu a {
-    color: #4db8ff;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.top-menu a:hover {
-    text-decoration: underline;
-}
-
-/* Para que el menú no tape nada */
-body {
-    padding-top: 15px;
-}
-/* ===================== */
-/*       MODAL DETALLE   */
-/* ===================== */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-    padding: 20px;
-}
-
-.modal-box {
-    background: white;
-    width: 95%;
-    max-width: 480px;
-    max-height: 85vh;
-    overflow-y: auto;
+  .order-card {
+    background: var(--card);
+    border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 6px 25px rgba(0,0,0,0.25);
-    animation: modalFade .25s ease-out;
-}
-
-.modal-cerrar {
-    font-size: 26px;
+    overflow: hidden;
+    transition: all .2s;
     cursor: pointer;
-    float: right;
-    font-weight: bold;
-    color: #444;
-}
+  }
 
-@keyframes modalFade {
-    from { transform: scale(0.93); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-}
+  .order-card:hover { border-color: var(--gold-dim); transform: translateY(-2px); }
 
-/* Para que se note que las mini-cards son clickeables */
-.mini-card {
-    cursor: pointer;
-    transition: transform .12s;
-}
-.mini-card:hover {
-    transform: scale(1.02);
-}
-/* =============== LOADER =============== */
-.loader-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(255,255,255,0.9);
+  .order-header {
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    color: #0f0e0c;
+    padding: 14px 16px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    flex-direction: column;
-    z-index: 99999;
-}
+    font-weight: 600;
+  }
 
-.loader-box {
-    text-align: center;
-    font-size: 16px;
-    color: #333;
-}
+  .order-number { font-size: 15px; }
 
-/* Spinner */
-.spinner {
-    width: 45px;
-    height: 45px;
-    border: 5px solid #ccc;
-    border-top-color: #007bff;
-    border-radius: 50%;
-    animation: spin 0.9s linear infinite;
-    margin-bottom: 12px;
-}
+  .order-status {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-.loader-camion {
+  .order-body { padding: 16px; }
+
+  .order-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+
+  .order-label {
+    color: var(--muted);
+    font-weight: 600;
+    min-width: 90px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  .order-value { color: var(--text); flex: 1; line-height: 1.4; }
+
+  .order-value.highlight { color: var(--gold); font-weight: 600; }
+
+  /* Estado badge en card */
+  .status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .status-pendiente   { background: rgba(212, 106, 106, 0.2); color: var(--red); }
+  .status-proceso     { background: rgba(212, 132, 90, 0.2);  color: var(--accent); }
+  .status-enviado     { background: rgba(90, 159, 212, 0.2);  color: var(--blue); }
+  .status-entregado   { background: rgba(106, 170, 122, 0.2); color: var(--green); }
+  .status-anulado     { background: rgba(122, 112, 96, 0.2);  color: var(--muted); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(255,255,255,0.9);
+    background: rgba(0,0,0,0.65);
     display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9998;
+    padding: 20px;
+  }
+
+  .modal-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 28px;
+    cursor: pointer;
+    transition: color .2s;
+  }
+
+  .modal-close:hover { color: var(--text); }
+
+  .modal-header {
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    color: #0f0e0c;
+    padding: 16px;
+    margin: -28px -28px 20px -28px;
+    border-radius: 16px 16px 0 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-section {
+    margin-bottom: 18px;
+  }
+
+  .modal-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .modal-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .modal-label {
+    color: var(--muted);
+    font-weight: 600;
+    min-width: 100px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+
+  .modal-value { color: var(--text); flex: 1; line-height: 1.4; word-break: break-word; }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+    margin-top: 16px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--gold), transparent);
+  }
+
+  .timeline-item {
+    margin-bottom: 16px;
+    display: flex;
+    gap: 14px;
+  }
+
+  .timeline-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  .timeline-item.active .timeline-dot {
+    background: var(--gold);
+    width: 16px;
+    height: 16px;
+    margin-top: 0;
+  }
+
+  .timeline-text {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .timeline-item.active .timeline-text { color: var(--text); }
+
+  /* ── LOADER ── */
+  #loader {
+    display: none;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    gap: 10px;
-    font-size: 18px;
-    z-index: 9999;
-}
+    height: 60vh;
+    gap: 16px;
+  }
 
-.camion {
-    font-size: 50px;
-    animation: moverCamion 1.3s infinite linear;
-}
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
 
-@keyframes moverCamion {
-    0%   { transform: translateX(-60px); }
-    50%  { transform: translateX(60px); }
-    100% { transform: translateX(-60px); }
-}
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-.barra-separadora {
-    width: 100%;
-    height: 3px;
-    background: #000;
-    margin: 25px 0 15px 0;
-    border-radius: 4px;
-}
+  .loader-text { color: var(--muted); font-size: 14px; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+  .empty-title { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--cream); margin-bottom: 6px; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 900px) {
+    header, main { padding-left: 20px; padding-right: 20px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .search-box { width: auto; }
+  }
+
+  @media(max-width: 600px) {
+    .order-card { font-size: 12px; }
+    .order-row { margin-bottom: 8px; }
+  }
 </style>
 </head>
-
 <body>
 
-     <!-- 🔵 Loader (VA AQUÍ) -->
-    <div id="loader" class="loader-camion" style="display:none;">
-        <div class="camion">
-        🚚
-    </div>
-    <span>Cargando pedidos…</span>
-</div>
-
-<!-- MENÚ SUPERIOR (oculto hasta validar PIN) -->
-<div class="top-menu-wrapper" id="topMenu" style="display:none;">
-    <nav class="top-menu">
-        <a href="https://fondocreativo.netlify.app/ventas" style="color:white; text-decoration:none; font-weight:600;">
-            Ir a Ventas
-        </a>
-    </nav>
-</div>
-<!-- ===================== -->
-<!--   PANTALLA DE PIN     -->
-<!-- ===================== -->
+<!-- PIN OVERLAY -->
 <div id="pinOverlay">
-  <div class="pin-box">
-      <h2 class="text-xl font-semibold mb-4">Acceso restringido</h2>
-
-      <p class="text-sm text-gray-600 mb-3">Ingrese su PIN de 4 dígitos</p>
-
-      <input id="pinInput" 
-             type="password" 
-             maxlength="4"
-             inputmode="numeric"
-             class="pin-input"
-             placeholder="••••">
-
-      <button id="pinBtn" class="pin-btn">
-          Acceder
-      </button>
-
-      <p id="pinError" class="pin-error">PIN incorrecto</p>
+  <div class="pin-container">
+    <div class="pin-icon">🔐</div>
+    <div class="pin-title">Acceso Restringido</div>
+    <div class="pin-subtitle">Ingresa tu PIN de 4 dígitos</div>
+    <input type="password" id="pinInput" maxlength="4" placeholder="••••" inputmode="numeric">
+    <button id="pinBtn">Acceder</button>
+    <div id="pinError">PIN incorrecto, intenta de nuevo</div>
   </div>
 </div>
 
+<!-- HEADER -->
+<header id="topMenu" style="display:none;">
+  <div class="logo">
+    <div class="logo-icon">📦</div>
+    <div>
+      <h1>Fondo Creativo</h1>
+      <p>Seguimiento de Pedidos</p>
+    </div>
+  </div>
+  <div class="header-actions">
+    <input type="text" id="searchBox" class="search-box" placeholder="🔍 Buscar por pedido, nombre…">
+    <button class="logout-btn" onclick="logout()">Salir</button>
+  </div>
+</header>
 
+<!-- MAIN -->
+<main id="mainContent">
 
-<h1>Pedidos Fondo Creativo</h1>
+  <div id="loader">
+    <div class="spinner"></div>
+    <div class="loader-text">Cargando pedidos…</div>
+  </div>
 
-<div class="contenedor">
+  <!-- PENDIENTES DE ENVÍO -->
+  <div class="section" id="secPendiente" style="display:none;">
+    <div class="section-title">
+      📋 Pendientes de Envío
+      <span class="section-badge" id="countPendiente">0</span>
+    </div>
+    <div class="cards-grid" id="listPendiente"></div>
+  </div>
 
-    <!-- PENDIENTES DE ENVÍO -->
-<section>
-    <h2>Pendientes de Envío</h2>
-    <div id="envioLista" class="lista-pendientes"></div>
-</section>
+  <!-- EN PROCESO / EN RUTA -->
+  <div class="section" id="secProceso" style="display:none;">
+    <div class="section-title">
+      🚚 En Proceso / En Ruta
+      <span class="section-badge" id="countProceso">0</span>
+    </div>
+    <div class="cards-grid" id="listProceso"></div>
+  </div>
 
-<!-- SEPARADOR -->
-<div class="barra-separadora"></div>
+  <!-- ENTREGADOS / HISTORIAL -->
+  <div class="section" id="secHistorial" style="display:none;">
+    <div class="section-title">
+      ✅ Historial (Entregados / Anuladosificaciones)
+      <span class="section-badge" id="countHistorial">0</span>
+    </div>
+    <div class="filter-bar">
+      <span class="filter-label">Filtrar por mes:</span>
+      <select id="filtroMes" onchange="filtrarHistorial()">
+        <option value="all">Todos los meses</option>
+      </select>
+    </div>
+    <div class="cards-grid" id="listHistorial"></div>
+  </div>
 
-<!-- EN PROCESO DE PRODUCCIÓN / EN RUTA -->
-<section>
-    <h2>En Proceso de Producción</h2>
-    <div id="procesoLista" class="lista-pendientes"></div>
-</section>
-<!-- SEPARADOR -->
-<div class="barra-separadora"></div>
-    <!-- HISTORIAL -->
-    <section>
-        <h2>Historial</h2>
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <div class="empty-icon">📭</div>
+    <div class="empty-title">Sin pedidos</div>
+    <div>No hay pedidos que mostrar</div>
+  </div>
 
-        <select id="filtroMes" class="filtro">
-            <option value="all">Ver todo</option>
-            <option value="1">Enero</option>
-            <option value="2">Febrero</option>
-            <option value="3">Marzo</option>
-            <option value="4">Abril</option>
-            <option value="5">Mayo</option>
-            <option value="6">Junio</option>
-            <option value="7">Julio</option>
-            <option value="8">Agosto</option>
-            <option value="9">Septiembre</option>
-            <option value="10">Octubre</option>
-            <option value="11">Noviembre</option>
-            <option value="12">Diciembre</option>
-        </select>
+</main>
 
-        <div id="historialLista" class="lista-historial"></div>
-    </section>
-
+<!-- MODAL -->
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modalBody"></div>
+  </div>
 </div>
 
 <script>
-const API_GET = "/.netlify/functions/getPedidos";
-
-/* COLORES */
-function getColorClase(estado, tipo) {
-    if (tipo === "CorreoEnviado") {
-        if (estado === "CONFIRMADO") return "verde";
-        if (estado === "ENVIADO SIN CONFIRMAR") return "amarillo";
-        return "rojo";
-    }
-
-    if (tipo === "Sublimado" || tipo === "Costura") {
-        if (estado === "TERMINADO") return "verde";
-        if (estado === "EN PROCESO") return "amarillo";
-        return "rojo";
-    }
-
-    if (tipo === "Entrega") {
-        if (estado === "ENTREGADO") return "verde";
-        if (estado === "PRODUCCIÓN") return "morado";
-        if (estado === "SUBLIMADO") return "rosado";
-        if (estado === "COSTURA") return "celeste";
-        if (estado === "ENVIADO" || estado === "EN RUTA" || estado === "EN DESTINO") return "amarillo";
-        if (estado === "ANULADO") return "gris";
-        return "rojo";
-    }
-
-    return "rojo";
-}
-
-/* Cargar pedidos */
-let pedidosGlobal = [];
-
-async function cargarPedidos() {
-   // 🔹 Mostrar loader ANTES de cargar Google Sheets
-    document.getElementById("loader").style.display = "flex";
-    
-    const res = await fetch(API_GET);
-    pedidosGlobal = await res.json();
-
-    // Filtrar por grupos
-    const pendientesEnvio = pedidosGlobal.filter(
-        p => p.Estado === "ALMACEN"
-    );
-
-    const enProceso = pedidosGlobal.filter(p =>
-        ["PRODUCCIÓN", "SUBLIMADO", "COSTURA"]
-        .includes(p.Estado)
-    );
-
-    const historial = pedidosGlobal.filter(
-        p => ["ENTREGADO", "ANULADO", "ENVIADO", "EN RUTA", "EN DESTINO"].includes(p.Estado)
-    );
-
-    renderPendientesEnvio(pendientesEnvio);
-    renderProcesoProduccion(enProceso);
-    renderHistorial(historial);
-    document.getElementById("loader").style.display = "none";
-}
-/* Tarjeta HTML reutilizada */
-function crearTarjetaPedido(p) {
-
-let img = p.Imagen ? p.Imagen.trim() : "";
-
-    if (img) {
-        // Si NO termina en .png, .jpg, .jpeg o .gif → agregar .png
-        if (!/\.(png|jpg|jpeg|gif)$/i.test(img)) {
-            img = img + ".png";
-        }
-    }
-    return `
-        <div class="card">
-            <div class="pedido-banner" style="background:#3a3a3a;">
-                Pedido Nº ${p.NoPedido}
-            </div>
-
-            <img src="${img}" class="card-img">
-
-            <div class="info-item">
-                <span class="label">Medida:</span>
-                <span class="value">Anch. ${p.Ancho} x Alt. ${p.Alto}</span>
-            </div>
-            <div class="info-item"><span class="label">Fecha Pedido:</span><span class="value">${p.Fecha}</span></div>
-            <div class="info-item"><span class="label">Nombre:</span><span class="value">${p.Nombre}</span></div>
-            <div class="info-item"><span class="label">DNI/RUC:</span><span class="value">${p.Dni}</span></div>
-            <div class="info-item"><span class="label">Telefono:</span><span class="value">${p.Telefono}</span></div>
-            <div class="info-item"><span class="label">Agencia:</span><span class="value">${p.Agencia}</span></div>
-            <div class="info-item"><span class="label">Dirección:</span><span class="value">${p.Direccion}</span></div>
-            <div class="info-item"><span class="label">Clave Recojo:</span><span class="value">${p.Crecojo}</span></div>
-            <div class="info-item long"><span class="label">Especif.:</span><span class="value">${p.Especificaciones}</span></div>
-
-            <div class="info-item">
-                <span class="label">Estado:</span>
-                <span class="value estado ${getColorClase(p.Estado,"Entrega")}">${p.Estado}</span>
-            </div>
-
-            <div class="info-item"><span class="label">Observaciones:</span><span class="value">${p.Observaciones}</span></div>
-        </div>
-    `;
-}
-
-/* Render: Pendientes de Envío */
-function renderPendientesEnvio(lista) {
-    const cont = document.getElementById("envioLista");
-    cont.innerHTML = "";
-    lista.forEach(p => {
-        const div = document.createElement("div");
-        div.innerHTML = crearTarjetaPedido(p);
-        cont.appendChild(div.firstElementChild);
-    });
-}
-
-/* Render: En Proceso de Producción / En Ruta */
-function renderProcesoProduccion(lista) {
-    const cont = document.getElementById("procesoLista");
-    cont.innerHTML = "";
-    lista.forEach(p => {
-        const div = document.createElement("div");
-        div.innerHTML = crearTarjetaPedido(p);
-        cont.appendChild(div.firstElementChild);
-    });
-}
-
-/* Pendientes */
-function renderPendientes(lista) {
-    const cont = document.getElementById("pendientesLista");
-    cont.innerHTML = "";
-
-    lista.forEach(p => {
-    // --- AÑADIR .png AUTOMÁTICO A LA IMAGEN ---
-        let img = p.Imagen ? p.Imagen.trim() : "";
-
-        if (img) {
-            // Si NO termina en .png, .jpg, .jpeg o .gif → agregar .png
-            if (!/\.(png|jpg|jpeg|gif)$/i.test(img)) {
-                img = img + ".png";
-            }
-        }
-        const div = document.createElement("div");
-        div.className = "card";
-
-        div.innerHTML = `
-            <div class="pedido-banner" style="background:#3a3a3a;">
-            Pedido Nº ${p.NoPedido}
-             </div>
-
-            <img src="${img}" class="card-img">
-
-            <div class="info-item">
-                <span class="label">Medida:</span>
-                <span class="value">Anch. ${p.Ancho} x Alt. ${p.Alto}</span>
-            </div>
-              <div class="info-item"><span class="label">Fecha Pedido:</span><span class="value">${p.Fecha}</span></div>
-                <div class="info-item"><span class="label">Nombre:</span><span class="value">${p.Nombre}</span></div>
-                <div class="info-item"><span class="label">DNI/RUC:</span><span class="value">${p.Dni}</span></div>
-                <div class="info-item"><span class="label">Telefono:</span><span class="value">${p.Telefono}</span></div>
-                <div class="info-item"><span class="label">Agencia:</span><span class="value">${p.Agencia}</span></div>
-
-                <div class="info-item"><span class="label">Dirección:</span><span class="value">${p.Direccion}</span></div>
-                <div class="info-item"><span class="label">Clave Recojo:</span><span class="value">${p.Crecojo}</span></div>                
-                <div class="info-item long"><span class="label">Especif.:</span><span class="value">${p.Especificaciones}</span></div>
-
-                <div class="info-item"><span class="label">Estado:</span><span class="value estado ${getColorClase(p.Estado,"Entrega")}">${p.Estado}</span></div>
-                <div class="info-item"><span class="label">Observaciones:</span><span class="value">${p.Observaciones}</span></div>
-            </div>
-        `;
-
-        cont.appendChild(div);
-    });
-}
-
-/* Historial */
-function normalizarFechaLatina(f) {
-    if (!f) return null;
-    f = f.trim();
-    if (f.includes("/")) {
-        const [d,m,a] = f.split("/");
-        return `${a}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
-    }
-    return f.substring(0,10);
-}
-
-function renderHistorial(lista) {
-    const cont = document.getElementById("historialLista");
-    cont.innerHTML = "";
-
-    const mes = document.getElementById("filtroMes").value;
-
-    const filtrado = lista.filter(p => {
-        if (mes === "all") return true;
-        if (!p.Fecha) return false;
-
-        const iso = normalizarFechaLatina(p.Fecha);
-        if (!iso) return false;
-
-        const fecha = new Date(iso);
-        if (isNaN(fecha)) return false;
-
-        return fecha.getMonth() + 1 == mes;
-    });
-
-    filtrado.forEach(p => {
-    const div = document.createElement("div");
-    div.className = "mini-card";
-// === CORRECCIÓN IMAGEN ===
-        let img = p.Imagen ? p.Imagen.trim() : "";
-        if (img && !/\.(png|jpg|jpeg|gif)$/i.test(img)) {
-            img = img + ".png";
-        }
-
-    div.innerHTML = `
-        <img src="${img}" class="mini-img">
-        <div class="mini-info">
-            <div><span class="mini-label">Pedido:</span> ${p.NoPedido}</div>
-            <div><span class="mini-label">Nombre:</span> ${p.Nombre}</div>
-            <div><span class="mini-label">Agencia:</span> ${p.Agencia}</div>
-            <div><span class="mini-label">Clave:</span> ${p.Crecojo}</div>
-            <div><span class="mini-label">Fecha Entrega:</span> ${p.FechaEntrega}</div>
-            <span class="estado ${getColorClase(p.Estado,"Entrega")}">${p.Estado}</span>
-        </div>
-    `;
-
-    cont.appendChild(div);
-});
-
-// Activar modal con la misma lista filtrada
-activarModalHistorial(filtrado);
-}
-
-document.getElementById("filtroMes").addEventListener("change", () => {
-    const historial = pedidosGlobal.filter(
-        p => ["ENTREGADO", "ANULADO", "ENVIADO", "EN RUTA", "EN DESTINO"].includes(p.Estado)
-    );
-    renderHistorial(historial);
-});
-
-// Seleccionar mes actual por defecto
-window.addEventListener("DOMContentLoaded", () => {
-    const mesActual = new Date().getMonth() + 1; // 1-12
-    const filtro = document.getElementById("filtroMes");
-
-    if (filtro.querySelector(`option[value="${mesActual}"]`)) {
-        filtro.value = mesActual;
-    }
-
-    const historial = pedidosGlobal.filter(
-        p => ["ENTREGADO", "ANULADO", "ENVIADO", "EN RUTA", "EN DESTINO"].includes(p.Estado)
-    );
-
-    renderHistorial(historial);
-});
-
-/* =================== */
-/*   LÓGICA DEL PIN    */
-/* =================== */
-
+const API_GET = "/.netlify/functions/getVentas";
 const PIN_CORRECTO = "0324";
 const CADUCIDAD_HORAS = 24;
-const loader = document.getElementById("loader");
-// Evita que el loader se muestre antes del PIN
-loader.style.display = "none";
 
+let pedidosGlobal = [];
+const MESES_NOM = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+// ── PIN ──────────────────────────────────────────────────────────────────────
 function validarPIN() {
-    const input = document.getElementById("pinInput").value.trim();
-    const error = document.getElementById("pinError");
+  const input = document.getElementById('pinInput').value.trim();
+  const error = document.getElementById('pinError');
 
-    if (input === PIN_CORRECTO) {
-        localStorage.setItem("pin_ok", "true");
-        localStorage.setItem("pin_time", Date.now().toString());
-        document.getElementById("pinOverlay").style.display = "none";
-         // ← mostrar menú
-        document.getElementById("topMenu").style.display = "flex";
-         // Mostrar loader mientras carga pedidos
-        loader.style.display = "flex";
-        // Cargar pedidos AHORA recién
-        cargarPedidos();
-        error.style.display = "none";
-    } else {
-        error.style.display = "block";
-    }
+  if (input === PIN_CORRECTO) {
+    localStorage.setItem('pin_ok', 'true');
+    localStorage.setItem('pin_time', Date.now().toString());
+    document.getElementById('pinOverlay').style.display = 'none';
+    document.getElementById('topMenu').style.display = 'flex';
+    document.getElementById('loader').style.display = 'flex';
+    cargarPedidos();
+    error.style.display = 'none';
+  } else {
+    error.style.display = 'block';
+  }
 }
 
 function comprobarPIN() {
-    const ok = localStorage.getItem("pin_ok");
-    const time = Number(localStorage.getItem("pin_time") || 0);
-    const ahora = Date.now();
+  const ok = localStorage.getItem('pin_ok');
+  const time = Number(localStorage.getItem('pin_time') || 0);
+  const ahora = Date.now();
 
-    if (ok === "true" && time) {
-        const horas = (ahora - time) / (1000 * 60 * 60);
-        if (horas < CADUCIDAD_HORAS) {
-            document.getElementById("pinOverlay").style.display = "none";
-            // ← mostrar menú si el PIN sigue válido
-        document.getElementById("topMenu").style.display = "flex";
-          loader.style.display = "flex";
-           // Cargar pedidos
-            cargarPedidos();
-                      return;
-        }
+  if (ok === 'true' && time) {
+    const horas = (ahora - time) / (1000 * 60 * 60);
+    if (horas < CADUCIDAD_HORAS) {
+      document.getElementById('pinOverlay').style.display = 'none';
+      document.getElementById('topMenu').style.display = 'flex';
+      document.getElementById('loader').style.display = 'flex';
+      cargarPedidos();
+      return;
     }
-
-    document.getElementById("pinOverlay").style.display = "flex";
+  }
+  document.getElementById('pinOverlay').style.display = 'flex';
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    comprobarPIN();
-
-    document.getElementById("pinBtn").addEventListener("click", validarPIN);
-
-    document.getElementById("pinInput").addEventListener("keyup", e => {
-        if (e.key === "Enter") validarPIN();
-    });
-
-   });
-
-/* =============================== */
-/*   ABRIR MODAL CON MINI-CARD    */
-/* =============================== */
-
-function activarModalHistorial(listaOriginal) {
-    const historialDiv = document.getElementById("historialLista");
-
-    // Evento para cada mini-card
-    historialDiv.querySelectorAll(".mini-card").forEach((card, i) => {
-        card.addEventListener("click", () => {
-            const pedido = listaOriginal[i];
-
-            // Reutilizamos la tarjeta completa existente
-            const htmlCompleto = crearTarjetaPedido(pedido);
-
-            document.getElementById("modalContenido").innerHTML = htmlCompleto;
-            document.getElementById("modalOverlay").style.display = "flex";
-        });
-    });
+function logout() {
+  localStorage.removeItem('pin_ok');
+  localStorage.removeItem('pin_time');
+  location.reload();
 }
 
-// Cerrar tocando afuera
-document.getElementById("modalOverlay")?.addEventListener("click", e => {
-    if (e.target.id === "modalOverlay") {
-        document.getElementById("modalOverlay").style.display = "none";
+// ── CARGA DE DATOS ───────────────────────────────────────────────────────────
+async function cargarPedidos() {
+  try {
+    const res = await fetch(API_GET);
+    if (!res.ok) throw new Error('Error HTTP ' + res.status);
+    pedidosGlobal = await res.json();
+    if (!Array.isArray(pedidosGlobal)) throw new Error('Formato inválido');
+
+    llenarMeses();
+    renderizar();
+
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+  } catch (err) {
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+    console.error(err);
+  }
+}
+
+// ── LLENAR MESES ────────────────────────────────────────────────────────────
+function llenarMeses() {
+  const meses = new Set();
+  pedidosGlobal.forEach(p => {
+    const f = p.FECHA || p.Fecha;
+    if (f) {
+      const m = parseMes(f);
+      if (m) meses.add(m);
     }
-});
-// Asegurar que el botón de cerrar siempre funcione
-document.addEventListener("DOMContentLoaded", () => {
-    const modalCerrar = document.getElementById("modalCerrar");
-    const modalOverlay = document.getElementById("modalOverlay");
+  });
 
-    modalCerrar.addEventListener("click", () => {
-        modalOverlay.style.display = "none";
-    });
+  const selectMes = document.getElementById('filtroMes');
+  [...meses].sort().forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = MESES_NOM[m] || m;
+    selectMes.appendChild(opt);
+  });
+}
 
-    modalOverlay.addEventListener("click", e => {
-        if (e.target.id === "modalOverlay") {
-            modalOverlay.style.display = "none";
-        }
-    });
-});
+function parseMes(f) {
+  if (!f) return null;
+  f = String(f).trim();
+  if (f.includes('/')) {
+    const parts = f.split('/');
+    const m = parseInt(parts[1]);
+    return isNaN(m) ? null : m;
+  }
+  const dt = new Date(f);
+  return isNaN(dt) ? null : dt.getMonth() + 1;
+}
 
-</script>
+// ── RENDERIZAR ──────────────────────────────────────────────────────────────
+function renderizar() {
+  const pendientes = pedidosGlobal.filter(p =>
+    ['PENDIENTE ENVÍO', 'PENDIENTE'].includes((p.ESTADO || p.Estado || '').toUpperCase())
+  );
+  const proceso = pedidosGlobal.filter(p =>
+    ['EN PROCESO', 'EN RUTA', 'EN PRODUCCIÓN'].includes((p.ESTADO || p.Estado || '').toUpperCase())
+  );
+  const historial = pedidosGlobal.filter(p =>
+    ['ENTREGADO', 'ENVIADO', 'EN DESTINO', 'ANULADO'].includes((p.ESTADO || p.Estado || '').toUpperCase())
+  );
 
-<!-- MODAL PARA DETALLE DEL PEDIDO -->
-<div id="modalOverlay" class="modal-overlay">
-    <div class="modal-box">
-        <span id="modalCerrar" class="modal-cerrar">×</span>
-        <div id="modalContenido"></div>
+  // Mostrar/ocultar secciones
+  document.getElementById('secPendiente').style.display = pendientes.length ? 'block' : 'none';
+  document.getElementById('secProceso').style.display = proceso.length ? 'block' : 'none';
+  document.getElementById('secHistorial').style.display = historial.length ? 'block' : 'none';
+
+  document.getElementById('countPendiente').textContent = pendientes.length;
+  document.getElementById('countProceso').textContent = proceso.length;
+  document.getElementById('countHistorial').textContent = historial.length;
+
+  renderCards('listPendiente', pendientes);
+  renderCards('listProceso', proceso);
+  renderCards('listHistorial', historial);
+
+  configurarBusqueda();
+}
+
+function renderCards(containerId, pedidos) {
+  const cont = document.getElementById(containerId);
+  cont.innerHTML = '';
+
+  pedidos.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'order-card';
+    card.onclick = () => mostrarDetalle(p);
+
+    const estado = (p.ESTADO || p.Estado || '—').toUpperCase();
+    const statusClass = getStatusClass(estado);
+
+    card.innerHTML = `
+      <div class="order-header">
+        <span class="order-number">Pedido #${p.NoPedido || p['No. Pedido'] || '—'}</span>
+        <span class="order-status">${estado}</span>
+      </div>
+      <div class="order-body">
+        <div class="order-row">
+          <span class="order-label">Nombre:</span>
+          <span class="order-value">${p.NOMBRE || p.Nombre || '—'}</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Medidas:</span>
+          <span class="order-value">${p.ANCHO || p.Ancho || '—'} × ${p.ALTO || p.Alto || '—'}</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Agencia:</span>
+          <span class="order-value highlight">${p.AGENCIA || p.Agencia || '—'}</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Estado:</span>
+          <span class="status-badge ${statusClass}">${estado}</span>
+        </div>
+      </div>
+    `;
+
+    cont.appendChild(card);
+  });
+}
+
+function getStatusClass(estado) {
+  if (estado.includes('PENDIENTE')) return 'status-pendiente';
+  if (estado.includes('PROCESO') || estado.includes('RUTA') || estado.includes('PRODUCCIÓN')) return 'status-proceso';
+  if (estado.includes('ENVIADO') || estado.includes('DESTINO')) return 'status-enviado';
+  if (estado.includes('ENTREGADO')) return 'status-entregado';
+  if (estado.includes('ANULADO')) return 'status-anulado';
+  return 'status-proceso';
+}
+
+// ── MODAL ───────────────────────────────────────────────────────────────────
+function mostrarDetalle(p) {
+  const estado = (p.ESTADO || p.Estado || '—').toUpperCase();
+
+  let html = `
+    <div class="modal-header">
+      Pedido #${p.NoPedido || p['No. Pedido'] || '—'}
+      <span class="status-badge ${getStatusClass(estado)}" style="margin-left:auto;">${estado}</span>
     </div>
-</div>
 
+    <div class="modal-section">
+      <div class="modal-section-title">📋 Información del Pedido</div>
+      <div class="modal-row"><span class="modal-label">Fecha:</span><span class="modal-value">${p.FECHA || p.Fecha || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Medidas:</span><span class="modal-value">${p.ANCHO || p.Ancho || '—'} × ${p.ALTO || p.Alto || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Tipología:</span><span class="modal-value">${p.TIPOLOGIA || p.Tipologia || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Especif.:</span><span class="modal-value">${p.ESPECIFICACIONES || p.Especificaciones || '—'}</span></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">👤 Información del Cliente</div>
+      <div class="modal-row"><span class="modal-label">Nombre:</span><span class="modal-value">${p.NOMBRE || p.Nombre || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">DNI/RUC:</span><span class="modal-value">${p.DNI || p.Dni || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Teléfono:</span><span class="modal-value">${p.TELEFONO || p.Telefono || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Dirección:</span><span class="modal-value">${p.DIRECCION || p.Direccion || '—'}</span></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">🚚 Envío</div>
+      <div class="modal-row"><span class="modal-label">Agencia:</span><span class="modal-value">${p.AGENCIA || p.Agencia || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Clave Recojo:</span><span class="modal-value">${p.CRECOJO || p.Crecojo || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Pago:</span><span class="modal-value">${p.PAGO || p.Pago || p.PAGADO || '—'}</span></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">📝 Notas</div>
+      <div class="modal-row"><span class="modal-label">Observaciones:</span><span class="modal-value">${p.OBSERVACIONES || p.Observaciones || '—'}</span></div>
+    </div>
+  `;
+
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').style.display = 'flex';
+}
+
+function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+
+function filtrarHistorial() { renderizar(); }
+
+function configurarBusqueda() {
+  document.getElementById('searchBox').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('.order-card').forEach(card => {
+      const texto = card.textContent.toLowerCase();
+      card.style.display = texto.includes(q) ? 'block' : 'none';
+    });
+  });
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  comprobarPIN();
+  document.getElementById('pinBtn').addEventListener('click', validarPIN);
+  document.getElementById('pinInput').addEventListener('keyup', e => {
+    if (e.key === 'Enter') validarPIN();
+  });
+});
+</script>
 </body>
 </html>
