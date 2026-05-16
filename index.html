@@ -134,7 +134,7 @@
 
   .header-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
   }
 
@@ -146,11 +146,28 @@
     border-radius: 20px;
     font-size: 12px;
     outline: none;
-    width: 220px;
+    width: 180px;
     transition: border-color .2s;
   }
 
   .search-box:focus { border-color: var(--gold-dim); }
+
+  .ventas-btn {
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    color: #0f0e0c;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .ventas-btn:hover { transform: translateY(-1px); }
 
   .logout-btn {
     background: var(--card);
@@ -193,6 +210,31 @@
     border-radius: 20px;
   }
 
+  /* ── FILTROS HISTORIAL ── */
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .filter-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  select {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+    transition: all .2s;
+  }
+
+  select:hover, select:focus { border-color: var(--gold-dim); }
+
   /* ── CARDS GRID ── */
   .cards-grid {
     display: grid;
@@ -232,7 +274,7 @@
     padding: 8px;
   }
 
-  .order-body { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .order-body { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 7px; }
 
   .order-row {
     display: flex;
@@ -243,7 +285,7 @@
   .order-label {
     color: var(--muted);
     font-weight: 600;
-    min-width: 70px;
+    min-width: 65px;
     flex-shrink: 0;
     text-transform: uppercase;
     font-size: 10px;
@@ -256,17 +298,19 @@
 
   .status-badge {
     display: inline-block;
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 20px;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
   }
 
-  .status-pendiente   { background: rgba(212, 106, 106, 0.2); color: var(--red); }
-  .status-proceso     { background: rgba(212, 132, 90, 0.2);  color: var(--accent); }
-  .status-enviado     { background: rgba(90, 159, 212, 0.2);  color: var(--blue); }
-  .status-entregado   { background: rgba(106, 170, 122, 0.2); color: var(--green); }
-  .status-anulado     { background: rgba(122, 112, 96, 0.2);  color: var(--muted); }
+  .status-almacen    { background: #d46a6a; }
+  .status-proceso    { background: #d4845a; }
+  .status-enviado    { background: #5a9fd4; }
+  .status-entregado  { background: #6aaa7a; }
+  .status-anulado    { background: #7a7060; }
 
   /* ── MODAL ── */
   .modal-overlay {
@@ -405,6 +449,7 @@
     .cards-grid { grid-template-columns: 1fr; }
     header { padding: 12px 16px; }
     main { padding: 20px 16px; }
+    .header-actions { flex-wrap: wrap; }
   }
 </style>
 </head>
@@ -433,6 +478,7 @@
   </div>
   <div class="header-actions">
     <input type="text" id="searchBox" class="search-box" placeholder="🔍 Buscar…">
+    <a href="https://fondocreativo.netlify.app/ventas" class="ventas-btn" target="_blank">📊 Ventas</a>
     <button class="logout-btn" onclick="logout()">Salir</button>
   </div>
 </header>
@@ -463,11 +509,28 @@
     <div class="cards-grid" id="listProceso"></div>
   </div>
 
-  <!-- HISTORIAL -->
+  <!-- HISTORIAL CON FILTROS -->
   <div class="section" id="secHistorial" style="display:none;">
     <div class="section-title">
       ✅ Historial (Entregados / Anulados)
       <span class="section-badge" id="countHistorial">0</span>
+    </div>
+    <div class="filter-bar">
+      <span class="filter-label">Filtrar:</span>
+      <select id="filterAno" onchange="filtrarHistorial()">
+        <option value="all">Todos los años</option>
+      </select>
+      <select id="filterMes" onchange="filtrarHistorial()">
+        <option value="all">Todos los meses</option>
+      </select>
+      <select id="filterEstado" onchange="filtrarHistorial()">
+        <option value="all">Todos los estados</option>
+        <option value="ENTREGADO">Entregado</option>
+        <option value="ANULADO">Anulado</option>
+        <option value="ENVIADO">Enviado</option>
+        <option value="EN RUTA">En Ruta</option>
+        <option value="EN DESTINO">En Destino</option>
+      </select>
     </div>
     <div class="cards-grid" id="listHistorial"></div>
   </div>
@@ -492,8 +555,28 @@
 const API_GET = "/.netlify/functions/getPedidos";
 const PIN_CORRECTO = "0324";
 const CADUCIDAD_HORAS = 24;
+const MESES_NOM = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
 let pedidosGlobal = [];
+let historialCompleto = [];
+
+// ── FORMATO DE FECHA ─────────────────────────────────────────────────────────
+function formatFecha(f) {
+  if (!f) return '—';
+  const dt = new Date(f);
+  if (isNaN(dt)) return '—';
+  const d = String(dt.getDate()).padStart(2,'0');
+  const m = String(dt.getMonth()+1).padStart(2,'0');
+  const y = dt.getFullYear();
+  return `${d}-${m}-${y}`;
+}
+
+function extraerMesAnio(f) {
+  if (!f) return { mes: null, anio: null };
+  const dt = new Date(f);
+  if (isNaN(dt)) return { mes: null, anio: null };
+  return { mes: dt.getMonth() + 1, anio: dt.getFullYear() };
+}
 
 // ── PIN ──────────────────────────────────────────────────────────────────────
 function validarPIN() {
@@ -545,6 +628,7 @@ async function cargarPedidos() {
     pedidosGlobal = await res.json();
     if (!Array.isArray(pedidosGlobal)) throw new Error('Formato inválido');
 
+    llenarFiltros();
     renderizar();
 
     document.getElementById('loader').style.display = 'none';
@@ -556,31 +640,56 @@ async function cargarPedidos() {
   }
 }
 
+// ── LLENAR FILTROS ───────────────────────────────────────────────────────────
+function llenarFiltros() {
+  const anos = new Set();
+  const meses = new Set();
+
+  historialCompleto = pedidosGlobal.filter(p =>
+    ['ENTREGADO', 'ANULADO', 'ENVIADO', 'EN RUTA', 'EN DESTINO'].includes(p.Estado || '')
+  );
+
+  historialCompleto.forEach(p => {
+    const { mes, anio } = extraerMesAnio(p.Fecha);
+    if (anio) anos.add(anio);
+    if (mes) meses.add(mes);
+  });
+
+  const selectAnio = document.getElementById('filterAno');
+  [...anos].sort().forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a;
+    opt.textContent = a;
+    selectAnio.appendChild(opt);
+  });
+
+  const selectMes = document.getElementById('filterMes');
+  [...meses].sort((a,b)=>a-b).forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = MESES_NOM[m] || m;
+    selectMes.appendChild(opt);
+  });
+}
+
 // ── RENDERIZAR ──────────────────────────────────────────────────────────────
 function renderizar() {
-  // Filtrar por ESTADO exacto (como en el original)
   const pendientes = pedidosGlobal.filter(p => p.Estado === 'ALMACEN');
   
   const proceso = pedidosGlobal.filter(p =>
     ['SUBLIMADO', 'COSTURA', 'EN PROCESO', 'PRODUCCIÓN'].includes(p.Estado || '')
   );
 
-  const historial = pedidosGlobal.filter(p =>
-    ['ENTREGADO', 'ANULADO', 'ENVIADO', 'EN RUTA', 'EN DESTINO'].includes(p.Estado || '')
-  );
-
-  // Mostrar/ocultar secciones
   document.getElementById('secPendiente').style.display = pendientes.length ? 'block' : 'none';
   document.getElementById('secProceso').style.display = proceso.length ? 'block' : 'none';
-  document.getElementById('secHistorial').style.display = historial.length ? 'block' : 'none';
+  document.getElementById('secHistorial').style.display = historialCompleto.length ? 'block' : 'none';
 
   document.getElementById('countPendiente').textContent = pendientes.length;
   document.getElementById('countProceso').textContent = proceso.length;
-  document.getElementById('countHistorial').textContent = historial.length;
 
   renderCards('listPendiente', pendientes);
   renderCards('listProceso', proceso);
-  renderCards('listHistorial', historial);
+  filtrarHistorial();
 
   configurarBusqueda();
 }
@@ -594,7 +703,6 @@ function renderCards(containerId, pedidos) {
     card.className = 'order-card';
     card.onclick = () => mostrarDetalle(p);
 
-    // Procesar imagen
     let img = p.Imagen ? p.Imagen.trim() : '';
     if (img && !/\.(png|jpg|jpeg|gif)$/i.test(img)) {
       img = img + '.png';
@@ -603,6 +711,7 @@ function renderCards(containerId, pedidos) {
     const estado = (p.Estado || '—').toUpperCase();
     const statusClass = getStatusClass(estado);
     const noPedido = p.NoPedido || '—';
+    const fechaFormato = formatFecha(p.Fecha);
 
     card.innerHTML = `
       <div class="order-header">
@@ -611,6 +720,10 @@ function renderCards(containerId, pedidos) {
       </div>
       ${img ? `<img src="${img}" class="order-image" onerror="this.style.display='none'">` : ''}
       <div class="order-body">
+        <div class="order-row">
+          <span class="order-label">Fecha:</span>
+          <span class="order-value">${fechaFormato}</span>
+        </div>
         <div class="order-row">
           <span class="order-label">Cliente:</span>
           <span class="order-value">${p.Nombre || '—'}</span>
@@ -624,8 +737,20 @@ function renderCards(containerId, pedidos) {
           <span class="order-value highlight">${p.Fondo || '—'}</span>
         </div>
         <div class="order-row">
-          <span class="order-label">Agencia:</span>
-          <span class="order-value">${p.Agencia || '—'}</span>
+          <span class="order-label">Especif.:</span>
+          <span class="order-value">${p.Especificaciones || '—'}</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">DNI:</span>
+          <span class="order-value">${p.Dni || '—'}</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Clave:</span>
+          <span class="order-value">${p.Crecojo || '—'}</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Teléfono:</span>
+          <span class="order-value">${p.Telefono || '—'}</span>
         </div>
       </div>
     `;
@@ -635,7 +760,7 @@ function renderCards(containerId, pedidos) {
 }
 
 function getStatusClass(estado) {
-  if (estado === 'ALMACEN') return 'status-pendiente';
+  if (estado === 'ALMACEN') return 'status-almacen';
   if (['SUBLIMADO', 'COSTURA', 'EN PROCESO', 'PRODUCCIÓN'].includes(estado)) return 'status-proceso';
   if (['ENVIADO', 'EN RUTA', 'EN DESTINO'].includes(estado)) return 'status-enviado';
   if (estado === 'ENTREGADO') return 'status-entregado';
@@ -643,9 +768,25 @@ function getStatusClass(estado) {
   return 'status-proceso';
 }
 
+// ── FILTRAR HISTORIAL ────────────────────────────────────────────────────────
+function filtrarHistorial() {
+  const anoFilt = document.getElementById('filterAno').value;
+  const mesFilt = document.getElementById('filterMes').value;
+  const estFilt = document.getElementById('filterEstado').value;
+
+  let filtrados = historialCompleto.filter(p => {
+    const { mes, anio } = extraerMesAnio(p.Fecha);
+    return (anoFilt === 'all' || anio == anoFilt) &&
+           (mesFilt === 'all' || mes == mesFilt) &&
+           (estFilt === 'all' || p.Estado === estFilt);
+  });
+
+  document.getElementById('countHistorial').textContent = filtrados.length;
+  renderCards('listHistorial', filtrados);
+}
+
 // ── MODAL ───────────────────────────────────────────────────────────────────
 function mostrarDetalle(p) {
-  // Procesar imagen
   let img = p.Imagen ? p.Imagen.trim() : '';
   if (img && !/\.(png|jpg|jpeg|gif)$/i.test(img)) {
     img = img + '.png';
@@ -653,7 +794,8 @@ function mostrarDetalle(p) {
 
   const estado = (p.Estado || '—').toUpperCase();
   const noPedido = p.NoPedido || '—';
-  const fechaFormato = p.Fecha ? new Date(p.Fecha).toLocaleDateString('es-PE') : '—';
+  const fechaFormato = formatFecha(p.Fecha);
+  const fechaEntregaFormato = formatFecha(p.FechaEntrega);
 
   let html = `
     <div class="modal-header">
@@ -665,7 +807,8 @@ function mostrarDetalle(p) {
 
     <div class="modal-section">
       <div class="modal-section-title">📋 Información del Pedido</div>
-      <div class="modal-row"><span class="modal-label">Fecha:</span><span class="modal-value">${fechaFormato}</span></div>
+      <div class="modal-row"><span class="modal-label">Fecha Pedido:</span><span class="modal-value">${fechaFormato}</span></div>
+      <div class="modal-row"><span class="modal-label">Fecha Entrega:</span><span class="modal-value">${fechaEntregaFormato}</span></div>
       <div class="modal-row"><span class="modal-label">Código:</span><span class="modal-value">${p.CodigoProduccion || '—'}</span></div>
       <div class="modal-row"><span class="modal-label">Fondo:</span><span class="modal-value">${p.Fondo || '—'}</span></div>
       <div class="modal-row"><span class="modal-label">Medidas:</span><span class="modal-value">${p.Ancho || '—'} × ${p.Alto || '—'}</span></div>
@@ -684,7 +827,7 @@ function mostrarDetalle(p) {
     <div class="modal-section">
       <div class="modal-section-title">🚚 Envío & Pago</div>
       <div class="modal-row"><span class="modal-label">Agencia:</span><span class="modal-value">${p.Agencia || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Clave:</span><span class="modal-value">${p.Crecojo || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Clave Recojo:</span><span class="modal-value">${p.Crecojo || '—'}</span></div>
       <div class="modal-row"><span class="modal-label">Monto:</span><span class="modal-value">S/ ${p.Monto || '—'}</span></div>
     </div>
 
