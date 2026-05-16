@@ -313,34 +313,41 @@ let chartMes, chartAnio, chartTipo;
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 const money = n => 'S/ ' + parseFloat(n||0).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:0});
 
+// Usa ÚNICAMENTE la columna FECHA VENTA. Si no parsea correctamente → null (registro ignorado en gráficos).
 function parseFecha(v) {
-  if (!v) return null;
+  if (!v || String(v).trim() === '' || String(v).trim() === '0') return null;
   const s = String(v).trim();
-  // DD/MM/YYYY
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
+
+  // DD/MM/YYYY  ← formato más común en Perú
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) {
     const [d,m,y] = s.split('/');
-    return new Date(`${y}-${m}-${d}`);
+    const dt = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`);
+    return isNaN(dt) ? null : dt;
   }
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    const dt = new Date(s.slice(0,10));
+    return isNaN(dt) ? null : dt;
+  }
+  // Cualquier otro formato reconocible por el navegador
   const dt = new Date(s);
   return isNaN(dt) ? null : dt;
 }
 
+// Extrae mes (1-12) SOLO desde FECHA VENTA. Devuelve null si no hay fecha válida.
 function getMes(d) {
-  const dt = parseFecha(d['FECHA VENTA'] || d.FECHA_VENTA);
-  if (dt) return dt.getMonth()+1;
-  const m = parseInt(d.MES);
-  return isNaN(m) ? null : m;
+  const dt = parseFecha(d['FECHA VENTA']);
+  return dt ? dt.getMonth() + 1 : null;
 }
 
+// Extrae año SOLO desde FECHA VENTA. Devuelve null si no hay fecha válida.
 function getAnio(d) {
-  const dt = parseFecha(d['FECHA VENTA'] || d.FECHA_VENTA);
-  if (dt) return dt.getFullYear();
-  const a = parseInt(d.AÑO);
-  return isNaN(a) ? null : a;
+  const dt = parseFecha(d['FECHA VENTA']);
+  return dt ? dt.getFullYear() : null;
 }
 
-function getMedio(d) { return d['MEDIO DE VENTA'] || d.MEDIO_DE_VENTA || ''; }
-function getTamano(d) { return d['TAMAÑO'] || d.TAMAÑO || '—'; }
+function getMedio(d) { return d['MEDIO DE VENTA'] || ''; }
+function getTamano(d) { return d['TAMAÑO'] || '—'; }
 function getPrecio(d) { return parseFloat(d['PRECIO FINAL'] || 0); }
 
 // ── CARGA ─────────────────────────────────────────────────────────────────────
@@ -562,8 +569,8 @@ function renderTabla() {
   };
 
   const fmtFecha = d => {
-    const dt = parseFecha(d['FECHA VENTA']||d.FECHA_VENTA);
-    return dt ? dt.toLocaleDateString('es-PE') : (d['FECHA VENTA']||'—');
+    const dt = parseFecha(d['FECHA VENTA']);
+    return dt ? dt.toLocaleDateString('es-PE') : '—';
   };
 
   document.getElementById('tbl-body').innerHTML = page.length
