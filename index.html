@@ -37,52 +37,51 @@
     inset: 0;
     background: var(--bg);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    gap: 20px;
   }
 
   .pin-container {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 40px;
+    padding: 32px 24px;
     width: 90%;
-    max-width: 380px;
+    max-width: 320px;
     text-align: center;
     box-shadow: 0 10px 40px rgba(0,0,0,0.4);
   }
 
-  .pin-icon { font-size: 48px; margin-bottom: 16px; }
+  .pin-icon { font-size: 40px; margin-bottom: 12px; }
 
   .pin-title {
     font-family: 'Playfair Display', serif;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--cream);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .pin-subtitle {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--muted);
-    margin-bottom: 24px;
+    margin-bottom: 18px;
   }
 
   #pinInput {
     background: var(--card);
     border: 1px solid var(--border);
     color: var(--text);
-    font-size: 32px;
-    padding: 16px;
-    border-radius: 12px;
+    font-size: 28px;
+    padding: 12px;
+    border-radius: 10px;
     text-align: center;
-    letter-spacing: 8px;
-    margin-bottom: 16px;
+    letter-spacing: 6px;
+    margin-bottom: 14px;
     outline: none;
     transition: border-color .2s;
+    width: 100%;
   }
 
   #pinInput:focus { border-color: var(--gold); }
@@ -92,28 +91,28 @@
     background: linear-gradient(135deg, var(--gold), var(--accent));
     color: #0f0e0c;
     border: none;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: transform .2s;
   }
 
-  #pinBtn:hover { transform: translateY(-2px); }
+  #pinBtn:hover { transform: translateY(-1px); }
 
   #pinError {
     display: none;
     color: var(--red);
-    font-size: 13px;
-    margin-top: 12px;
+    font-size: 12px;
+    margin-top: 10px;
   }
 
   /* ── HEADER ── */
   header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
-    padding: 18px 40px;
+    padding: 16px 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -123,15 +122,15 @@
 
   .logo { display: flex; align-items: center; gap: 12px; }
   .logo-icon {
-    width: 40px; height: 40px;
+    width: 36px; height: 36px;
     background: linear-gradient(135deg, var(--gold), var(--accent));
-    border-radius: 10px;
+    border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
+    font-size: 16px;
   }
 
-  .logo h1 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--cream); }
-  .logo p  { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+  .logo h1 { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--cream); }
+  .logo p  { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
 
   .header-actions {
     display: flex;
@@ -143,11 +142,11 @@
     background: var(--card);
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 8px 14px;
+    padding: 8px 12px;
     border-radius: 20px;
-    font-size: 13px;
+    font-size: 12px;
     outline: none;
-    width: 240px;
+    width: 220px;
     transition: border-color .2s;
   }
 
@@ -157,9 +156,9 @@
     background: var(--card);
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 8px 14px;
+    padding: 8px 12px;
     border-radius: 20px;
-    font-size: 13px;
+    font-size: 12px;
     cursor: pointer;
     transition: all .2s;
   }
@@ -167,44 +166,19 @@
   .logout-btn:hover { border-color: var(--red); color: var(--red); }
 
   /* ── MAIN ── */
-  main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; display: none; }
-
-  /* ── FILTROS ── */
-  .filter-bar {
-    display: flex;
-    gap: 14px;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-  }
-
-  .filter-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-
-  select {
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 8px 14px;
-    border-radius: 20px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    outline: none;
-    transition: all .2s;
-  }
-
-  select:hover, select:focus { border-color: var(--gold-dim); }
+  main { padding: 28px 40px; max-width: 1300px; margin: 0 auto; display: none; }
 
   /* ── SECCIONES ── */
   .section {
-    margin-bottom: 40px;
+    margin-bottom: 36px;
   }
 
   .section-title {
     font-family: 'Playfair Display', serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--cream);
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -213,7 +187,7 @@
   .section-badge {
     background: var(--gold);
     color: #0f0e0c;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     padding: 2px 8px;
     border-radius: 20px;
@@ -222,17 +196,19 @@
   /* ── CARDS GRID ── */
   .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
   }
 
   .order-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 12px;
     overflow: hidden;
     transition: all .2s;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
   }
 
   .order-card:hover { border-color: var(--gold-dim); transform: translateY(-2px); }
@@ -240,46 +216,50 @@
   .order-header {
     background: linear-gradient(135deg, var(--gold), var(--accent));
     color: #0f0e0c;
-    padding: 14px 16px;
+    padding: 10px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
+    font-size: 13px;
   }
 
-  .order-number { font-size: 15px; }
+  .order-image {
+    width: 100%;
+    height: 160px;
+    object-fit: contain;
+    background: var(--surface);
+    padding: 8px;
+  }
 
-  .order-body { padding: 16px; }
+  .order-body { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
 
   .order-row {
     display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    font-size: 13px;
+    gap: 8px;
+    font-size: 11px;
   }
 
   .order-label {
     color: var(--muted);
     font-weight: 600;
-    min-width: 90px;
+    min-width: 70px;
     flex-shrink: 0;
     text-transform: uppercase;
-    font-size: 11px;
-    letter-spacing: 0.5px;
+    font-size: 10px;
+    letter-spacing: 0.3px;
   }
 
-  .order-value { color: var(--text); flex: 1; line-height: 1.4; }
+  .order-value { color: var(--text); flex: 1; line-height: 1.3; word-break: break-word; }
 
   .order-value.highlight { color: var(--gold); font-weight: 600; }
 
-  /* Estado badge en card */
   .status-badge {
     display: inline-block;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
-    margin-top: 4px;
   }
 
   .status-pendiente   { background: rgba(212, 106, 106, 0.2); color: var(--red); }
@@ -303,22 +283,22 @@
   .modal-content {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    max-width: 540px;
+    border-radius: 14px;
+    max-width: 520px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
-    padding: 28px;
+    padding: 24px;
   }
 
   .modal-close {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 12px;
+    right: 12px;
     background: none;
     border: none;
     color: var(--muted);
-    font-size: 28px;
+    font-size: 24px;
     cursor: pointer;
     transition: color .2s;
   }
@@ -328,48 +308,58 @@
   .modal-header {
     background: linear-gradient(135deg, var(--gold), var(--accent));
     color: #0f0e0c;
-    padding: 16px;
-    margin: -28px -28px 20px -28px;
-    border-radius: 16px 16px 0 0;
+    padding: 14px;
+    margin: -24px -24px 16px -24px;
+    border-radius: 14px 14px 0 0;
     font-family: 'Playfair Display', serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
+  .modal-img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background: var(--card);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    padding: 8px;
+  }
+
   .modal-section {
-    margin-bottom: 18px;
+    margin-bottom: 14px;
   }
 
   .modal-section-title {
     font-family: 'Playfair Display', serif;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--gold);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 
   .modal-row {
     display: flex;
-    gap: 10px;
-    margin-bottom: 8px;
-    font-size: 13px;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
   }
 
   .modal-label {
     color: var(--muted);
     font-weight: 600;
-    min-width: 110px;
+    min-width: 90px;
     flex-shrink: 0;
     text-transform: uppercase;
-    font-size: 11px;
+    font-size: 10px;
   }
 
-  .modal-value { color: var(--text); flex: 1; line-height: 1.4; word-break: break-word; }
+  .modal-value { color: var(--text); flex: 1; line-height: 1.3; word-break: break-word; }
 
   /* ── LOADER ── */
   #loader {
@@ -378,12 +368,12 @@
     align-items: center;
     justify-content: center;
     height: 60vh;
-    gap: 16px;
+    gap: 14px;
   }
 
   .spinner {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border: 3px solid var(--border);
     border-top-color: var(--gold);
     border-radius: 50%;
@@ -392,29 +382,29 @@
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .loader-text { color: var(--muted); font-size: 14px; }
+  .loader-text { color: var(--muted); font-size: 12px; }
 
-  /* ── EMPTY STATE ── */
   .empty-state {
     text-align: center;
-    padding: 40px;
+    padding: 36px 20px;
     color: var(--muted);
   }
 
-  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-icon { font-size: 44px; margin-bottom: 10px; }
 
-  .empty-title { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--cream); margin-bottom: 6px; }
+  .empty-title { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--cream); margin-bottom: 4px; }
 
   /* ── RESPONSIVE ── */
   @media(max-width: 900px) {
     header, main { padding-left: 20px; padding-right: 20px; }
-    .cards-grid { grid-template-columns: 1fr; }
+    .cards-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
     .search-box { width: auto; }
   }
 
   @media(max-width: 600px) {
-    .order-card { font-size: 12px; }
-    .order-row { margin-bottom: 8px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    header { padding: 12px 16px; }
+    main { padding: 20px 16px; }
   }
 </style>
 </head>
@@ -425,10 +415,10 @@
   <div class="pin-container">
     <div class="pin-icon">🔐</div>
     <div class="pin-title">Acceso Restringido</div>
-    <div class="pin-subtitle">Ingresa tu PIN de 4 dígitos</div>
+    <div class="pin-subtitle">Ingresa tu PIN</div>
     <input type="password" id="pinInput" maxlength="4" placeholder="••••" inputmode="numeric">
     <button id="pinBtn">Acceder</button>
-    <div id="pinError">PIN incorrecto, intenta de nuevo</div>
+    <div id="pinError">PIN incorrecto</div>
   </div>
 </div>
 
@@ -438,11 +428,11 @@
     <div class="logo-icon">📦</div>
     <div>
       <h1>Fondo Creativo</h1>
-      <p>Seguimiento de Pedidos</p>
+      <p>Seguimiento</p>
     </div>
   </div>
   <div class="header-actions">
-    <input type="text" id="searchBox" class="search-box" placeholder="🔍 Buscar pedido, nombre…">
+    <input type="text" id="searchBox" class="search-box" placeholder="🔍 Buscar…">
     <button class="logout-btn" onclick="logout()">Salir</button>
   </div>
 </header>
@@ -464,26 +454,20 @@
     <div class="cards-grid" id="listPendiente"></div>
   </div>
 
-  <!-- EN PROCESO / PRODUCCIÓN / EN RUTA -->
+  <!-- EN PROCESO -->
   <div class="section" id="secProceso" style="display:none;">
     <div class="section-title">
-      ⚙️ En Proceso / En Ruta
+      ⚙️ En Proceso de Producción
       <span class="section-badge" id="countProceso">0</span>
     </div>
     <div class="cards-grid" id="listProceso"></div>
   </div>
 
-  <!-- ENTREGADOS / HISTORIAL -->
+  <!-- HISTORIAL -->
   <div class="section" id="secHistorial" style="display:none;">
     <div class="section-title">
       ✅ Historial (Entregados / Anulados)
       <span class="section-badge" id="countHistorial">0</span>
-    </div>
-    <div class="filter-bar">
-      <span class="filter-label">Filtrar por mes:</span>
-      <select id="filtroMes" onchange="renderizar()">
-        <option value="all">Todos los meses</option>
-      </select>
     </div>
     <div class="cards-grid" id="listHistorial"></div>
   </div>
@@ -510,7 +494,6 @@ const PIN_CORRECTO = "0324";
 const CADUCIDAD_HORAS = 24;
 
 let pedidosGlobal = [];
-const MESES_NOM = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
 // ── PIN ──────────────────────────────────────────────────────────────────────
 function validarPIN() {
@@ -562,7 +545,6 @@ async function cargarPedidos() {
     pedidosGlobal = await res.json();
     if (!Array.isArray(pedidosGlobal)) throw new Error('Formato inválido');
 
-    llenarMeses();
     renderizar();
 
     document.getElementById('loader').style.display = 'none';
@@ -574,58 +556,18 @@ async function cargarPedidos() {
   }
 }
 
-// ── LLENAR MESES ────────────────────────────────────────────────────────────
-function llenarMeses() {
-  const meses = new Set();
-  pedidosGlobal.forEach(p => {
-    const f = p.Fecha;
-    if (f) {
-      const m = parseMes(f);
-      if (m) meses.add(m);
-    }
-  });
-
-  const selectMes = document.getElementById('filtroMes');
-  [...meses].sort((a,b)=>a-b).forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m;
-    opt.textContent = MESES_NOM[m] || m;
-    selectMes.appendChild(opt);
-  });
-}
-
-function parseMes(f) {
-  if (!f) return null;
-  const dt = new Date(f);
-  return isNaN(dt) ? null : dt.getMonth() + 1;
-}
-
 // ── RENDERIZAR ──────────────────────────────────────────────────────────────
 function renderizar() {
-  const mesFiltro = document.getElementById('filtroMes').value;
+  // Filtrar por ESTADO exacto (como en el original)
+  const pendientes = pedidosGlobal.filter(p => p.Estado === 'ALMACEN');
+  
+  const proceso = pedidosGlobal.filter(p =>
+    ['SUBLIMADO', 'COSTURA', 'EN PROCESO', 'PRODUCCIÓN'].includes(p.Estado || '')
+  );
 
-  const pendientes = pedidosGlobal.filter(p => {
-    const estado = (p.Estado || '').trim().toUpperCase();
-    return ['PENDIENTE ENVÍO', 'PENDIENTE'].includes(estado);
-  });
-
-  const proceso = pedidosGlobal.filter(p => {
-    const estado = (p.Estado || '').trim().toUpperCase();
-    return ['SUBLIMADO', 'EN PROCESO', 'EN RUTA', 'EN PRODUCCIÓN', 'COSTURA'].includes(estado);
-  });
-
-  let historial = pedidosGlobal.filter(p => {
-    const estado = (p.Estado || '').trim().toUpperCase();
-    return ['ENTREGADO', 'ENVIADO', 'EN DESTINO', 'ANULADO', 'ALMACEN'].includes(estado);
-  });
-
-  // Filtrar historial por mes
-  if (mesFiltro !== 'all') {
-    historial = historial.filter(p => {
-      const m = parseMes(p.Fecha);
-      return m == mesFiltro;
-    });
-  }
+  const historial = pedidosGlobal.filter(p =>
+    ['ENTREGADO', 'ANULADO', 'ENVIADO', 'EN RUTA', 'EN DESTINO'].includes(p.Estado || '')
+  );
 
   // Mostrar/ocultar secciones
   document.getElementById('secPendiente').style.display = pendientes.length ? 'block' : 'none';
@@ -652,15 +594,22 @@ function renderCards(containerId, pedidos) {
     card.className = 'order-card';
     card.onclick = () => mostrarDetalle(p);
 
-    const estado = (p.Estado || '—').trim().toUpperCase();
+    // Procesar imagen
+    let img = p.Imagen ? p.Imagen.trim() : '';
+    if (img && !/\.(png|jpg|jpeg|gif)$/i.test(img)) {
+      img = img + '.png';
+    }
+
+    const estado = (p.Estado || '—').toUpperCase();
     const statusClass = getStatusClass(estado);
-    const noPedido = p.NoPedido || p['No. Pedido'] || '—';
+    const noPedido = p.NoPedido || '—';
 
     card.innerHTML = `
       <div class="order-header">
-        <span class="order-number">Pedido #${noPedido}</span>
-        <span class="order-status">${estado}</span>
+        <span>Pedido #${noPedido}</span>
+        <span class="status-badge ${statusClass}">${estado}</span>
       </div>
+      ${img ? `<img src="${img}" class="order-image" onerror="this.style.display='none'">` : ''}
       <div class="order-body">
         <div class="order-row">
           <span class="order-label">Cliente:</span>
@@ -678,10 +627,6 @@ function renderCards(containerId, pedidos) {
           <span class="order-label">Agencia:</span>
           <span class="order-value">${p.Agencia || '—'}</span>
         </div>
-        <div class="order-row">
-          <span class="order-label">Estado:</span>
-          <span class="status-badge ${statusClass}">${estado}</span>
-        </div>
       </div>
     `;
 
@@ -690,19 +635,25 @@ function renderCards(containerId, pedidos) {
 }
 
 function getStatusClass(estado) {
-  if (estado.includes('PENDIENTE')) return 'status-pendiente';
-  if (estado.includes('PROCESO') || estado.includes('RUTA') || estado.includes('PRODUCCIÓN') || estado.includes('SUBLIMADO') || estado.includes('COSTURA')) return 'status-proceso';
-  if (estado.includes('ENVIADO') || estado.includes('DESTINO')) return 'status-enviado';
-  if (estado.includes('ENTREGADO') || estado.includes('ALMACEN')) return 'status-entregado';
-  if (estado.includes('ANULADO')) return 'status-anulado';
+  if (estado === 'ALMACEN') return 'status-pendiente';
+  if (['SUBLIMADO', 'COSTURA', 'EN PROCESO', 'PRODUCCIÓN'].includes(estado)) return 'status-proceso';
+  if (['ENVIADO', 'EN RUTA', 'EN DESTINO'].includes(estado)) return 'status-enviado';
+  if (estado === 'ENTREGADO') return 'status-entregado';
+  if (estado === 'ANULADO') return 'status-anulado';
   return 'status-proceso';
 }
 
 // ── MODAL ───────────────────────────────────────────────────────────────────
 function mostrarDetalle(p) {
-  const estado = (p.Estado || '—').trim().toUpperCase();
-  const noPedido = p.NoPedido || p['No. Pedido'] || '—';
-  const pagado = p.Observaciones ? (p.Observaciones.toUpperCase().includes('PAGADO') ? 'Sí' : 'No') : '—';
+  // Procesar imagen
+  let img = p.Imagen ? p.Imagen.trim() : '';
+  if (img && !/\.(png|jpg|jpeg|gif)$/i.test(img)) {
+    img = img + '.png';
+  }
+
+  const estado = (p.Estado || '—').toUpperCase();
+  const noPedido = p.NoPedido || '—';
+  const fechaFormato = p.Fecha ? new Date(p.Fecha).toLocaleDateString('es-PE') : '—';
 
   let html = `
     <div class="modal-header">
@@ -710,10 +661,12 @@ function mostrarDetalle(p) {
       <span class="status-badge ${getStatusClass(estado)}" style="margin-left:auto;">${estado}</span>
     </div>
 
+    ${img ? `<img src="${img}" class="modal-img" onerror="this.style.display='none'">` : ''}
+
     <div class="modal-section">
       <div class="modal-section-title">📋 Información del Pedido</div>
-      <div class="modal-row"><span class="modal-label">Fecha:</span><span class="modal-value">${p.Fecha ? new Date(p.Fecha).toLocaleDateString('es-PE') : '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Código Prod:</span><span class="modal-value">${p.CodigoProduccion || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Fecha:</span><span class="modal-value">${fechaFormato}</span></div>
+      <div class="modal-row"><span class="modal-label">Código:</span><span class="modal-value">${p.CodigoProduccion || '—'}</span></div>
       <div class="modal-row"><span class="modal-label">Fondo:</span><span class="modal-value">${p.Fondo || '—'}</span></div>
       <div class="modal-row"><span class="modal-label">Medidas:</span><span class="modal-value">${p.Ancho || '—'} × ${p.Alto || '—'}</span></div>
       <div class="modal-row"><span class="modal-label">Especif.:</span><span class="modal-value">${p.Especificaciones || '—'}</span></div>
@@ -721,7 +674,7 @@ function mostrarDetalle(p) {
     </div>
 
     <div class="modal-section">
-      <div class="modal-section-title">👤 Información del Cliente</div>
+      <div class="modal-section-title">👤 Cliente</div>
       <div class="modal-row"><span class="modal-label">Nombre:</span><span class="modal-value">${p.Nombre || '—'}</span></div>
       <div class="modal-row"><span class="modal-label">DNI/RUC:</span><span class="modal-value">${p.Dni || '—'}</span></div>
       <div class="modal-row"><span class="modal-label">Teléfono:</span><span class="modal-value">${p.Telefono || '—'}</span></div>
@@ -731,9 +684,8 @@ function mostrarDetalle(p) {
     <div class="modal-section">
       <div class="modal-section-title">🚚 Envío & Pago</div>
       <div class="modal-row"><span class="modal-label">Agencia:</span><span class="modal-value">${p.Agencia || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Clave Recojo:</span><span class="modal-value">${p.Crecojo || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Clave:</span><span class="modal-value">${p.Crecojo || '—'}</span></div>
       <div class="modal-row"><span class="modal-label">Monto:</span><span class="modal-value">S/ ${p.Monto || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Pagado:</span><span class="modal-value">${pagado}</span></div>
     </div>
 
     <div class="modal-section">
@@ -744,8 +696,8 @@ function mostrarDetalle(p) {
     </div>
 
     <div class="modal-section">
-      <div class="modal-section-title">📝 Notas</div>
-      <div class="modal-row"><span class="modal-label">Observ.:</span><span class="modal-value">${p.Observaciones || '—'}</span></div>
+      <div class="modal-section-title">📝 Observaciones</div>
+      <div class="modal-row"><span class="modal-value">${p.Observaciones || '—'}</span></div>
     </div>
   `;
 
@@ -759,16 +711,13 @@ function closeModal() {
 
 function configurarBusqueda() {
   const searchBox = document.getElementById('searchBox');
-  if (!searchBox.hasListener) {
-    searchBox.addEventListener('input', e => {
-      const q = e.target.value.toLowerCase();
-      document.querySelectorAll('.order-card').forEach(card => {
-        const texto = card.textContent.toLowerCase();
-        card.style.display = texto.includes(q) ? 'block' : 'none';
-      });
+  searchBox.addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('.order-card').forEach(card => {
+      const texto = card.textContent.toLowerCase();
+      card.style.display = texto.includes(q) ? 'block' : 'none';
     });
-    searchBox.hasListener = true;
-  }
+  }, { once: false });
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
