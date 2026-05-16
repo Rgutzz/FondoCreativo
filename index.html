@@ -561,21 +561,54 @@ let pedidosGlobal = [];
 let historialCompleto = [];
 
 // ── FORMATO DE FECHA ─────────────────────────────────────────────────────────
+function parseFechaLocal(f) {
+  if (!f || String(f).trim() === '') return null;
+
+  const s = String(f).trim();
+
+  // DD/MM/YYYY
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) {
+    const [d, m, y] = s.split('/').map(Number);
+    const dt = new Date(y, m - 1, d);
+    return isNaN(dt) ? null : dt;
+  }
+
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    const [y, m, d] = s.slice(0,10).split('-').map(Number);
+    const dt = new Date(y, m - 1, d);
+    return isNaN(dt) ? null : dt;
+  }
+
+  // fallback
+  const dt = new Date(s);
+
+  return isNaN(dt) ? null : dt;
+}
+
 function formatFecha(f) {
-  if (!f) return '—';
-  const dt = new Date(f);
-  if (isNaN(dt)) return '—';
+  const dt = parseFechaLocal(f);
+
+  if (!dt) return '—';
+
   const d = String(dt.getDate()).padStart(2,'0');
-  const m = String(dt.getMonth()+1).padStart(2,'0');
+  const m = String(dt.getMonth() + 1).padStart(2,'0');
   const y = dt.getFullYear();
+
   return `${d}-${m}-${y}`;
 }
 
 function extraerMesAnio(f) {
-  if (!f) return { mes: null, anio: null };
-  const dt = new Date(f);
-  if (isNaN(dt)) return { mes: null, anio: null };
-  return { mes: dt.getMonth() + 1, anio: dt.getFullYear() };
+  const dt = parseFechaLocal(f);
+
+  if (!dt) {
+    return { mes: null, anio: null };
+  }
+
+  return {
+    mes: dt.getMonth() + 1,
+    anio: dt.getFullYear()
+  };
 }
 
 // ── PIN ──────────────────────────────────────────────────────────────────────
