@@ -237,7 +237,7 @@
   <div class="kpi-grid">
     <div class="kpi-card"><div class="kpi-icon">💰</div><div class="kpi-label">Ventas Totales</div><div class="kpi-value" id="kpi-total">—</div><div class="kpi-sub">en soles (S/)</div></div>
     <div class="kpi-card"><div class="kpi-icon">🛍️</div><div class="kpi-label">Pedidos</div><div class="kpi-value" id="kpi-pedidos">—</div><div class="kpi-sub">transacciones registradas</div></div>
-    <div class="kpi-card"><div class="kpi-icon">🎯</div><div class="kpi-label">Ticket Promedio</div><div class="kpi-value" id="kpi-ticket">—</div><div class="kpi-sub">precio promedio por venta</div></div>
+    <div class="kpi-card"><div class="kpi-icon">🎯</div><div class="kpi-label">Precio Promedio</div><div class="kpi-value" id="kpi-ticket">—</div><div class="kpi-sub">precio promedio por venta</div></div>
     <div class="kpi-card"><div class="kpi-icon">📐</div><div class="kpi-label">Tamaño Top</div><div class="kpi-value" id="kpi-tamano">—</div><div class="kpi-sub" id="kpi-tamano-sub">más vendido en S/</div></div>
   </div>
 
@@ -316,21 +316,31 @@ const money = n => 'S/ ' + parseFloat(n||0).toLocaleString('es-PE',{minimumFract
 // Usa ÚNICAMENTE la columna FECHA VENTA. Si no parsea correctamente → null (registro ignorado en gráficos).
 function parseFecha(v) {
   if (!v || String(v).trim() === '' || String(v).trim() === '0') return null;
+
   const s = String(v).trim();
 
-  // DD/MM/YYYY  ← formato más común en Perú
+  // DD/MM/YYYY
   if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) {
-    const [d,m,y] = s.split('/');
-    const dt = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`);
+    const [d, m, y] = s.split('/').map(Number);
+
+    // IMPORTANTE: mes empieza en 0
+    const dt = new Date(y, m - 1, d);
+
     return isNaN(dt) ? null : dt;
   }
+
   // YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
-    const dt = new Date(s.slice(0,10));
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    const [y, m, d] = s.split('-').map(Number);
+
+    const dt = new Date(y, m - 1, d);
+
     return isNaN(dt) ? null : dt;
   }
-  // Cualquier otro formato reconocible por el navegador
+
+  // fallback
   const dt = new Date(s);
+
   return isNaN(dt) ? null : dt;
 }
 
