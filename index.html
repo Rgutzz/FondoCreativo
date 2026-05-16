@@ -249,15 +249,6 @@
 
   .order-number { font-size: 15px; }
 
-  .order-status {
-    display: inline-block;
-    background: rgba(255,255,255,0.2);
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-
   .order-body { padding: 16px; }
 
   .order-row {
@@ -313,7 +304,7 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 16px;
-    max-width: 520px;
+    max-width: 540px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
@@ -372,59 +363,13 @@
   .modal-label {
     color: var(--muted);
     font-weight: 600;
-    min-width: 100px;
+    min-width: 110px;
     flex-shrink: 0;
     text-transform: uppercase;
     font-size: 11px;
   }
 
   .modal-value { color: var(--text); flex: 1; line-height: 1.4; word-break: break-word; }
-
-  /* ── TIMELINE ── */
-  .timeline {
-    position: relative;
-    padding-left: 30px;
-    margin-top: 16px;
-  }
-
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: 5px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(180deg, var(--gold), transparent);
-  }
-
-  .timeline-item {
-    margin-bottom: 16px;
-    display: flex;
-    gap: 14px;
-  }
-
-  .timeline-dot {
-    width: 12px;
-    height: 12px;
-    background: var(--border);
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 3px;
-  }
-
-  .timeline-item.active .timeline-dot {
-    background: var(--gold);
-    width: 16px;
-    height: 16px;
-    margin-top: 0;
-  }
-
-  .timeline-text {
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .timeline-item.active .timeline-text { color: var(--text); }
 
   /* ── LOADER ── */
   #loader {
@@ -497,7 +442,7 @@
     </div>
   </div>
   <div class="header-actions">
-    <input type="text" id="searchBox" class="search-box" placeholder="🔍 Buscar por pedido, nombre…">
+    <input type="text" id="searchBox" class="search-box" placeholder="🔍 Buscar pedido, nombre…">
     <button class="logout-btn" onclick="logout()">Salir</button>
   </div>
 </header>
@@ -519,10 +464,10 @@
     <div class="cards-grid" id="listPendiente"></div>
   </div>
 
-  <!-- EN PROCESO / EN RUTA -->
+  <!-- EN PROCESO / PRODUCCIÓN / EN RUTA -->
   <div class="section" id="secProceso" style="display:none;">
     <div class="section-title">
-      🚚 En Proceso / En Ruta
+      ⚙️ En Proceso / En Ruta
       <span class="section-badge" id="countProceso">0</span>
     </div>
     <div class="cards-grid" id="listProceso"></div>
@@ -531,12 +476,12 @@
   <!-- ENTREGADOS / HISTORIAL -->
   <div class="section" id="secHistorial" style="display:none;">
     <div class="section-title">
-      ✅ Historial (Entregados / Anuladosificaciones)
+      ✅ Historial (Entregados / Anulados)
       <span class="section-badge" id="countHistorial">0</span>
     </div>
     <div class="filter-bar">
       <span class="filter-label">Filtrar por mes:</span>
-      <select id="filtroMes" onchange="filtrarHistorial()">
+      <select id="filtroMes" onchange="renderizar()">
         <option value="all">Todos los meses</option>
       </select>
     </div>
@@ -560,7 +505,7 @@
 </div>
 
 <script>
-const API_GET = "/.netlify/functions/getVentas";
+const API_GET = "/.netlify/functions/getPedidos";
 const PIN_CORRECTO = "0324";
 const CADUCIDAD_HORAS = 24;
 
@@ -623,9 +568,9 @@ async function cargarPedidos() {
     document.getElementById('loader').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
   } catch (err) {
+    console.error(err);
     document.getElementById('loader').style.display = 'none';
     document.getElementById('emptyState').style.display = 'block';
-    console.error(err);
   }
 }
 
@@ -633,7 +578,7 @@ async function cargarPedidos() {
 function llenarMeses() {
   const meses = new Set();
   pedidosGlobal.forEach(p => {
-    const f = p.FECHA || p.Fecha;
+    const f = p.Fecha;
     if (f) {
       const m = parseMes(f);
       if (m) meses.add(m);
@@ -641,7 +586,7 @@ function llenarMeses() {
   });
 
   const selectMes = document.getElementById('filtroMes');
-  [...meses].sort().forEach(m => {
+  [...meses].sort((a,b)=>a-b).forEach(m => {
     const opt = document.createElement('option');
     opt.value = m;
     opt.textContent = MESES_NOM[m] || m;
@@ -651,27 +596,36 @@ function llenarMeses() {
 
 function parseMes(f) {
   if (!f) return null;
-  f = String(f).trim();
-  if (f.includes('/')) {
-    const parts = f.split('/');
-    const m = parseInt(parts[1]);
-    return isNaN(m) ? null : m;
-  }
   const dt = new Date(f);
   return isNaN(dt) ? null : dt.getMonth() + 1;
 }
 
 // ── RENDERIZAR ──────────────────────────────────────────────────────────────
 function renderizar() {
-  const pendientes = pedidosGlobal.filter(p =>
-    ['PENDIENTE ENVÍO', 'PENDIENTE'].includes((p.ESTADO || p.Estado || '').toUpperCase())
-  );
-  const proceso = pedidosGlobal.filter(p =>
-    ['EN PROCESO', 'EN RUTA', 'EN PRODUCCIÓN'].includes((p.ESTADO || p.Estado || '').toUpperCase())
-  );
-  const historial = pedidosGlobal.filter(p =>
-    ['ENTREGADO', 'ENVIADO', 'EN DESTINO', 'ANULADO'].includes((p.ESTADO || p.Estado || '').toUpperCase())
-  );
+  const mesFiltro = document.getElementById('filtroMes').value;
+
+  const pendientes = pedidosGlobal.filter(p => {
+    const estado = (p.Estado || '').trim().toUpperCase();
+    return ['PENDIENTE ENVÍO', 'PENDIENTE'].includes(estado);
+  });
+
+  const proceso = pedidosGlobal.filter(p => {
+    const estado = (p.Estado || '').trim().toUpperCase();
+    return ['SUBLIMADO', 'EN PROCESO', 'EN RUTA', 'EN PRODUCCIÓN', 'COSTURA'].includes(estado);
+  });
+
+  let historial = pedidosGlobal.filter(p => {
+    const estado = (p.Estado || '').trim().toUpperCase();
+    return ['ENTREGADO', 'ENVIADO', 'EN DESTINO', 'ANULADO', 'ALMACEN'].includes(estado);
+  });
+
+  // Filtrar historial por mes
+  if (mesFiltro !== 'all') {
+    historial = historial.filter(p => {
+      const m = parseMes(p.Fecha);
+      return m == mesFiltro;
+    });
+  }
 
   // Mostrar/ocultar secciones
   document.getElementById('secPendiente').style.display = pendientes.length ? 'block' : 'none';
@@ -698,26 +652,31 @@ function renderCards(containerId, pedidos) {
     card.className = 'order-card';
     card.onclick = () => mostrarDetalle(p);
 
-    const estado = (p.ESTADO || p.Estado || '—').toUpperCase();
+    const estado = (p.Estado || '—').trim().toUpperCase();
     const statusClass = getStatusClass(estado);
+    const noPedido = p.NoPedido || p['No. Pedido'] || '—';
 
     card.innerHTML = `
       <div class="order-header">
-        <span class="order-number">Pedido #${p.NoPedido || p['No. Pedido'] || '—'}</span>
+        <span class="order-number">Pedido #${noPedido}</span>
         <span class="order-status">${estado}</span>
       </div>
       <div class="order-body">
         <div class="order-row">
-          <span class="order-label">Nombre:</span>
-          <span class="order-value">${p.NOMBRE || p.Nombre || '—'}</span>
+          <span class="order-label">Cliente:</span>
+          <span class="order-value">${p.Nombre || '—'}</span>
         </div>
         <div class="order-row">
           <span class="order-label">Medidas:</span>
-          <span class="order-value">${p.ANCHO || p.Ancho || '—'} × ${p.ALTO || p.Alto || '—'}</span>
+          <span class="order-value">${p.Ancho || '—'} × ${p.Alto || '—'}</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">Fondo:</span>
+          <span class="order-value highlight">${p.Fondo || '—'}</span>
         </div>
         <div class="order-row">
           <span class="order-label">Agencia:</span>
-          <span class="order-value highlight">${p.AGENCIA || p.Agencia || '—'}</span>
+          <span class="order-value">${p.Agencia || '—'}</span>
         </div>
         <div class="order-row">
           <span class="order-label">Estado:</span>
@@ -732,49 +691,61 @@ function renderCards(containerId, pedidos) {
 
 function getStatusClass(estado) {
   if (estado.includes('PENDIENTE')) return 'status-pendiente';
-  if (estado.includes('PROCESO') || estado.includes('RUTA') || estado.includes('PRODUCCIÓN')) return 'status-proceso';
+  if (estado.includes('PROCESO') || estado.includes('RUTA') || estado.includes('PRODUCCIÓN') || estado.includes('SUBLIMADO') || estado.includes('COSTURA')) return 'status-proceso';
   if (estado.includes('ENVIADO') || estado.includes('DESTINO')) return 'status-enviado';
-  if (estado.includes('ENTREGADO')) return 'status-entregado';
+  if (estado.includes('ENTREGADO') || estado.includes('ALMACEN')) return 'status-entregado';
   if (estado.includes('ANULADO')) return 'status-anulado';
   return 'status-proceso';
 }
 
 // ── MODAL ───────────────────────────────────────────────────────────────────
 function mostrarDetalle(p) {
-  const estado = (p.ESTADO || p.Estado || '—').toUpperCase();
+  const estado = (p.Estado || '—').trim().toUpperCase();
+  const noPedido = p.NoPedido || p['No. Pedido'] || '—';
+  const pagado = p.Observaciones ? (p.Observaciones.toUpperCase().includes('PAGADO') ? 'Sí' : 'No') : '—';
 
   let html = `
     <div class="modal-header">
-      Pedido #${p.NoPedido || p['No. Pedido'] || '—'}
+      Pedido #${noPedido}
       <span class="status-badge ${getStatusClass(estado)}" style="margin-left:auto;">${estado}</span>
     </div>
 
     <div class="modal-section">
       <div class="modal-section-title">📋 Información del Pedido</div>
-      <div class="modal-row"><span class="modal-label">Fecha:</span><span class="modal-value">${p.FECHA || p.Fecha || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Medidas:</span><span class="modal-value">${p.ANCHO || p.Ancho || '—'} × ${p.ALTO || p.Alto || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Tipología:</span><span class="modal-value">${p.TIPOLOGIA || p.Tipologia || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Especif.:</span><span class="modal-value">${p.ESPECIFICACIONES || p.Especificaciones || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Fecha:</span><span class="modal-value">${p.Fecha ? new Date(p.Fecha).toLocaleDateString('es-PE') : '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Código Prod:</span><span class="modal-value">${p.CodigoProduccion || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Fondo:</span><span class="modal-value">${p.Fondo || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Medidas:</span><span class="modal-value">${p.Ancho || '—'} × ${p.Alto || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Especif.:</span><span class="modal-value">${p.Especificaciones || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Metraje:</span><span class="modal-value">${p.Metraje || '—'} m²</span></div>
     </div>
 
     <div class="modal-section">
       <div class="modal-section-title">👤 Información del Cliente</div>
-      <div class="modal-row"><span class="modal-label">Nombre:</span><span class="modal-value">${p.NOMBRE || p.Nombre || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">DNI/RUC:</span><span class="modal-value">${p.DNI || p.Dni || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Teléfono:</span><span class="modal-value">${p.TELEFONO || p.Telefono || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Dirección:</span><span class="modal-value">${p.DIRECCION || p.Direccion || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Nombre:</span><span class="modal-value">${p.Nombre || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">DNI/RUC:</span><span class="modal-value">${p.Dni || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Teléfono:</span><span class="modal-value">${p.Telefono || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Dirección:</span><span class="modal-value">${p.Direccion || '—'}</span></div>
     </div>
 
     <div class="modal-section">
-      <div class="modal-section-title">🚚 Envío</div>
-      <div class="modal-row"><span class="modal-label">Agencia:</span><span class="modal-value">${p.AGENCIA || p.Agencia || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Clave Recojo:</span><span class="modal-value">${p.CRECOJO || p.Crecojo || '—'}</span></div>
-      <div class="modal-row"><span class="modal-label">Pago:</span><span class="modal-value">${p.PAGO || p.Pago || p.PAGADO || '—'}</span></div>
+      <div class="modal-section-title">🚚 Envío & Pago</div>
+      <div class="modal-row"><span class="modal-label">Agencia:</span><span class="modal-value">${p.Agencia || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Clave Recojo:</span><span class="modal-value">${p.Crecojo || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Monto:</span><span class="modal-value">S/ ${p.Monto || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Pagado:</span><span class="modal-value">${pagado}</span></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">📊 Producción</div>
+      <div class="modal-row"><span class="modal-label">Sublimado:</span><span class="modal-value">${p.Sublimado || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Costura:</span><span class="modal-value">${p.Costura || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Entrega:</span><span class="modal-value">${p.Entrega || '—'}</span></div>
     </div>
 
     <div class="modal-section">
       <div class="modal-section-title">📝 Notas</div>
-      <div class="modal-row"><span class="modal-label">Observaciones:</span><span class="modal-value">${p.OBSERVACIONES || p.Observaciones || '—'}</span></div>
+      <div class="modal-row"><span class="modal-label">Observ.:</span><span class="modal-value">${p.Observaciones || '—'}</span></div>
     </div>
   `;
 
@@ -782,18 +753,22 @@ function mostrarDetalle(p) {
   document.getElementById('modalOverlay').style.display = 'flex';
 }
 
-function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-
-function filtrarHistorial() { renderizar(); }
+function closeModal() { 
+  document.getElementById('modalOverlay').style.display = 'none'; 
+}
 
 function configurarBusqueda() {
-  document.getElementById('searchBox').addEventListener('input', e => {
-    const q = e.target.value.toLowerCase();
-    document.querySelectorAll('.order-card').forEach(card => {
-      const texto = card.textContent.toLowerCase();
-      card.style.display = texto.includes(q) ? 'block' : 'none';
+  const searchBox = document.getElementById('searchBox');
+  if (!searchBox.hasListener) {
+    searchBox.addEventListener('input', e => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll('.order-card').forEach(card => {
+        const texto = card.textContent.toLowerCase();
+        card.style.display = texto.includes(q) ? 'block' : 'none';
+      });
     });
-  });
+    searchBox.hasListener = true;
+  }
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -802,6 +777,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('pinBtn').addEventListener('click', validarPIN);
   document.getElementById('pinInput').addEventListener('keyup', e => {
     if (e.key === 'Enter') validarPIN();
+  });
+  document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target.id === 'modalOverlay') closeModal();
   });
 });
 </script>
