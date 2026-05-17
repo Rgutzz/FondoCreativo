@@ -31,6 +31,11 @@
     min-height: 100vh;
   }
 
+  body.modal-open{
+  overflow: hidden;
+  touch-action: none;
+}
+
   /* ── PIN OVERLAY ── */
   #pinOverlay {
     position: fixed;
@@ -974,10 +979,12 @@ function mostrarDetalle(p) {
 
   document.getElementById('modalBody').innerHTML = html;
   document.getElementById('modalOverlay').style.display = 'flex';
+  document.body.classList.add('modal-open');
 }
 
 function closeModal() { 
-  document.getElementById('modalOverlay').style.display = 'none'; 
+  document.getElementById('modalOverlay').style.display = 'none';
+  document.body.classList.remove('modal-open'); 
 }
 
 function configurarBusqueda() {
