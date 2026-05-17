@@ -273,6 +273,15 @@
     </div>
   </div>
 
+  <!-- TOP 10 CLIENTES -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div><div class="chart-title">Top 10 Clientes</div><div class="chart-subtitle">Clientes con más compras en S/</div></div>
+      <span class="chart-badge">Top 10</span>
+    </div>
+    <div class="top-bars" id="bars-clientes"></div>
+  </div>
+
   <div class="table-card">
     <div class="chart-header">
       <div><div class="chart-title">Detalle de Ventas</div><div class="chart-subtitle" id="tbl-count">—</div></div>
@@ -425,6 +434,7 @@ function aplicarFiltros() {
   renderChartAnio();
   renderTamanos();
   renderTipologias();
+  renderClientes();
   renderTabla();
 }
 
@@ -561,6 +571,20 @@ function renderTipologias() {
         y:{ticks:{color:'#e8dfc8',font:{size:12,weight:'500'}},grid:{display:false}}
       }}
   });
+}
+
+// ── TOP 10 CLIENTES ────────────────────────────────────────────────────────────
+function renderClientes() {
+  const grp={};
+  datosFiltrados.forEach(d=>{ const c=d.NOMBRE||'—'; grp[c]=(grp[c]||0)+getPrecio(d); });
+  const sorted=Object.entries(grp).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const max=sorted[0]?.[1]||1;
+
+  document.getElementById('bars-clientes').innerHTML = sorted.map(([c,v],i)=>`
+    <div class="bar-row">
+      <div class="bar-meta"><span class="bar-name">${c}</span><span class="bar-amount">${money(v)}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${COLORES[i]||'#c9a84c'}"></div></div>
+    </div>`).join('');
 }
 
 // ── TABLA ─────────────────────────────────────────────────────────────────────
