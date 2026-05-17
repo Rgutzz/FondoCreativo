@@ -349,18 +349,45 @@
 
   .modal-close:hover { color: var(--text); }
 
-  .modal-header {
-    background: linear-gradient(135deg, var(--gold), var(--accent));
-    color: #0f0e0c;
-    padding: 14px;
-    margin: -24px -24px 16px -24px;
-    border-radius: 14px 14px 0 0;
-    font-family: 'Playfair Display', serif;
-    font-size: 16px;
-    font-weight: 700;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .modal-header-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.modal-close-btn{
+  background: rgba(15,14,12,0.18);
+  border: 1px solid rgba(15,14,12,0.22);
+  color: #0f0e0c;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  min-height: 42px;
+}
+
+.modal-close-btn:hover{
+  background: rgba(15,14,12,0.28);
+}
+
+@media(max-width:600px){
+
+  .modal-header{
+    align-items:flex-start;
+    gap:10px;
+    flex-direction:column;
+  }
+
+  .modal-close-btn{
+    width:100%;
+    justify-content:center;
+    display:flex;
+    align-items:center;
+    font-size:14px;
+    padding:10px 14px;
   }
 
   .modal-img {
@@ -546,7 +573,6 @@
 <!-- MODAL -->
 <div id="modalOverlay" class="modal-overlay">
   <div class="modal-content">
-    <button class="modal-close" onclick="closeModal()">×</button>
     <div id="modalBody"></div>
   </div>
 </div>
@@ -839,10 +865,16 @@ function mostrarDetalle(p) {
   const fechaEntregaFormato = formatFecha(p.FechaEntrega);
 
   let html = `
-    <div class="modal-header">
-      Pedido #${noPedido}
-      <span class="status-badge ${getStatusClass(estado)}" style="margin-left:auto;">${estado}</span>
-    </div>
+    div class="modal-header">
+  <div class="modal-header-left">
+    <span>Pedido #${noPedido}</span>
+    <span class="status-badge ${getStatusClass(estado)}">${estado}</span>
+  </div>
+
+  <button class="modal-close-btn" onclick="closeModal()">
+    ✕ Cerrar
+  </button>
+</div>
 
     ${img ? `<img src="${img}" class="modal-img" onerror="this.style.display='none'">` : ''}
 
