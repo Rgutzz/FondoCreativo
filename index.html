@@ -528,6 +528,13 @@
   .empty-icon { font-size: 44px; margin-bottom: 10px; }
 
   .empty-title { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--cream); margin-bottom: 4px; }
+#error-msg {
+    display:none; flex-direction:column; align-items:center;
+    justify-content:center; height:60vh; gap:12px; text-align:center; padding:20px;
+  }
+  .error-icon  { font-size:40px; }
+  .error-title { font-family:'Playfair Display',serif; font-size:20px; color:var(--cream); }
+  .error-sub   { font-size:13px; color:var(--muted); max-width:360px; line-height:1.6; }
 
   /* ── RESPONSIVE ── */
   @media(max-width: 900px) {
@@ -579,8 +586,14 @@
 
   <div id="loader">
     <div class="spinner"></div>
-    <div class="loader-text">Cargando pedidos…</div>
+    <div class="loader-text">Cargando datos desde Google Sheets…</div>
   </div>
+
+  <div id="error-msg">
+  <div class="error-icon">⚠️</div>
+  <div class="error-title">No se pudieron cargar los datos</div>
+  <div class="error-sub" id="error-detail">Verifica que la función de Netlify esté activa y la API key de Google Sheets sea válida.</div>
+</div>
 
   <!-- PENDIENTES DE ENVÍO -->
   <div class="section" id="secPendiente" style="display:none;">
@@ -711,6 +724,7 @@ function validarPIN() {
     localStorage.setItem('pin_time', Date.now().toString());
     document.getElementById('pinOverlay').style.display = 'none';
     document.getElementById('topMenu').style.display = 'flex';
+    document.getElementById('mainContent').style.display = 'block';
     document.getElementById('loader').style.display = 'flex';
     cargarPedidos();
     error.style.display = 'none';
@@ -729,6 +743,7 @@ function comprobarPIN() {
     if (horas < CADUCIDAD_HORAS) {
       document.getElementById('pinOverlay').style.display = 'none';
       document.getElementById('topMenu').style.display = 'flex';
+      document.getElementById('mainContent').style.display = 'block';
       document.getElementById('loader').style.display = 'flex';
       cargarPedidos();
       return;
@@ -755,11 +770,11 @@ async function cargarPedidos() {
     renderizar();
 
     document.getElementById('loader').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-  } catch (err) {
-    console.error(err);
+    } catch (err) {
     document.getElementById('loader').style.display = 'none';
-    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('error-msg').style.display = 'flex';
+    document.getElementById('error-detail').textContent = err.message;
+    console.error(err);
   }
 }
 
