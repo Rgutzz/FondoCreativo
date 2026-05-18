@@ -447,6 +447,9 @@ async function cargarDatos() {
 datosGlobal = Array.isArray(respuesta)
   ? respuesta
   : (respuesta.ventas || respuesta);
+ console.log(datosGlobal[0]);
+    console.log(Object.keys(datosGlobal[0]));
+
     if (!Array.isArray(datosGlobal) || datosGlobal.length === 0)
       throw new Error('La hoja no tiene datos o está vacía.');
 
