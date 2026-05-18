@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard de Ventas — Fondo Creativo</title>
+<title>Dashboard Financiero — Fondo Creativo</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -19,6 +19,7 @@
     --text:     #e8dfc8;
     --accent:   #d4845a;
     --green:    #6aaa7a;
+    --red:      #d46a6a;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
 
@@ -29,7 +30,6 @@
     min-height: 100vh;
   }
 
-  /* HEADER */
   header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -52,7 +52,6 @@
   }
   .back-link:hover { color:var(--text); border-color:var(--gold-dim); }
 
-  /* FILTROS */
   .filter-bar {
     background:var(--surface); border-bottom:1px solid var(--border);
     padding:12px 40px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
@@ -65,7 +64,6 @@
   }
   select:hover, select:focus { border-color:var(--gold-dim); }
 
-  /* LOADER */
   #loader {
     display:flex; flex-direction:column; align-items:center;
     justify-content:center; height:60vh; gap:16px;
@@ -85,10 +83,19 @@
   .error-title { font-family:'Playfair Display',serif; font-size:20px; color:var(--cream); }
   .error-sub   { font-size:13px; color:var(--muted); max-width:360px; line-height:1.6; }
 
-  /* MAIN */
   main { padding:32px 40px; max-width:1400px; margin:0 auto; display:none; }
 
-  /* KPIs */
+  .tabs { display:flex; gap:0; margin-bottom:20px; border-bottom:1px solid var(--border); }
+  .tab-btn {
+    background:none; border:none; color:var(--muted); padding:12px 20px;
+    cursor:pointer; font-size:13px; font-weight:600; text-transform:uppercase;
+    letter-spacing:1px; border-bottom:2px solid transparent; transition:all .2s;
+  }
+  .tab-btn:hover, .tab-btn.active { color:var(--gold); border-bottom-color:var(--gold); }
+
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
   .kpi-grid {
     display:grid; grid-template-columns:repeat(4,1fr);
     gap:14px; margin-bottom:24px;
@@ -108,7 +115,6 @@
   .kpi-sub   { font-size:12px; color:var(--muted); }
   .kpi-icon  { position:absolute; right:18px; top:18px; font-size:26px; opacity:.12; }
 
-  /* CHARTS */
   .charts-main { display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:14px; }
   .charts-row  { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
   .chart-card {
@@ -124,7 +130,6 @@
     border:1px solid rgba(201,168,76,.2); padding:3px 10px; border-radius:20px; font-weight:500; white-space:nowrap;
   }
 
-  /* DONUT */
   .donut-wrap { display:flex; flex-direction:column; gap:8px; margin-top:18px; }
   .legend-item {
     display:flex; align-items:center; justify-content:space-between;
@@ -136,7 +141,6 @@
   .legend-pct  { font-size:11px; color:var(--muted); margin-top:1px; }
   .legend-val  { font-size:13px; color:var(--gold); font-weight:600; font-family:'Playfair Display',serif; }
 
-  /* BARRAS */
   .top-bars { display:flex; flex-direction:column; gap:10px; }
   .bar-row  { display:flex; flex-direction:column; gap:5px; }
   .bar-meta { display:flex; justify-content:space-between; align-items:center; }
@@ -144,41 +148,6 @@
   .bar-amount { font-size:13px; color:var(--gold); font-weight:600; }
   .bar-track  { height:6px; background:var(--border); border-radius:10px; overflow:hidden; }
   .bar-fill   { height:100%; border-radius:10px; transition:width 1s cubic-bezier(.4,0,.2,1); }
-
-  /* TABLA */
-  .table-card {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:16px; padding:26px; margin-bottom:14px; animation:fadeUp .5s ease both;
-  }
-  .table-search {
-    background:var(--surface); border:1px solid var(--border); color:var(--text);
-    padding:8px 14px; border-radius:8px; font-family:'DM Sans',sans-serif;
-    font-size:13px; outline:none; width:100%; max-width:320px; margin-bottom:16px;
-  }
-  .table-search:focus { border-color:var(--gold-dim); }
-  .tbl-wrap { overflow-x:auto; }
-  table { width:100%; border-collapse:collapse; font-size:13px; }
-  thead th {
-    text-align:left; padding:10px 12px; color:var(--muted);
-    font-size:11px; text-transform:uppercase; letter-spacing:1px;
-    border-bottom:1px solid var(--border); font-weight:500; white-space:nowrap;
-  }
-  tbody tr { border-bottom:1px solid rgba(46,43,38,.5); transition:background .15s; }
-  tbody tr:hover { background:rgba(201,168,76,.04); }
-  tbody td { padding:10px 12px; color:var(--text); white-space:nowrap; }
-  .td-money { color:var(--gold); font-weight:600; font-family:'Playfair Display',serif; }
-  .td-badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600; }
-  .badge-ws { background:rgba(106,170,122,.15); color:var(--green); border:1px solid rgba(106,170,122,.3); }
-  .badge-ig { background:rgba(212,132,90,.15);  color:var(--accent); border:1px solid rgba(212,132,90,.3); }
-
-  .pagination { display:flex; gap:6px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap; }
-  .pg-btn {
-    background:var(--surface); border:1px solid var(--border); color:var(--muted);
-    padding:5px 12px; border-radius:8px; font-size:12px; cursor:pointer; transition:all .2s;
-  }
-  .pg-btn:hover, .pg-btn.active { background:var(--gold); border-color:var(--gold); color:#0f0e0c; font-weight:600; }
-
-  footer { text-align:center; padding:20px; color:var(--muted); font-size:12px; border-top:1px solid var(--border); }
 
   @keyframes fadeUp {
     from { opacity:0; transform:translateY(16px); }
@@ -190,13 +159,13 @@
   .kpi-card:nth-child(4){animation-delay:.20s}
 
   @media(max-width:900px){
-    header,.filter-bar,main{padding-left:20px;padding-right:20px;}
-    .kpi-grid{grid-template-columns:repeat(2,1fr);}
-    .charts-main,.charts-row{grid-template-columns:1fr;}
+    header, main { padding-left:20px; padding-right:20px; }
+    .kpi-grid { grid-template-columns:repeat(2,1fr); }
+    .charts-main, .charts-row { grid-template-columns:1fr; }
   }
   @media(max-width:500px){
-    .kpi-grid{grid-template-columns:1fr;}
-    .kpi-value{font-size:24px;}
+    .kpi-grid { grid-template-columns:1fr; }
+    .kpi-value { font-size:24px; }
   }
 </style>
 </head>
@@ -204,10 +173,10 @@
 
 <header>
   <div class="logo">
-    <div class="logo-icon">🖼️</div>
+    <div class="logo-icon">📊</div>
     <div>
       <h1>Fondo Creativo</h1>
-      <p>Dashboard de Ventas</p>
+      <p>Dashboard Financiero</p>
     </div>
   </div>
   <a href="https://fondocreativo.netlify.app/" class="back-link">⬅ Volver</a>
@@ -215,190 +184,175 @@
 
 <div class="filter-bar">
   <span class="filter-label">Filtrar por:</span>
-  <select id="filterAno"       onchange="aplicarFiltros()"><option value="all">Todos los años</option></select>
-  <select id="filterMes"       onchange="aplicarFiltros()"><option value="all">Todos los meses</option></select>
-  <select id="filterTipologia" onchange="aplicarFiltros()"><option value="all">Todas las tipologías</option></select>
-  <select id="filterMedio"     onchange="aplicarFiltros()"><option value="all">Todos los medios</option></select>
+  <select id="filterAno" onchange="aplicarFiltros()"><option value="all">Todos los años</option></select>
+  <select id="filterMes" onchange="aplicarFiltros()"><option value="all">Todos los meses</option></select>
 </div>
 
 <div id="loader">
   <div class="spinner"></div>
-  <div class="loader-text">Cargando datos desde Google Sheets…</div>
+  <div class="loader-text">Cargando datos…</div>
 </div>
 
 <div id="error-msg">
   <div class="error-icon">⚠️</div>
   <div class="error-title">No se pudieron cargar los datos</div>
-  <div class="error-sub" id="error-detail">Verifica que la función de Netlify esté activa y la API key de Google Sheets sea válida.</div>
+  <div class="error-sub" id="error-detail">Verifica la conexión</div>
 </div>
 
 <main id="main-content">
 
-  <div class="kpi-grid">
-    <div class="kpi-card"><div class="kpi-icon">💰</div><div class="kpi-label">Ventas Totales</div><div class="kpi-value" id="kpi-total">—</div><div class="kpi-sub">en soles (S/)</div></div>
-    <div class="kpi-card"><div class="kpi-icon">🛍️</div><div class="kpi-label">Pedidos</div><div class="kpi-value" id="kpi-pedidos">—</div><div class="kpi-sub">transacciones registradas</div></div>
-    <div class="kpi-card"><div class="kpi-icon">🎯</div><div class="kpi-label">Precio Promedio</div><div class="kpi-value" id="kpi-ticket">—</div><div class="kpi-sub">precio promedio por venta</div></div>
-    <div class="kpi-card"><div class="kpi-icon">📐</div><div class="kpi-label">Tamaño Top</div><div class="kpi-value" id="kpi-tamano">—</div><div class="kpi-sub" id="kpi-tamano-sub">más vendido en S/</div></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="cambiarTab('ventas')">💰 Ventas</button>
+    <button class="tab-btn" onclick="cambiarTab('gastos')">💸 Gastos</button>
+    <button class="tab-btn" onclick="cambiarTab('rentabilidad')">📈 Rentabilidad</button>
   </div>
 
-  <div class="charts-main">
-    <div class="chart-card">
-      <div class="chart-header">
-        <div><div class="chart-title">Ventas por Mes</div><div class="chart-subtitle">Evolución mensual en S/</div></div>
-        <span class="chart-badge" id="badge-rango">—</span>
+  <div id="tab-ventas" class="tab-content active">
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-icon">💰</div><div class="kpi-label">Total Ventas</div><div class="kpi-value" id="kpi-ventas-total">—</div><div class="kpi-sub">en soles (S/)</div></div>
+      <div class="kpi-card"><div class="kpi-icon">🛍️</div><div class="kpi-label">Pedidos</div><div class="kpi-value" id="kpi-ventas-pedidos">—</div><div class="kpi-sub">transacciones</div></div>
+      <div class="kpi-card"><div class="kpi-icon">🎯</div><div class="kpi-label">Ticket Promedio</div><div class="kpi-value" id="kpi-ventas-ticket">—</div><div class="kpi-sub">precio promedio</div></div>
+      <div class="kpi-card"><div class="kpi-icon">📐</div><div class="kpi-label">Top Tamaño</div><div class="kpi-value" id="kpi-ventas-tamano">—</div><div class="kpi-sub" id="kpi-ventas-tamano-sub">más vendido</div></div>
+    </div>
+
+    <div class="charts-main">
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Ventas Mensuales</div><div class="chart-subtitle">Evolución en S/</div></div><span class="chart-badge" id="badge-ventas">—</span></div>
+        <canvas id="chartVentasMes" height="220"></canvas>
       </div>
-      <canvas id="chartMes" height="220"></canvas>
-    </div>
-    <div class="chart-card">
-      <div class="chart-header"><div><div class="chart-title">Ventas por Año</div><div class="chart-subtitle">Distribución porcentual</div></div></div>
-      <canvas id="chartAnio" height="160"></canvas>
-      <div class="donut-wrap" id="donut-legend"></div>
-    </div>
-  </div>
-
-  <div class="charts-row">
-    <div class="chart-card">
-      <div class="chart-header">
-        <div><div class="chart-title">Top Tamaños</div><div class="chart-subtitle">Ranking por ingresos en S/</div></div>
-        <span class="chart-badge">Por ingresos</span>
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Ventas por Año</div><div class="chart-subtitle">Distribución</div></div></div>
+        <canvas id="chartVentasAnio" height="160"></canvas>
+        <div class="donut-wrap" id="donut-ventas"></div>
       </div>
-      <div class="top-bars" id="bars-tamano"></div>
     </div>
-    <div class="chart-card">
-      <div class="chart-header">
-        <div><div class="chart-title">Top 5 Tipologías</div><div class="chart-subtitle">Por tipo de fondo</div></div>
-        <span class="chart-badge">Top 5</span>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Top Tamaños</div><div class="chart-subtitle">Ranking ventas</div></div></div>
+        <div class="top-bars" id="bars-ventas-tamano"></div>
       </div>
-      <canvas id="chartTipo" height="240"></canvas>
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Top 10 Clientes</div><div class="chart-subtitle">Más compras</div></div></div>
+        <div class="top-bars" id="bars-ventas-clientes"></div>
+      </div>
     </div>
   </div>
 
-  <!-- TOP 10 CLIENTES -->
-  <div class="chart-card">
-    <div class="chart-header">
-      <div><div class="chart-title">Top 10 Clientes</div><div class="chart-subtitle">Clientes con más compras en S/</div></div>
-      <span class="chart-badge">Top 10</span>
+  <div id="tab-gastos" class="tab-content">
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-icon">💸</div><div class="kpi-label">Total Gastos</div><div class="kpi-value" id="kpi-gastos-total">—</div><div class="kpi-sub">en soles (S/)</div></div>
+      <div class="kpi-card"><div class="kpi-icon">📦</div><div class="kpi-label">Transacciones</div><div class="kpi-value" id="kpi-gastos-cant">—</div><div class="kpi-sub">compras registradas</div></div>
+      <div class="kpi-card"><div class="kpi-icon">📊</div><div class="kpi-label">Gasto Promedio</div><div class="kpi-value" id="kpi-gastos-prom">—</div><div class="kpi-sub">por transacción</div></div>
+      <div class="kpi-card"><div class="kpi-icon">🏆</div><div class="kpi-label">Top Proveedor</div><div class="kpi-value" id="kpi-gastos-prov">—</div><div class="kpi-sub" id="kpi-gastos-prov-sub">mayor gasto</div></div>
     </div>
-    <div class="top-bars" id="bars-clientes"></div>
+
+    <div class="charts-main">
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Gastos Mensuales</div><div class="chart-subtitle">Evolución en S/</div></div><span class="chart-badge" id="badge-gastos">—</span></div>
+        <canvas id="chartGastosMes" height="220"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Gastos por Año</div><div class="chart-subtitle">Distribución</div></div></div>
+        <canvas id="chartGastosAnio" height="160"></canvas>
+        <div class="donut-wrap" id="donut-gastos"></div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Top Tipos Gasto</div><div class="chart-subtitle">Ranking categorías</div></div></div>
+        <div class="top-bars" id="bars-gastos-tipo"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Top 10 Proveedores</div><div class="chart-subtitle">Mayor gasto</div></div></div>
+        <div class="top-bars" id="bars-gastos-prov"></div>
+      </div>
+    </div>
   </div>
 
-  <div class="table-card">
-    <div class="chart-header">
-      <div><div class="chart-title">Detalle de Ventas</div><div class="chart-subtitle" id="tbl-count">—</div></div>
+  <div id="tab-rentabilidad" class="tab-content">
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-icon">💵</div><div class="kpi-label">Ganancia Neta</div><div class="kpi-value" id="kpi-rent-ganancia">—</div><div class="kpi-sub">ventas - gastos</div></div>
+      <div class="kpi-card"><div class="kpi-icon">📈</div><div class="kpi-label">Margen %</div><div class="kpi-value" id="kpi-rent-margen">—</div><div class="kpi-sub">% de ganancia</div></div>
+      <div class="kpi-card"><div class="kpi-icon">💰</div><div class="kpi-label">ROI</div><div class="kpi-value" id="kpi-rent-roi">—</div><div class="kpi-sub">retorno inversión</div></div>
+      <div class="kpi-card"><div class="kpi-icon">🎯</div><div class="kpi-label">Ratio V/G</div><div class="kpi-value" id="kpi-rent-ratio">—</div><div class="kpi-sub">ventas/gastos</div></div>
     </div>
-    <input class="table-search" id="tblSearch" type="text" placeholder="🔍 Buscar por nombre, código, tipología…" oninput="buscarTabla()">
-    <div class="tbl-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Pedido</th><th>Código</th><th>Tipología</th><th>Tamaño</th>
-            <th>Precio Final</th><th>Medio</th><th>Fecha</th><th>Nombre</th>
-          </tr>
-        </thead>
-        <tbody id="tbl-body"></tbody>
-      </table>
+
+    <div class="charts-main">
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Ventas vs Gastos</div><div class="chart-subtitle">Comparativo mensual</div></div></div>
+        <canvas id="chartComparativo" height="220"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header"><div><div class="chart-title">Ganancia por Mes</div><div class="chart-subtitle">Utilidad neta</div></div></div>
+        <canvas id="chartGanancia" height="220"></canvas>
+      </div>
     </div>
-    <div class="pagination" id="pagination"></div>
+
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">Análisis Mensual Detallado</div><div class="chart-subtitle">Ventas | Gastos | Ganancia | Margen %</div></div></div>
+      <canvas id="chartMesesDetallado" height="280"></canvas>
+    </div>
   </div>
 
 </main>
 
-<footer>
-  Datos en vivo desde Google Sheets · Fondo Creativo · 2025–2026
-</footer>
-
 <script>
-const API_GET    = "/.netlify/functions/getVentas";
-const MESES_NOM  = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-const COLORES    = ['#c9a84c','#d4845a','#6aaa7a','#5a9fd4','#a87cc9','#d4c45a','#7ac9b8'];
-const POR_PAGINA = 15;
+const API_GET = "/.netlify/functions/getVentas";
+const MESES_NOM = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const COLORES = ['#c9a84c','#d4845a','#6aaa7a','#5a9fd4','#a87cc9','#d4c45a','#7ac9b8'];
 
-let datosGlobal    = [];
+let datosGlobal = [];
+let gastosGlobal = [];
 let datosFiltrados = [];
-let filasBusqueda  = [];
-let paginaActual   = 1;
-let chartMes, chartAnio, chartTipo;
+let gastosFiltrados = [];
+let charts = {};
 
-// ── UTILS ─────────────────────────────────────────────────────────────────────
 const money = n => 'S/ ' + parseFloat(n||0).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:0});
 
-// Usa ÚNICAMENTE la columna FECHA VENTA. Si no parsea correctamente → null (registro ignorado en gráficos).
 function parseFecha(v) {
-  if (!v || String(v).trim() === '' || String(v).trim() === '0') return null;
-
+  if (!v) return null;
   const s = String(v).trim();
-
-  // DD/MM/YYYY
   if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) {
-    const [d, m, y] = s.split('/').map(Number);
-
-    // IMPORTANTE: mes empieza en 0
-    const dt = new Date(y, m - 1, d);
-
+    const [d,m,y] = s.split('/');
+    const dt = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`);
     return isNaN(dt) ? null : dt;
   }
-
-  // YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-    const [y, m, d] = s.split('-').map(Number);
-
-    const dt = new Date(y, m - 1, d);
-
-    return isNaN(dt) ? null : dt;
-  }
-
-  // fallback
   const dt = new Date(s);
-
   return isNaN(dt) ? null : dt;
 }
 
-// Extrae mes (1-12) SOLO desde FECHA VENTA. Devuelve null si no hay fecha válida.
-function getMes(d) {
-  const dt = parseFecha(d['FECHA VENTA']);
-  return dt ? dt.getMonth() + 1 : null;
-}
+function getMes(d, campo='FECHA VENTA') { const dt=parseFecha(d[campo]); return dt ? dt.getMonth()+1 : null; }
+function getAnio(d, campo='FECHA VENTA') { const dt=parseFecha(d[campo]); return dt ? dt.getFullYear() : null; }
 
-// Extrae año SOLO desde FECHA VENTA. Devuelve null si no hay fecha válida.
-function getAnio(d) {
-  const dt = parseFecha(d['FECHA VENTA']);
-  return dt ? dt.getFullYear() : null;
-}
-
-function getMedio(d) { return d['MEDIO DE VENTA'] || ''; }
-function getTamano(d) { return d['TAMAÑO'] || '—'; }
-function getPrecio(d) { return parseFloat(d['PRECIO FINAL'] || 0); }
-
-// ── CARGA ─────────────────────────────────────────────────────────────────────
 async function cargarDatos() {
   try {
     const res = await fetch(API_GET);
-    if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
-    datosGlobal = await res.json();
-    if (!Array.isArray(datosGlobal) || datosGlobal.length === 0)
-      throw new Error('La hoja no tiene datos o está vacía.');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { ventas, gastos } = await res.json();
+    if (!Array.isArray(ventas)) throw new Error('Sin datos de ventas');
+
+    datosGlobal = ventas;
+    gastosGlobal = gastos || [];
 
     llenarFiltros();
     aplicarFiltros();
 
-    document.getElementById('loader').style.display      = 'none';
+    document.getElementById('loader').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
   } catch(err) {
-    document.getElementById('loader').style.display    = 'none';
+    document.getElementById('loader').style.display = 'none';
     document.getElementById('error-msg').style.display = 'flex';
     document.getElementById('error-detail').textContent = err.message;
     console.error(err);
   }
 }
 
-// ── FILTROS ───────────────────────────────────────────────────────────────────
 function llenarFiltros() {
   const uniq = (arr) => [...new Set(arr.filter(Boolean))];
-
-  const anos      = uniq(datosGlobal.map(getAnio)).sort((a,b)=>a-b);
-  const meses     = uniq(datosGlobal.map(getMes)).sort((a,b)=>a-b);
-  const tipologias= uniq(datosGlobal.map(d=>d.TIPOLOGIA)).sort();
-  const medios    = uniq(datosGlobal.map(getMedio)).sort();
+  const anos = uniq(datosGlobal.map(d=>getAnio(d))).sort((a,b)=>a-b);
+  const meses = uniq(datosGlobal.map(d=>getMes(d))).sort((a,b)=>a-b);
 
   const fill = (id, items, label, fmt=(v=>v)) => {
     const el = document.getElementById(id);
@@ -406,241 +360,341 @@ function llenarFiltros() {
     items.forEach(v => { const op=document.createElement('option'); op.value=v; op.textContent=fmt(v); el.appendChild(op); });
   };
 
-  fill('filterAno',       anos,       'Todos los años');
-  fill('filterMes',       meses,      'Todos los meses', m => MESES_NOM[m]||m);
-  fill('filterTipologia', tipologias, 'Todas las tipologías');
-  fill('filterMedio',     medios,     'Todos los medios');
+  fill('filterAno', anos, 'Todos los años');
+  fill('filterMes', meses, 'Todos los meses', m => MESES_NOM[m]||m);
 }
 
 function aplicarFiltros() {
-  const ano  = document.getElementById('filterAno').value;
-  const mes  = document.getElementById('filterMes').value;
-  const tip  = document.getElementById('filterTipologia').value;
-  const med  = document.getElementById('filterMedio').value;
+  const ano = document.getElementById('filterAno').value;
+  const mes = document.getElementById('filterMes').value;
 
   datosFiltrados = datosGlobal.filter(d =>
-    (ano==='all' || getAnio(d)==ano) &&
-    (mes==='all' || getMes(d)==mes)  &&
-    (tip==='all' || d.TIPOLOGIA===tip) &&
-    (med==='all' || getMedio(d)===med)
+    (ano==='all' || getAnio(d)==ano) && (mes==='all' || getMes(d)==mes)
   );
 
-  document.getElementById('tblSearch').value = '';
-  filasBusqueda = datosFiltrados;
-  paginaActual  = 1;
-
-  renderKPIs();
-  renderChartMes();
-  renderChartAnio();
-  renderTamanos();
-  renderTipologias();
-  renderClientes();
-  renderTabla();
-}
-
-function buscarTabla() {
-  const q = document.getElementById('tblSearch').value.toLowerCase();
-  filasBusqueda = datosFiltrados.filter(d =>
-    [d.PEDIDO, d.CODIGO, d.TIPOLOGIA, d.NOMBRE, d.ARTICULO]
-      .some(v => String(v||'').toLowerCase().includes(q))
+  gastosFiltrados = gastosGlobal.filter(d =>
+    (ano==='all' || getAnio(d,'FECHA DE PAGO')==ano) && (mes==='all' || getMes(d,'FECHA DE PAGO')==mes)
   );
-  paginaActual = 1;
-  renderTabla();
+
+  renderVentas();
+  renderGastos();
+  renderRentabilidad();
 }
 
-// ── KPIs ──────────────────────────────────────────────────────────────────────
-function renderKPIs() {
-  const total   = datosFiltrados.reduce((s,d)=>s+getPrecio(d),0);
+function renderVentas() {
+  const total = datosFiltrados.reduce((s,d)=>s+parseFloat(d['PRECIO FINAL']||0),0);
   const pedidos = datosFiltrados.length;
-  const ticket  = pedidos ? total/pedidos : 0;
-
+  const ticket = pedidos ? total/pedidos : 0;
   const tamGrp = {};
-  datosFiltrados.forEach(d=>{ const t=getTamano(d); tamGrp[t]=(tamGrp[t]||0)+getPrecio(d); });
+  datosFiltrados.forEach(d=>{ const t=d['TAMAÑO']||'—'; tamGrp[t]=(tamGrp[t]||0)+parseFloat(d['PRECIO FINAL']||0); });
   const topTam = Object.entries(tamGrp).sort((a,b)=>b[1]-a[1])[0];
 
-  document.getElementById('kpi-total').textContent      = money(total);
-  document.getElementById('kpi-pedidos').textContent    = pedidos.toLocaleString('es-PE');
-  document.getElementById('kpi-ticket').textContent     = money(ticket);
-  document.getElementById('kpi-tamano').textContent     = topTam ? topTam[0] : '—';
-  document.getElementById('kpi-tamano-sub').textContent = topTam ? money(topTam[1])+' en ventas' : '—';
+  document.getElementById('kpi-ventas-total').textContent = money(total);
+  document.getElementById('kpi-ventas-pedidos').textContent = pedidos;
+  document.getElementById('kpi-ventas-ticket').textContent = money(ticket);
+  document.getElementById('kpi-ventas-tamano').textContent = topTam ? topTam[0] : '—';
+  document.getElementById('kpi-ventas-tamano-sub').textContent = topTam ? money(topTam[1]) : '—';
+
+  renderChartVentasMes();
+  renderChartVentasAnio();
+  renderBarsVentasTamano();
+  renderBarsVentasClientes();
 }
 
-// ── CHART MES ─────────────────────────────────────────────────────────────────
-function renderChartMes() {
+function renderChartVentasMes() {
   const grp = {};
   datosFiltrados.forEach(d => {
     const a=getAnio(d), m=getMes(d);
     if (!a||!m) return;
     const k = `${a}-${String(m).padStart(2,'0')}`;
-    grp[k] = (grp[k]||0) + getPrecio(d);
+    grp[k] = (grp[k]||0) + parseFloat(d['PRECIO FINAL']||0);
   });
-  const keys   = Object.keys(grp).sort();
+  const keys = Object.keys(grp).sort();
   const labels = keys.map(k => { const[a,m]=k.split('-'); return (MESES_NOM[+m]||m)+' '+a; });
-  const data   = keys.map(k=>grp[k]);
+  const data = keys.map(k=>grp[k]);
   const maxVal = Math.max(...data,0);
 
-  if(chartMes) chartMes.destroy();
-  chartMes = new Chart(document.getElementById('chartMes'),{
+  if(charts.ventasMes) charts.ventasMes.destroy();
+  charts.ventasMes = new Chart(document.getElementById('chartVentasMes'),{
     type:'bar',
-    data:{labels, datasets:[{
-      label:'Ventas S/', data,
+    data:{labels, datasets:[{label:'Ventas S/', data,
       backgroundColor: data.map(v=>v===maxVal?'#c9a84c':'rgba(201,168,76,0.22)'),
-      borderColor:     data.map(v=>v===maxVal?'#c9a84c':'rgba(201,168,76,0.4)'),
+      borderColor: data.map(v=>v===maxVal?'#c9a84c':'rgba(201,168,76,0.4)'),
       borderWidth:1, borderRadius:6, borderSkipped:false,
     }]},
-    options:{
-      responsive:true,
-      plugins:{
-        legend:{display:false},
-        tooltip:{backgroundColor:'#211f1b',borderColor:'#2e2b26',borderWidth:1,titleColor:'#e8dfc8',bodyColor:'#c9a84c',
-          callbacks:{label:c=>' S/ '+c.raw.toLocaleString('es-PE')}}
-      },
-      scales:{
-        x:{ticks:{color:'#7a7060',font:{size:11},maxRotation:45},grid:{color:'rgba(46,43,38,.5)'}},
-        y:{ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+v.toLocaleString('es-PE')},grid:{color:'rgba(46,43,38,.8)'}}
-      }
-    }
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#211f1b',borderColor:'#2e2b26',borderWidth:1,titleColor:'#e8dfc8',bodyColor:'#c9a84c',callbacks:{label:c=>' S/ '+c.raw.toLocaleString('es-PE')}}},scales:{x:{ticks:{color:'#7a7060',font:{size:11},maxRotation:45},grid:{color:'rgba(46,43,38,.5)'}},y:{ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+v.toLocaleString('es-PE')},grid:{color:'rgba(46,43,38,.8)'}}}}
   });
-
-  if(keys.length){
-    const f=labels[0], l=labels[labels.length-1];
-    document.getElementById('badge-rango').textContent = f===l?f:`${f} — ${l}`;
-  }
+  if(keys.length) document.getElementById('badge-ventas').textContent = `${labels[0]} — ${labels[labels.length-1]}`;
 }
 
-// ── DONUT AÑO ─────────────────────────────────────────────────────────────────
-function renderChartAnio() {
+function renderChartVentasAnio() {
   const grp={};
-  datosFiltrados.forEach(d=>{ const a=getAnio(d); if(a) grp[a]=(grp[a]||0)+getPrecio(d); });
+  datosFiltrados.forEach(d=>{ const a=getAnio(d); if(a) grp[a]=(grp[a]||0)+parseFloat(d['PRECIO FINAL']||0); });
   const anos=Object.keys(grp).sort();
   const data=anos.map(a=>grp[a]);
   const total=data.reduce((s,v)=>s+v,0);
 
-  if(chartAnio) chartAnio.destroy();
-  chartAnio = new Chart(document.getElementById('chartAnio'),{
+  if(charts.ventasAnio) charts.ventasAnio.destroy();
+  charts.ventasAnio = new Chart(document.getElementById('chartVentasAnio'),{
     type:'doughnut',
     data:{labels:anos,datasets:[{data,backgroundColor:['#c9a84c','#d4845a'],borderColor:'#211f1b',borderWidth:3,hoverOffset:6}]},
-    options:{cutout:'68%',responsive:true,
-      plugins:{legend:{display:false},
-        tooltip:{backgroundColor:'#211f1b',borderColor:'#2e2b26',borderWidth:1,titleColor:'#e8dfc8',bodyColor:'#c9a84c',
-          callbacks:{label:c=>' S/ '+c.raw.toLocaleString('es-PE')}}}}
+    options:{cutout:'68%',responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#211f1b',borderColor:'#2e2b26',borderWidth:1,titleColor:'#e8dfc8',bodyColor:'#c9a84c',callbacks:{label:c=>' S/ '+c.raw.toLocaleString('es-PE')}}}}
   });
 
-  document.getElementById('donut-legend').innerHTML = anos.map((a,i)=>{
+  document.getElementById('donut-ventas').innerHTML = anos.map((a,i)=>{
     const pct=total>0?((grp[a]/total)*100).toFixed(1):0;
-    return `<div class="legend-item">
-      <div class="legend-dot-label">
-        <div class="legend-dot" style="background:${['#c9a84c','#d4845a'][i]||COLORES[i]}"></div>
-        <div><div class="legend-name">${a}</div><div class="legend-pct">${pct}% del total</div></div>
-      </div>
-      <div class="legend-val">${money(grp[a])}</div>
-    </div>`;
+    return `<div class="legend-item"><div class="legend-dot-label"><div class="legend-dot" style="background:${['#c9a84c','#d4845a'][i]}"></div><div><div class="legend-name">${a}</div><div class="legend-pct">${pct}%</div></div></div><div class="legend-val">${money(grp[a])}</div></div>`;
   }).join('');
 }
 
-// ── BARRAS TAMAÑOS ────────────────────────────────────────────────────────────
-function renderTamanos() {
+function renderBarsVentasTamano() {
   const grp={};
-  datosFiltrados.forEach(d=>{ const t=getTamano(d); grp[t]=(grp[t]||0)+getPrecio(d); });
+  datosFiltrados.forEach(d=>{ const t=d['TAMAÑO']||'—'; grp[t]=(grp[t]||0)+parseFloat(d['PRECIO FINAL']||0); });
   const sorted=Object.entries(grp).sort((a,b)=>b[1]-a[1]);
   const max=sorted[0]?.[1]||1;
 
-  document.getElementById('bars-tamano').innerHTML = sorted.map(([t,v],i)=>`
+  document.getElementById('bars-ventas-tamano').innerHTML = sorted.map(([t,v],i)=>`
     <div class="bar-row">
       <div class="bar-meta"><span class="bar-name">${t}</span><span class="bar-amount">${money(v)}</span></div>
       <div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${COLORES[i]||'#c9a84c'}"></div></div>
     </div>`).join('');
 }
 
-// ── TIPOLOGÍAS ────────────────────────────────────────────────────────────────
-function renderTipologias() {
+function renderBarsVentasClientes() {
   const grp={};
-  datosFiltrados.forEach(d=>{ const t=d.TIPOLOGIA||'—'; grp[t]=(grp[t]||0)+getPrecio(d); });
-  const top5=Object.entries(grp).sort((a,b)=>b[1]-a[1]).slice(0,5);
-
-  if(chartTipo) chartTipo.destroy();
-  chartTipo = new Chart(document.getElementById('chartTipo'),{
-    type:'bar',
-    data:{labels:top5.map(([t])=>t),datasets:[{data:top5.map(([,v])=>v),backgroundColor:COLORES,borderRadius:6,borderSkipped:false}]},
-    options:{indexAxis:'y',responsive:true,
-      plugins:{legend:{display:false},
-        tooltip:{backgroundColor:'#211f1b',borderColor:'#2e2b26',borderWidth:1,titleColor:'#e8dfc8',bodyColor:'#c9a84c',
-          callbacks:{label:c=>' S/ '+c.raw.toLocaleString('es-PE')}}},
-      scales:{
-        x:{ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+v.toLocaleString('es-PE')},grid:{color:'rgba(46,43,38,.8)'}},
-        y:{ticks:{color:'#e8dfc8',font:{size:12,weight:'500'}},grid:{display:false}}
-      }}
-  });
-}
-
-// ── TOP 10 CLIENTES ────────────────────────────────────────────────────────────
-function renderClientes() {
-  const grp={};
-  datosFiltrados.forEach(d=>{ const c=d.NOMBRE||'—'; grp[c]=(grp[c]||0)+getPrecio(d); });
+  datosFiltrados.forEach(d=>{ const c=d.NOMBRE||'—'; grp[c]=(grp[c]||0)+parseFloat(d['PRECIO FINAL']||0); });
   const sorted=Object.entries(grp).sort((a,b)=>b[1]-a[1]).slice(0,10);
   const max=sorted[0]?.[1]||1;
 
-  document.getElementById('bars-clientes').innerHTML = sorted.map(([c,v],i)=>`
+  document.getElementById('bars-ventas-clientes').innerHTML = sorted.map(([c,v],i)=>`
     <div class="bar-row">
       <div class="bar-meta"><span class="bar-name">${c}</span><span class="bar-amount">${money(v)}</span></div>
       <div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${COLORES[i]||'#c9a84c'}"></div></div>
     </div>`).join('');
 }
 
-// ── TABLA ─────────────────────────────────────────────────────────────────────
-function renderTabla() {
-  const total = filasBusqueda.length;
-  const start = (paginaActual-1)*POR_PAGINA;
-  const page  = filasBusqueda.slice(start, start+POR_PAGINA);
+function renderGastos() {
+  const total = gastosFiltrados.reduce((s,d)=>s+parseFloat(d['COSTO TOTAL']||0),0);
+  const cant = gastosFiltrados.length;
+  const prom = cant ? total/cant : 0;
+  const provGrp = {};
+  gastosFiltrados.forEach(d=>{ const p=d.PROVEEDOR||'—'; provGrp[p]=(provGrp[p]||0)+parseFloat(d['COSTO TOTAL']||0); });
+  const topProv = Object.entries(provGrp).sort((a,b)=>b[1]-a[1])[0];
 
-  document.getElementById('tbl-count').textContent = `${total} registro${total!==1?'s':''}`;
+  document.getElementById('kpi-gastos-total').textContent = money(total);
+  document.getElementById('kpi-gastos-cant').textContent = cant;
+  document.getElementById('kpi-gastos-prom').textContent = money(prom);
+  document.getElementById('kpi-gastos-prov').textContent = topProv ? topProv[0] : '—';
+  document.getElementById('kpi-gastos-prov-sub').textContent = topProv ? money(topProv[1]) : '—';
 
-  const medBadge = m => {
-    if(!m) return '—';
-    const cls   = m.toLowerCase().includes('insta')?'badge-ig':'badge-ws';
-    const label = m.replace(/VENTA\s*/i,'');
-    return `<span class="td-badge ${cls}">${label}</span>`;
-  };
-
-  const fmtFecha = d => {
-    const dt = parseFecha(d['FECHA VENTA']);
-    return dt ? dt.toLocaleDateString('es-PE') : '—';
-  };
-
-  document.getElementById('tbl-body').innerHTML = page.length
-    ? page.map(d=>`<tr>
-        <td>${d.PEDIDO||'—'}</td>
-        <td>${d.CODIGO||'—'}</td>
-        <td>${d.TIPOLOGIA||'—'}</td>
-        <td>${getTamano(d)}</td>
-        <td class="td-money">${money(getPrecio(d))}</td>
-        <td>${medBadge(getMedio(d))}</td>
-        <td>${fmtFecha(d)}</td>
-        <td>${d.NOMBRE||'—'}</td>
-      </tr>`).join('')
-    : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sin resultados</td></tr>';
-
-  // Paginación
-  const totalPags = Math.max(1, Math.ceil(total/POR_PAGINA));
-  let pg = '';
-  if(paginaActual>1) pg+=`<button class="pg-btn" onclick="irPag(${paginaActual-1})">‹</button>`;
-  for(let i=1;i<=totalPags;i++){
-    if(i===1||i===totalPags||Math.abs(i-paginaActual)<=1)
-      pg+=`<button class="pg-btn${i===paginaActual?' active':''}" onclick="irPag(${i})">${i}</button>`;
-    else if(Math.abs(i-paginaActual)===2)
-      pg+=`<span style="color:var(--muted);padding:0 4px">…</span>`;
-  }
-  if(paginaActual<totalPags) pg+=`<button class="pg-btn" onclick="irPag(${paginaActual+1})">›</button>`;
-  document.getElementById('pagination').innerHTML = pg;
+  renderChartGastosMes();
+  renderChartGastosAnio();
+  renderBarsGastosTipo();
+  renderBarsGastosProveedores();
 }
 
-function irPag(n) {
-  paginaActual = n;
-  renderTabla();
-  document.getElementById('tbl-body').scrollIntoView({behavior:'smooth',block:'start'});
+function renderChartGastosMes() {
+  const grp = {};
+  gastosFiltrados.forEach(d => {
+    const a=getAnio(d,'FECHA DE PAGO'), m=getMes(d,'FECHA DE PAGO');
+    if (!a||!m) return;
+    const k = `${a}-${String(m).padStart(2,'0')}`;
+    grp[k] = (grp[k]||0) + parseFloat(d['COSTO TOTAL']||0);
+  });
+  const keys = Object.keys(grp).sort();
+  const labels = keys.map(k => { const[a,m]=k.split('-'); return (MESES_NOM[+m]||m)+' '+a; });
+  const data = keys.map(k=>grp[k]);
+  const maxVal = Math.max(...data,0);
+
+  if(charts.gastosMes) charts.gastosMes.destroy();
+  charts.gastosMes = new Chart(document.getElementById('chartGastosMes'),{
+    type:'bar',
+    data:{labels, datasets:[{label:'Gastos S/', data,
+      backgroundColor: data.map(v=>v===maxVal?'#d46a6a':'rgba(212,106,106,0.22)'),
+      borderColor: data.map(v=>v===maxVal?'#d46a6a':'rgba(212,106,106,0.4)'),
+      borderWidth:1, borderRadius:6, borderSkipped:false,
+    }]},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#211f1b',borderColor:'#2e2b26',borderWidth:1,titleColor:'#e8dfc8',bodyColor:'#d46a6a',callbacks:{label:c=>' S/ '+c.raw.toLocaleString('es-PE')}}},scales:{x:{ticks:{color:'#7a7060',font:{size:11},maxRotation:45},grid:{color:'rgba(46,43,38,.5)'}},y:{ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+v.toLocaleString('es-PE')},grid:{color:'rgba(46,43,38,.8)'}}}}
+  });
+  if(keys.length) document.getElementById('badge-gastos').textContent = `${labels[0]} — ${labels[labels.length-1]}`;
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
+function renderChartGastosAnio() {
+  const grp={};
+  gastosFiltrados.forEach(d=>{ const a=getAnio(d,'FECHA DE PAGO'); if(a) grp[a]=(grp[a]||0)+parseFloat(d['COSTO TOTAL']||0); });
+  const anos=Object.keys(grp).sort();
+  const data=anos.map(a=>grp[a]);
+  const total=data.reduce((s,v)=>s+v,0);
+
+  if(charts.gastosAnio) charts.gastosAnio.destroy();
+  charts.gastosAnio = new Chart(document.getElementById('chartGastosAnio'),{
+    type:'doughnut',
+    data:{labels:anos,datasets:[{data,backgroundColor:['#d46a6a','#d4845a'],borderColor:'#211f1b',borderWidth:3,hoverOffset:6}]},
+    options:{cutout:'68%',responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#211f1b',borderColor:'#2e2b26',borderWidth:1,titleColor:'#e8dfc8',bodyColor:'#d46a6a',callbacks:{label:c=>' S/ '+c.raw.toLocaleString('es-PE')}}}}
+  });
+
+  document.getElementById('donut-gastos').innerHTML = anos.map((a,i)=>{
+    const pct=total>0?((grp[a]/total)*100).toFixed(1):0;
+    return `<div class="legend-item"><div class="legend-dot-label"><div class="legend-dot" style="background:${['#d46a6a','#d4845a'][i]}"></div><div><div class="legend-name">${a}</div><div class="legend-pct">${pct}%</div></div></div><div class="legend-val">${money(grp[a])}</div></div>`;
+  }).join('');
+}
+
+function renderBarsGastosTipo() {
+  const grp={};
+  gastosFiltrados.forEach(d=>{ const t=d['TIPO DE GASTO']||'—'; grp[t]=(grp[t]||0)+parseFloat(d['COSTO TOTAL']||0); });
+  const sorted=Object.entries(grp).sort((a,b)=>b[1]-a[1]);
+  const max=sorted[0]?.[1]||1;
+
+  document.getElementById('bars-gastos-tipo').innerHTML = sorted.map(([t,v],i)=>`
+    <div class="bar-row">
+      <div class="bar-meta"><span class="bar-name">${t}</span><span class="bar-amount">${money(v)}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${COLORES[i]||'#d46a6a'}"></div></div>
+    </div>`).join('');
+}
+
+function renderBarsGastosProveedores() {
+  const grp={};
+  gastosFiltrados.forEach(d=>{ const p=d.PROVEEDOR||'—'; grp[p]=(grp[p]||0)+parseFloat(d['COSTO TOTAL']||0); });
+  const sorted=Object.entries(grp).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const max=sorted[0]?.[1]||1;
+
+  document.getElementById('bars-gastos-prov').innerHTML = sorted.map(([p,v],i)=>`
+    <div class="bar-row">
+      <div class="bar-meta"><span class="bar-name">${p}</span><span class="bar-amount">${money(v)}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${COLORES[i]||'#d46a6a'}"></div></div>
+    </div>`).join('');
+}
+
+function renderRentabilidad() {
+  const ventasTotal = datosFiltrados.reduce((s,d)=>s+parseFloat(d['PRECIO FINAL']||0),0);
+  const gastosTotal = gastosFiltrados.reduce((s,d)=>s+parseFloat(d['COSTO TOTAL']||0),0);
+  const ganancia = ventasTotal - gastosTotal;
+  const margen = ventasTotal > 0 ? (ganancia / ventasTotal * 100) : 0;
+  const roi = gastosTotal > 0 ? (ganancia / gastosTotal * 100) : 0;
+  const ratio = gastosTotal > 0 ? (ventasTotal / gastosTotal) : 0;
+
+  document.getElementById('kpi-rent-ganancia').textContent = money(ganancia);
+  document.getElementById('kpi-rent-margen').textContent = margen.toFixed(1) + '%';
+  document.getElementById('kpi-rent-roi').textContent = roi.toFixed(1) + '%';
+  document.getElementById('kpi-rent-ratio').textContent = ratio.toFixed(2) + 'x';
+
+  renderChartComparativo();
+  renderChartGanancia();
+  renderChartMesesDetallado();
+}
+
+function renderChartComparativo() {
+  const grpVentas = {};
+  const grpGastos = {};
+  
+  datosFiltrados.forEach(d => {
+    const a=getAnio(d), m=getMes(d);
+    if (!a||!m) return;
+    const k = `${a}-${String(m).padStart(2,'0')}`;
+    grpVentas[k] = (grpVentas[k]||0) + parseFloat(d['PRECIO FINAL']||0);
+  });
+  
+  gastosFiltrados.forEach(d => {
+    const a=getAnio(d,'FECHA DE PAGO'), m=getMes(d,'FECHA DE PAGO');
+    if (!a||!m) return;
+    const k = `${a}-${String(m).padStart(2,'0')}`;
+    grpGastos[k] = (grpGastos[k]||0) + parseFloat(d['COSTO TOTAL']||0);
+  });
+
+  const keys = [...new Set([...Object.keys(grpVentas), ...Object.keys(grpGastos)])].sort();
+  const labels = keys.map(k => { const[a,m]=k.split('-'); return (MESES_NOM[+m]||m)+' '+a; });
+  const dataVentas = keys.map(k => grpVentas[k]||0);
+  const dataGastos = keys.map(k => grpGastos[k]||0);
+
+  if(charts.comparativo) charts.comparativo.destroy();
+  charts.comparativo = new Chart(document.getElementById('chartComparativo'),{
+    type:'bar',
+    data:{labels, datasets:[
+      {label:'Ventas', data:dataVentas, backgroundColor:'rgba(201,168,76,0.7)', borderColor:'#c9a84c', borderWidth:1},
+      {label:'Gastos', data:dataGastos, backgroundColor:'rgba(212,106,106,0.7)', borderColor:'#d46a6a', borderWidth:1}
+    ]},
+    options:{responsive:true,plugins:{legend:{position:'top'},tooltip:{backgroundColor:'#211f1b',borderColor:'#2e2b26',borderWidth:1,titleColor:'#e8dfc8',callbacks:{label:c=>' S/ '+c.raw.toLocaleString('es-PE')}}},scales:{x:{ticks:{color:'#7a7060'},grid:{color:'rgba(46,43,38,.5)'}},y:{ticks:{color:'#7a7060',callback:v=>'S/ '+v.toLocaleString('es-PE')},grid:{color:'rgba(46,43,38,.8)'}}}}
+  });
+}
+
+function renderChartGanancia() {
+  const grpVentas = {};
+  const grpGastos = {};
+  
+  datosFiltrados.forEach(d => {
+    const a=getAnio(d), m=getMes(d);
+    if (!a||!m) return;
+    const k = `${a}-${String(m).padStart(2,'0')}`;
+    grpVentas[k] = (grpVentas[k]||0) + parseFloat(d['PRECIO FINAL']||0);
+  });
+  
+  gastosFiltrados.forEach(d => {
+    const a=getAnio(d,'FECHA DE PAGO'), m=getMes(d,'FECHA DE PAGO');
+    if (!a||!m) return;
+    const k = `${a}-${String(m).padStart(2,'0')}`;
+    grpGastos[k] = (grpGastos[k]||0) + parseFloat(d['COSTO TOTAL']||0);
+  });
+
+  const keys = [...new Set([...Object.keys(grpVentas), ...Object.keys(grpGastos)])].sort();
+  const labels = keys.map(k => { const[a,m]=k.split('-'); return (MESES_NOM[+m]||m)+' '+a; });
+  const dataGanancia = keys.map(k => (grpVentas[k]||0) - (grpGastos[k]||0));
+
+  if(charts.ganancia) charts.ganancia.destroy();
+  charts.ganancia = new Chart(document.getElementById('chartGanancia'),{
+    type:'line',
+    data:{labels, datasets:[{
+      label:'Ganancia Neta', data:dataGanancia, borderColor:'#6aaa7a', backgroundColor:'rgba(106,170,122,0.1)',
+      fill:true, tension:0.4, borderWidth:2, pointBackgroundColor:'#6aaa7a', pointBorderColor:'#0f0e0c', pointBorderWidth:2, pointRadius:5
+    }]},
+    options:{responsive:true,plugins:{legend:{display:true,position:'top'},tooltip:{backgroundColor:'#211f1b',borderColor:'#2e2b26',borderWidth:1,titleColor:'#e8dfc8',bodyColor:'#6aaa7a',callbacks:{label:c=>' S/ '+c.raw.toLocaleString('es-PE')}}},scales:{y:{ticks:{color:'#7a7060',callback:v=>'S/ '+v.toLocaleString('es-PE')},grid:{color:'rgba(46,43,38,.8)'}},x:{ticks:{color:'#7a7060'},grid:{color:'rgba(46,43,38,.5)'}}}}}
+  });
+}
+
+function renderChartMesesDetallado() {
+  const grpVentas = {};
+  const grpGastos = {};
+  
+  datosFiltrados.forEach(d => {
+    const a=getAnio(d), m=getMes(d);
+    if (!a||!m) return;
+    const k = `${a}-${String(m).padStart(2,'0')}`;
+    grpVentas[k] = (grpVentas[k]||0) + parseFloat(d['PRECIO FINAL']||0);
+  });
+  
+  gastosFiltrados.forEach(d => {
+    const a=getAnio(d,'FECHA DE PAGO'), m=getMes(d,'FECHA DE PAGO');
+    if (!a||!m) return;
+    const k = `${a}-${String(m).padStart(2,'0')}`;
+    grpGastos[k] = (grpGastos[k]||0) + parseFloat(d['COSTO TOTAL']||0);
+  });
+
+  const keys = [...new Set([...Object.keys(grpVentas), ...Object.keys(grpGastos)])].sort();
+  const labels = keys.map(k => { const[a,m]=k.split('-'); return (MESES_NOM[+m]||m)+' '+a; });
+  
+  const dataVentas = keys.map(k => grpVentas[k]||0);
+  const dataGastos = keys.map(k => grpGastos[k]||0);
+  const dataGanancia = keys.map((k,i) => dataVentas[i] - dataGastos[i]);
+  const dataMargen = keys.map((k,i) => dataVentas[i]>0 ? (dataGanancia[i]/dataVentas[i]*100) : 0);
+
+  if(charts.mesesDetallado) charts.mesesDetallado.destroy();
+  charts.mesesDetallado = new Chart(document.getElementById('chartMesesDetallado'),{
+    type:'bar',
+    data:{labels, datasets:[
+      {label:'Ventas', data:dataVentas, backgroundColor:'#c9a84c', yAxisID:'y'},
+      {label:'Gastos', data:dataGastos, backgroundColor:'#d46a6a', yAxisID:'y'},
+      {label:'Margen %', data:dataMargen, type:'line', borderColor:'#6aaa7a', backgroundColor:'transparent', yAxisID:'y1', borderWidth:2, tension:0.4, pointRadius:5}
+    ]},
+    options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top'},tooltip:{backgroundColor:'#211f1b',borderColor:'#2e2b26',borderWidth:1,titleColor:'#e8dfc8',callbacks:{label:c=>c.dataset.label+(c.dataset.yAxisID==='y1' ? ': '+c.raw.toFixed(1)+'%' : ': S/ '+c.raw.toLocaleString('es-PE'))}}},scales:{y:{type:'linear',position:'left',ticks:{color:'#7a7060',callback:v=>'S/ '+v.toLocaleString('es-PE')},grid:{color:'rgba(46,43,38,.8)'}},y1:{type:'linear',position:'right',ticks:{color:'#6aaa7a',callback:v=>v+'%'},grid:{display:false}},x:{ticks:{color:'#7a7060'},grid:{color:'rgba(46,43,38,.5)'}}}}
+  });
+}
+
+function cambiarTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
 document.addEventListener('DOMContentLoaded', cargarDatos);
 </script>
 </body>
