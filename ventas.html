@@ -330,11 +330,14 @@ async function cargarDatos() {
   try {
     const res = await fetch(API_GET);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const { ventas, gastos } = await res.json();
-    if (!Array.isArray(ventas)) throw new Error('Sin datos de ventas');
+    const respuesta = await res.json();
 
-    datosGlobal = ventas;
-    gastosGlobal = gastos || [];
+if (!Array.isArray(respuesta)) {
+  throw new Error('La API no devolvió un array');
+}
+
+datosGlobal = respuesta.filter(d => d['PRECIO FINAL']);
+gastosGlobal = respuesta.filter(d => d['COSTO TOTAL']);
 
     llenarFiltros();
     aplicarFiltros();
