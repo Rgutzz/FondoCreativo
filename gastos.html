@@ -92,6 +92,14 @@
   /* MAIN */
   main { padding:32px 40px; max-width:1400px; margin:0 auto; display:none; }
 
+  .logo-img{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  object-fit:cover;
+  border:1px solid rgba(201,168,76,.25);
+  box-shadow:0 4px 12px rgba(0,0,0,.25);
+}
   /* KPIs */
   .kpi-grid {
     display:grid; grid-template-columns:repeat(4,1fr);
@@ -216,7 +224,7 @@
 
 <header>
   <div class="logo">
-    <div class="logo-icon">📊</div>
+    <img src="https://i.imgur.com/qKdYt3R.jpeg" class="logo-img" alt="Logo Fondo Creativo">
     <div>
       <h1>Fondo Creativo</h1>
       <p>Dashboard de Gastos</p>
@@ -253,8 +261,8 @@
   <div class="kpi-grid">
     <div class="kpi-card"><div class="kpi-icon">💸</div><div class="kpi-label">Gastos Totales</div><div class="kpi-value" id="kpi-gastos">—</div><div class="kpi-sub">en soles (S/)</div></div>
     <div class="kpi-card"><div class="kpi-icon">🧾</div><div class="kpi-label">Transacciones</div><div class="kpi-value" id="kpi-trans">—</div><div class="kpi-sub">registros de gasto</div></div>
-    <div class="kpi-card"><div class="kpi-icon">📦</div><div class="kpi-label">Mayor Categoría</div><div class="kpi-value" id="kpi-categoria">—</div><div class="kpi-sub" id="kpi-categoria-sub">tipo de gasto top</div></div>
-    <div class="kpi-card"><div class="kpi-icon">🏭</div><div class="kpi-label">Mayor Proveedor</div><div class="kpi-value" id="kpi-proveedor">—</div><div class="kpi-sub" id="kpi-proveedor-sub">proveedor top</div></div>
+    <div class="kpi-card"><div class="kpi-icon">📦</div><div class="kpi-label">Mayor Gasto Categoría</div><div class="kpi-value" id="kpi-categoria">—</div><div class="kpi-sub" id="kpi-categoria-sub">tipo de gasto top</div></div>
+    <div class="kpi-card"><div class="kpi-icon">🏭</div><div class="kpi-label">Mayor Gasto Proveedor</div><div class="kpi-value" id="kpi-proveedor">—</div><div class="kpi-sub" id="kpi-proveedor-sub">proveedor top</div></div>
   </div>
 
   <!-- Gastos vs Ventas mensuales -->
@@ -356,19 +364,7 @@ let paginaActual    = 1;
 let chartComparativo, chartMargen, chartTipoDonut, chartEvolucion;
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
-// Parsea números que pueden venir con coma decimal ("34,82") o punto ("34.82")
-function parseNum(n) {
-  if (n === null || n === undefined || n === '') return 0;
-  const s = String(n).trim().replace(/\s/g, '');
-  // Formato miles con punto y decimal con coma: "1.234,56"
-  if (s.includes('.') && s.includes(',')) return parseFloat(s.replace(/\./g, '').replace(',', '.'));
-  // Solo coma → decimal con coma: "34,82"
-  if (s.includes(',')) return parseFloat(s.replace(',', '.'));
-  return parseFloat(s) || 0;
-}
-// Todos los montos con 2 decimales fijos para precisión
-const money    = n => 'S/ ' + parseNum(n).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
-const moneyDec = money;
+const money = n => 'S/ ' + parseFloat(n||0).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:0});
 
 function parseFecha(v) {
   if (!v || String(v).trim() === '' || String(v).trim() === '0') return null;
@@ -403,7 +399,7 @@ function getAnioGasto(g) {
   const dt = parseFecha(g['FECHA DE PAGO']);
   return dt ? dt.getFullYear() : null;
 }
-function getCostoTotal(g) { return parseNum(g['COSTO TOTAL']); }
+function getCostoTotal(g) { return parseFloat(g['COSTO TOTAL'] || 0); }
 
 // Para ventas, reusar la misma lógica del dashboard de ventas
 function getMesVenta(v) {
@@ -414,7 +410,7 @@ function getAnioVenta(v) {
   const dt = parseFecha(v['FECHA VENTA']);
   return dt ? dt.getFullYear() : null;
 }
-function getPrecioVenta(v) { return parseNum(v['PRECIO FINAL']); }
+function getPrecioVenta(v) { return parseFloat(v['PRECIO FINAL'] || 0); }
 
 // ── CARGA DATOS ───────────────────────────────────────────────────────────────
 async function cargarDatos() {
@@ -430,12 +426,12 @@ async function cargarDatos() {
     // Separar registros de gastos (tienen COSTO TOTAL) y ventas (tienen PRECIO FINAL)
     gastosGlobal = datos.filter(d =>
       d['COSTO TOTAL'] !== undefined && d['COSTO TOTAL'] !== null &&
-      d['COSTO TOTAL'] !== '' && parseNum(d['COSTO TOTAL']) > 0
+      d['COSTO TOTAL'] !== '' && parseFloat(d['COSTO TOTAL'] || 0) > 0
     );
 
     ventasGlobal = datos.filter(d =>
       d['PRECIO FINAL'] !== undefined && d['PRECIO FINAL'] !== null &&
-      d['PRECIO FINAL'] !== '' && parseNum(d['PRECIO FINAL']) > 0
+      d['PRECIO FINAL'] !== '' && parseFloat(d['PRECIO FINAL'] || 0) > 0
     );
 
     if (gastosGlobal.length === 0)
@@ -589,12 +585,12 @@ function renderComparativo() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#e8dfc8',
-          callbacks: { label: c => ` ${c.dataset.label}: S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
+          callbacks: { label: c => ` ${c.dataset.label}: S/ ${c.raw.toLocaleString('es-PE')}` }
         }
       },
       scales: {
         x: { ticks:{color:'#7a7060',font:{size:11},maxRotation:45}, grid:{color:'rgba(46,43,38,.5)'} },
-        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+parseNum(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}, grid:{color:'rgba(46,43,38,.8)'} }
+        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+v.toLocaleString('es-PE')}, grid:{color:'rgba(46,43,38,.8)'} }
       }
     }
   });
@@ -633,12 +629,12 @@ function renderMargen() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#e8dfc8',
-          callbacks: { label: c => ` Margen: S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
+          callbacks: { label: c => ` Margen: S/ ${c.raw.toLocaleString('es-PE')}` }
         }
       },
       scales: {
         x: { ticks:{color:'#7a7060',font:{size:10},maxRotation:45}, grid:{color:'rgba(46,43,38,.5)'} },
-        y: { ticks:{color:'#7a7060',font:{size:10},callback:v=>'S/ '+parseNum(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}, grid:{color:'rgba(46,43,38,.8)'} }
+        y: { ticks:{color:'#7a7060',font:{size:10},callback:v=>'S/ '+v.toLocaleString('es-PE')}, grid:{color:'rgba(46,43,38,.8)'} }
       }
     }
   });
@@ -725,7 +721,7 @@ function renderTipoDonut() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#d4845a',
-          callbacks: { label: c => ` S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
+          callbacks: { label: c => ` S/ ${c.raw.toLocaleString('es-PE')}` }
         }
       }
     }
@@ -775,12 +771,12 @@ function renderEvolucion() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#d4845a',
-          callbacks: { label: c => ` S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
+          callbacks: { label: c => ` S/ ${c.raw.toLocaleString('es-PE')}` }
         }
       },
       scales: {
         x: { ticks:{color:'#7a7060',font:{size:11},maxRotation:45}, grid:{color:'rgba(46,43,38,.5)'} },
-        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+parseNum(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}, grid:{color:'rgba(46,43,38,.8)'} }
+        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+v.toLocaleString('es-PE')}, grid:{color:'rgba(46,43,38,.8)'} }
       }
     }
   });
@@ -831,8 +827,8 @@ function renderTabla() {
           <td>${g['PROVEEDOR']||'—'}</td>
           <td>${g['CANT.']||'—'}</td>
           <td>${g['UNIDAD']||'—'}</td>
-          <td class="td-money">${g['COSTO/U'] ? moneyDec(g['COSTO/U']) : '—'}</td>
-          <td class="td-money">${moneyDec(getCostoTotal(g))}</td>
+          <td class="td-money">${g['COSTO/U'] ? money(g['COSTO/U']) : '—'}</td>
+          <td class="td-money">${money(getCostoTotal(g))}</td>
         </tr>`;
       }).join('')
     : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sin resultados</td></tr>';
