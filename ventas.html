@@ -317,8 +317,7 @@
       </table>
     </div>
     <div class="pagination" id="pagination"></div>
-  </div>
-<div class="kpi-card">
+    <div class="kpi-card">
   <div class="kpi-icon">💸</div>
   <div class="kpi-label">Gastos Totales</div>
   <div class="kpi-value" id="kpi-gastos">—</div>
@@ -331,6 +330,8 @@
   <div class="kpi-value" id="kpi-ganancia">—</div>
   <div class="kpi-sub">ventas - gastos</div>
 </div>
+  </div>
+
 
 </main>
 
@@ -399,7 +400,7 @@ function getAnio(d) {
 function getMedio(d) { return d['MEDIO DE VENTA'] || ''; }
 function getTamano(d) { return d['TAMAÑO'] || '—'; }
 function getPrecio(d) { return parseFloat(d['PRECIO FINAL'] || 0); }
-unction getGasto(d) {
+function getGasto(d) {
   return parseFloat(d['COSTO TOTAL'] || 0);
 }
 
