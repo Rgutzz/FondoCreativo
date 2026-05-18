@@ -255,7 +255,34 @@
       <div class="donut-wrap" id="donut-legend"></div>
     </div>
   </div>
+<div class="charts-row">
 
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Gastos por Mes</div>
+        <div class="chart-subtitle">Costo total mensual</div>
+      </div>
+      <span class="chart-badge">Egresos</span>
+    </div>
+
+    <canvas id="chartGastos" height="240"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Ganancia Mensual</div>
+        <div class="chart-subtitle">Ventas - Gastos</div>
+      </div>
+
+      <span class="chart-badge">Utilidad</span>
+    </div>
+
+    <canvas id="chartGanancia" height="240"></canvas>
+  </div>
+
+</div>
   <div class="charts-row">
     <div class="chart-card">
       <div class="chart-header">
@@ -291,6 +318,19 @@
     </div>
     <div class="pagination" id="pagination"></div>
   </div>
+<div class="kpi-card">
+  <div class="kpi-icon">💸</div>
+  <div class="kpi-label">Gastos Totales</div>
+  <div class="kpi-value" id="kpi-gastos">—</div>
+  <div class="kpi-sub">egresos registrados</div>
+</div>
+
+<div class="kpi-card">
+  <div class="kpi-icon">📈</div>
+  <div class="kpi-label">Ganancia</div>
+  <div class="kpi-value" id="kpi-ganancia">—</div>
+  <div class="kpi-sub">ventas - gastos</div>
+</div>
 
 </main>
 
@@ -308,7 +348,7 @@ let datosGlobal    = [];
 let datosFiltrados = [];
 let filasBusqueda  = [];
 let paginaActual   = 1;
-let chartMes, chartAnio, chartTipo;
+let chartMes, chartAnio, chartTipo, chartGastos, chartGanancia;
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 const money = n => 'S/ ' + parseFloat(n||0).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:0});
@@ -359,13 +399,55 @@ function getAnio(d) {
 function getMedio(d) { return d['MEDIO DE VENTA'] || ''; }
 function getTamano(d) { return d['TAMAÑO'] || '—'; }
 function getPrecio(d) { return parseFloat(d['PRECIO FINAL'] || 0); }
+unction getGasto(d) {
+  return parseFloat(d['COSTO TOTAL'] || 0);
+}
+
+function parseFechaGasto(v) {
+
+  if (!v) return null;
+
+  const s = String(v).trim();
+
+  // dd/mm/aa
+  if (/^\d{1,2}\/\d{1,2}\/\d{2}$/.test(s)) {
+
+    let [d, m, y] = s.split('/').map(Number);
+
+    y += 2000;
+
+    const dt = new Date(y, m - 1, d);
+
+    return isNaN(dt) ? null : dt;
+  }
+
+  return null;
+}
+
+function getMesGasto(d) {
+
+  const dt = parseFechaGasto(d['FECHA DE PAGO']);
+
+  return dt ? dt.getMonth() + 1 : null;
+}
+
+function getAnioGasto(d) {
+
+  const dt = parseFechaGasto(d['FECHA DE PAGO']);
+
+  return dt ? dt.getFullYear() : null;
+}
 
 // ── CARGA ─────────────────────────────────────────────────────────────────────
 async function cargarDatos() {
   try {
     const res = await fetch(API_GET);
     if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
-    datosGlobal = await res.json();
+    const respuesta = await res.json();
+
+datosGlobal = Array.isArray(respuesta)
+  ? respuesta
+  : (respuesta.ventas || respuesta);
     if (!Array.isArray(datosGlobal) || datosGlobal.length === 0)
       throw new Error('La hoja no tiene datos o está vacía.');
 
@@ -425,7 +507,9 @@ function aplicarFiltros() {
   renderChartAnio();
   renderTamanos();
   renderTipologias();
-  renderTabla();
+renderGastos();
+renderGanancia();
+renderTabla();
 }
 
 function buscarTabla() {
@@ -441,6 +525,9 @@ function buscarTabla() {
 // ── KPIs ──────────────────────────────────────────────────────────────────────
 function renderKPIs() {
   const total   = datosFiltrados.reduce((s,d)=>s+getPrecio(d),0);
+  const gastos = datosFiltrados.reduce((s,d)=>s+getGasto(d),0);
+
+const ganancia = total - gastos;
   const pedidos = datosFiltrados.length;
   const ticket  = pedidos ? total/pedidos : 0;
 
@@ -451,6 +538,9 @@ function renderKPIs() {
   document.getElementById('kpi-total').textContent      = money(total);
   document.getElementById('kpi-pedidos').textContent    = pedidos.toLocaleString('es-PE');
   document.getElementById('kpi-ticket').textContent     = money(ticket);
+  document.getElementById('kpi-gastos').textContent = money(gastos);
+
+document.getElementById('kpi-ganancia').textContent = money(ganancia);
   document.getElementById('kpi-tamano').textContent     = topTam ? topTam[0] : '—';
   document.getElementById('kpi-tamano-sub').textContent = topTam ? money(topTam[1])+' en ventas' : '—';
 }
@@ -615,7 +705,181 @@ function irPag(n) {
   renderTabla();
   document.getElementById('tbl-body').scrollIntoView({behavior:'smooth',block:'start'});
 }
+// ── GASTOS POR MES ───────────────────────────────────────────────────────────
+function renderGastos() {
 
+  const grp = {};
+
+  datosFiltrados.forEach(d => {
+
+    const a = getAnioGasto(d);
+    const m = getMesGasto(d);
+
+    if (!a || !m) return;
+
+    const k = `${a}-${String(m).padStart(2,'0')}`;
+
+    grp[k] = (grp[k] || 0) + getGasto(d);
+
+  });
+
+  const keys = Object.keys(grp).sort();
+
+  const labels = keys.map(k => {
+
+    const [a,m] = k.split('-');
+
+    return `${MESES_NOM[+m]} ${a}`;
+
+  });
+
+  const data = keys.map(k => grp[k]);
+
+  if(chartGastos) chartGastos.destroy();
+
+  chartGastos = new Chart(document.getElementById('chartGastos'),{
+
+    type:'line',
+
+    data:{
+      labels,
+      datasets:[{
+        label:'Gastos',
+        data,
+        tension:.35,
+        borderColor:'#d4845a',
+        backgroundColor:'rgba(212,132,90,.15)',
+        fill:true
+      }]
+    },
+
+    options:{
+      responsive:true,
+
+      plugins:{
+        legend:{display:false}
+      },
+
+      scales:{
+        x:{
+          ticks:{color:'#7a7060'},
+          grid:{color:'rgba(46,43,38,.5)'}
+        },
+
+        y:{
+          ticks:{
+            color:'#7a7060',
+            callback:v=>'S/ '+v.toLocaleString('es-PE')
+          },
+
+          grid:{color:'rgba(46,43,38,.8)'}
+        }
+      }
+    }
+
+  });
+
+}
+
+// ── GANANCIA ─────────────────────────────────────────────────────────────────
+function renderGanancia() {
+
+  const ventas = {};
+  const gastos = {};
+
+  datosFiltrados.forEach(d => {
+
+    const a = getAnio(d);
+    const m = getMes(d);
+
+    if (!a || !m) return;
+
+    const k = `${a}-${String(m).padStart(2,'0')}`;
+
+    ventas[k] = (ventas[k] || 0) + getPrecio(d);
+
+  });
+
+  datosFiltrados.forEach(d => {
+
+    const a = getAnioGasto(d);
+    const m = getMesGasto(d);
+
+    if (!a || !m) return;
+
+    const k = `${a}-${String(m).padStart(2,'0')}`;
+
+    gastos[k] = (gastos[k] || 0) + getGasto(d);
+
+  });
+
+  const keys = [...new Set([
+    ...Object.keys(ventas),
+    ...Object.keys(gastos)
+  ])].sort();
+
+  const labels = keys.map(k => {
+
+    const [a,m] = k.split('-');
+
+    return `${MESES_NOM[+m]} ${a}`;
+
+  });
+
+  const data = keys.map(k =>
+    (ventas[k] || 0) - (gastos[k] || 0)
+  );
+
+  if(chartGanancia) chartGanancia.destroy();
+
+  chartGanancia = new Chart(document.getElementById('chartGanancia'),{
+
+    type:'bar',
+
+    data:{
+      labels,
+
+      datasets:[{
+        label:'Ganancia',
+        data,
+
+        backgroundColor:data.map(v =>
+          v >= 0
+            ? 'rgba(106,170,122,.7)'
+            : 'rgba(212,90,90,.7)'
+        ),
+
+        borderRadius:6
+      }]
+    },
+
+    options:{
+      responsive:true,
+
+      plugins:{
+        legend:{display:false}
+      },
+
+      scales:{
+        x:{
+          ticks:{color:'#7a7060'},
+          grid:{color:'rgba(46,43,38,.5)'}
+        },
+
+        y:{
+          ticks:{
+            color:'#7a7060',
+            callback:v=>'S/ '+v.toLocaleString('es-PE')
+          },
+
+          grid:{color:'rgba(46,43,38,.8)'}
+        }
+      }
+    }
+
+  });
+
+}
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', cargarDatos);
 </script>
