@@ -406,16 +406,14 @@ function getGasto(d) {
 
 function parseFechaGasto(v) {
 
-  if (!v) return null;
+  if (!v || String(v).trim() === '') return null;
 
   const s = String(v).trim();
 
-  // dd/mm/aa
-  if (/^\d{1,2}\/\d{1,2}\/\d{2}$/.test(s)) {
+  // dd/mm/yyyy
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s)) {
 
-    let [d, m, y] = s.split('/').map(Number);
-
-    y += 2000;
+    const [d, m, y] = s.split('/').map(Number);
 
     const dt = new Date(y, m - 1, d);
 
