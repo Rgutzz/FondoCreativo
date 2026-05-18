@@ -3,37 +3,27 @@
 export async function handler(event) {
   const SHEET_ID = "14JOAkWEe5IzURpCwchlYQhzWkROL66ghDfKMFhl2-nQ";
   const API_KEY = process.env.GOOGLE_SHEETS_API_KEY;
+  const RANGE = "Ventastotal!A:AB";
 
   try {
-    // Traer VENTAS
-    const urlVentas = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Ventastotal!A:AB?key=${API_KEY}`;
-    const resVentas = await fetch(urlVentas);
-    if (!resVentas.ok) throw new Error("Error al leer Ventastotal");
-    
-    const dataVentas = await resVentas.json();
-    if (!dataVentas.values) throw new Error("Ventastotal vacía");
-    
-    const filasVentas = dataVentas.values;
-    const headersVentas = filasVentas.shift();
-    const ventas = filasVentas.map(r => {
-      let obj = {};
-      headersVentas.forEach((h, i) => {
-        obj[h] = r[i] || "";
-      });
-      return obj;
-    });
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+    const res = await fetch(url);
 
-    // Traer GASTOS
-    const urlGastos = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Gastos!A:J?key=${API_KEY}`;
-    const resGastos = await fetch(urlGastos);
-    if (!resGastos.ok) throw new Error("Error al leer Gastos");
-    
-    const dataGastos = resGastos.ok ? await resGastos.json() : { values: [] };
-    const filasGastos = dataGastos.values ? [...dataGastos.values] : [];
-    const headersGastos = filasGastos.length > 0 ? filasGastos.shift() : [];
-    const gastos = filasGastos.map(r => {
+    if (!res.ok) {
+      return { statusCode: res.status, body: JSON.stringify({ error: "Error al leer la hoja" }) };
+    }
+
+    const data = await res.json();
+    if (!data.values) {
+      return { statusCode: 500, body: JSON.stringify({ error: "Hoja vacía" }) };
+    }
+
+    const filas = data.values;
+    const headers = filas.shift();
+
+    const pedidos = filas.map(r => {
       let obj = {};
-      headersGastos.forEach((h, i) => {
+      headers.forEach((h, i) => {
         obj[h] = r[i] || "";
       });
       return obj;
@@ -41,10 +31,7 @@ export async function handler(event) {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        ventas,
-        gastos
-      })
+      body: JSON.stringify(pedidos)
     };
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
