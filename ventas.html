@@ -145,6 +145,23 @@
   .bar-track  { height:6px; background:var(--border); border-radius:10px; overflow:hidden; }
   .bar-fill   { height:100%; border-radius:10px; transition:width 1s cubic-bezier(.4,0,.2,1); }
 
+  .gastos-btn {
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    color: #0f0e0c;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .gastos-btn:hover { transform: translateY(-1px); }
+
   /* TABLA */
   .table-card {
     background:var(--card); border:1px solid var(--border);
