@@ -401,7 +401,14 @@ function getMedio(d) { return d['MEDIO DE VENTA'] || ''; }
 function getTamano(d) { return d['TAMAÑO'] || '—'; }
 function getPrecio(d) { return parseFloat(d['PRECIO FINAL'] || 0); }
 function getGasto(d) {
-  return parseFloat(d['COSTO TOTAL'] || 0);
+
+  const raw = String(d['COSTO TOTAL'] || '0')
+    .replace('S/.', '')
+    .replace(/\./g, '')
+    .replace(',', '.')
+    .trim();
+
+  return parseFloat(raw) || 0;
 }
 
 function parseFechaGasto(v) {
