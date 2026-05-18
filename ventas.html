@@ -87,7 +87,11 @@
 
   /* MAIN */
   main { padding:32px 40px; max-width:1400px; margin:0 auto; display:none; }
-
+  .header-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
   /* KPIs */
   .kpi-grid {
     display:grid; grid-template-columns:repeat(4,1fr);
@@ -227,8 +231,11 @@
       <p>Dashboard de Ventas</p>
     </div>
   </div>
-  <a href="https://fondocreativo.netlify.app/gastos" class="gastos-btn">📊 Gastos</a>
-  <a href="https://fondocreativo.netlify.app/" class="back-link">⬅ Volver</a>
+
+  <div class="header-actions">
+    <a href="https://fondocreativo.netlify.app/gastos" class="gastos-btn">📊 Gastos</a>
+    <a href="https://fondocreativo.netlify.app/" class="back-link">⬅ Volver</a>
+  </div>
 </header>
 
 <div class="filter-bar">
