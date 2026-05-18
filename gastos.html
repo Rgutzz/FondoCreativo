@@ -253,8 +253,8 @@
   <div class="kpi-grid">
     <div class="kpi-card"><div class="kpi-icon">💸</div><div class="kpi-label">Gastos Totales</div><div class="kpi-value" id="kpi-gastos">—</div><div class="kpi-sub">en soles (S/)</div></div>
     <div class="kpi-card"><div class="kpi-icon">🧾</div><div class="kpi-label">Transacciones</div><div class="kpi-value" id="kpi-trans">—</div><div class="kpi-sub">registros de gasto</div></div>
-    <div class="kpi-card"><div class="kpi-icon">📦</div><div class="kpi-label">Mayor Gasto Categoría</div><div class="kpi-value" id="kpi-categoria">—</div><div class="kpi-sub" id="kpi-categoria-sub">tipo de gasto top</div></div>
-    <div class="kpi-card"><div class="kpi-icon">🏭</div><div class="kpi-label">Mayor Gasto Proveedor</div><div class="kpi-value" id="kpi-proveedor">—</div><div class="kpi-sub" id="kpi-proveedor-sub">proveedor top</div></div>
+    <div class="kpi-card"><div class="kpi-icon">📦</div><div class="kpi-label">Mayor Categoría</div><div class="kpi-value" id="kpi-categoria">—</div><div class="kpi-sub" id="kpi-categoria-sub">tipo de gasto top</div></div>
+    <div class="kpi-card"><div class="kpi-icon">🏭</div><div class="kpi-label">Mayor Proveedor</div><div class="kpi-value" id="kpi-proveedor">—</div><div class="kpi-sub" id="kpi-proveedor-sub">proveedor top</div></div>
   </div>
 
   <!-- Gastos vs Ventas mensuales -->
@@ -357,6 +357,12 @@ let chartComparativo, chartMargen, chartTipoDonut, chartEvolucion;
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 const money = n => 'S/ ' + parseFloat(n||0).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:0});
+// Para columnas con decimales (Costo/U y Costo Total): muestra hasta 2 decimales, pero solo si los hay
+const moneyDec = n => {
+  const v = parseFloat(n||0);
+  const decimals = v % 1 === 0 ? 0 : 2;
+  return 'S/ ' + v.toLocaleString('es-PE',{minimumFractionDigits:decimals,maximumFractionDigits:2});
+};
 
 function parseFecha(v) {
   if (!v || String(v).trim() === '' || String(v).trim() === '0') return null;
@@ -819,8 +825,8 @@ function renderTabla() {
           <td>${g['PROVEEDOR']||'—'}</td>
           <td>${g['CANT.']||'—'}</td>
           <td>${g['UNIDAD']||'—'}</td>
-          <td class="td-money">${g['COSTO/U'] ? money(g['COSTO/U']) : '—'}</td>
-          <td class="td-money">${money(getCostoTotal(g))}</td>
+          <td class="td-money">${g['COSTO/U'] ? moneyDec(g['COSTO/U']) : '—'}</td>
+          <td class="td-money">${moneyDec(getCostoTotal(g))}</td>
         </tr>`;
       }).join('')
     : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sin resultados</td></tr>';
