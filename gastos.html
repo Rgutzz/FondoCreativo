@@ -356,13 +356,19 @@ let paginaActual    = 1;
 let chartComparativo, chartMargen, chartTipoDonut, chartEvolucion;
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
-const money = n => 'S/ ' + parseFloat(n||0).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:0});
-// Para columnas con decimales (Costo/U y Costo Total): muestra hasta 2 decimales, pero solo si los hay
-const moneyDec = n => {
-  const v = parseFloat(n||0);
-  const decimals = v % 1 === 0 ? 0 : 2;
-  return 'S/ ' + v.toLocaleString('es-PE',{minimumFractionDigits:decimals,maximumFractionDigits:2});
-};
+// Parsea números que pueden venir con coma decimal ("34,82") o punto ("34.82")
+function parseNum(n) {
+  if (n === null || n === undefined || n === '') return 0;
+  const s = String(n).trim().replace(/\s/g, '');
+  // Formato miles con punto y decimal con coma: "1.234,56"
+  if (s.includes('.') && s.includes(',')) return parseFloat(s.replace(/\./g, '').replace(',', '.'));
+  // Solo coma → decimal con coma: "34,82"
+  if (s.includes(',')) return parseFloat(s.replace(',', '.'));
+  return parseFloat(s) || 0;
+}
+// Todos los montos con 2 decimales fijos para precisión
+const money    = n => 'S/ ' + parseNum(n).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const moneyDec = money;
 
 function parseFecha(v) {
   if (!v || String(v).trim() === '' || String(v).trim() === '0') return null;
@@ -397,7 +403,7 @@ function getAnioGasto(g) {
   const dt = parseFecha(g['FECHA DE PAGO']);
   return dt ? dt.getFullYear() : null;
 }
-function getCostoTotal(g) { return parseFloat(g['COSTO TOTAL'] || 0); }
+function getCostoTotal(g) { return parseNum(g['COSTO TOTAL']); }
 
 // Para ventas, reusar la misma lógica del dashboard de ventas
 function getMesVenta(v) {
@@ -408,7 +414,7 @@ function getAnioVenta(v) {
   const dt = parseFecha(v['FECHA VENTA']);
   return dt ? dt.getFullYear() : null;
 }
-function getPrecioVenta(v) { return parseFloat(v['PRECIO FINAL'] || 0); }
+function getPrecioVenta(v) { return parseNum(v['PRECIO FINAL']); }
 
 // ── CARGA DATOS ───────────────────────────────────────────────────────────────
 async function cargarDatos() {
@@ -424,12 +430,12 @@ async function cargarDatos() {
     // Separar registros de gastos (tienen COSTO TOTAL) y ventas (tienen PRECIO FINAL)
     gastosGlobal = datos.filter(d =>
       d['COSTO TOTAL'] !== undefined && d['COSTO TOTAL'] !== null &&
-      d['COSTO TOTAL'] !== '' && parseFloat(d['COSTO TOTAL'] || 0) > 0
+      d['COSTO TOTAL'] !== '' && parseNum(d['COSTO TOTAL']) > 0
     );
 
     ventasGlobal = datos.filter(d =>
       d['PRECIO FINAL'] !== undefined && d['PRECIO FINAL'] !== null &&
-      d['PRECIO FINAL'] !== '' && parseFloat(d['PRECIO FINAL'] || 0) > 0
+      d['PRECIO FINAL'] !== '' && parseNum(d['PRECIO FINAL']) > 0
     );
 
     if (gastosGlobal.length === 0)
@@ -583,12 +589,12 @@ function renderComparativo() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#e8dfc8',
-          callbacks: { label: c => ` ${c.dataset.label}: S/ ${c.raw.toLocaleString('es-PE')}` }
+          callbacks: { label: c => ` ${c.dataset.label}: S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
         }
       },
       scales: {
         x: { ticks:{color:'#7a7060',font:{size:11},maxRotation:45}, grid:{color:'rgba(46,43,38,.5)'} },
-        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+v.toLocaleString('es-PE')}, grid:{color:'rgba(46,43,38,.8)'} }
+        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+parseNum(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}, grid:{color:'rgba(46,43,38,.8)'} }
       }
     }
   });
@@ -627,12 +633,12 @@ function renderMargen() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#e8dfc8',
-          callbacks: { label: c => ` Margen: S/ ${c.raw.toLocaleString('es-PE')}` }
+          callbacks: { label: c => ` Margen: S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
         }
       },
       scales: {
         x: { ticks:{color:'#7a7060',font:{size:10},maxRotation:45}, grid:{color:'rgba(46,43,38,.5)'} },
-        y: { ticks:{color:'#7a7060',font:{size:10},callback:v=>'S/ '+v.toLocaleString('es-PE')}, grid:{color:'rgba(46,43,38,.8)'} }
+        y: { ticks:{color:'#7a7060',font:{size:10},callback:v=>'S/ '+parseNum(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}, grid:{color:'rgba(46,43,38,.8)'} }
       }
     }
   });
@@ -719,7 +725,7 @@ function renderTipoDonut() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#d4845a',
-          callbacks: { label: c => ` S/ ${c.raw.toLocaleString('es-PE')}` }
+          callbacks: { label: c => ` S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
         }
       }
     }
@@ -769,12 +775,12 @@ function renderEvolucion() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#d4845a',
-          callbacks: { label: c => ` S/ ${c.raw.toLocaleString('es-PE')}` }
+          callbacks: { label: c => ` S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
         }
       },
       scales: {
         x: { ticks:{color:'#7a7060',font:{size:11},maxRotation:45}, grid:{color:'rgba(46,43,38,.5)'} },
-        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+v.toLocaleString('es-PE')}, grid:{color:'rgba(46,43,38,.8)'} }
+        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+parseNum(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}, grid:{color:'rgba(46,43,38,.8)'} }
       }
     }
   });
