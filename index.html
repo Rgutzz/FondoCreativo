@@ -870,7 +870,13 @@ function renderCards(containerId, pedidos) {
 
 // Si es Google Drive, usar normal
 if (img.includes('drive.google.com')) {
-  // no hacer nada
+
+  // Extraer ID del archivo
+  const match = img.match(/[-\w]{25,}/);
+
+  if (match) {
+    img = `https://lh3.googleusercontent.com/d/${match[0]}`;
+  }
 }
 
 // Si es Imgur y no tiene extensión
@@ -976,7 +982,13 @@ function mostrarDetalle(p) {
 
 // Si es Google Drive, usar normal
 if (img.includes('drive.google.com')) {
-  // no hacer nada
+
+  // Extraer ID del archivo
+  const match = img.match(/[-\w]{25,}/);
+
+  if (match) {
+    img = `https://lh3.googleusercontent.com/d/${match[0]}`;
+  }
 }
 
 // Si es Imgur y no tiene extensión
