@@ -92,14 +92,6 @@
   /* MAIN */
   main { padding:32px 40px; max-width:1400px; margin:0 auto; display:none; }
 
-  .logo-img{
-  width:42px;
-  height:42px;
-  border-radius:12px;
-  object-fit:cover;
-  border:1px solid rgba(201,168,76,.25);
-  box-shadow:0 4px 12px rgba(0,0,0,.25);
-}
   /* KPIs */
   .kpi-grid {
     display:grid; grid-template-columns:repeat(4,1fr);
@@ -124,22 +116,7 @@
   .kpi-margen-value { font-family:'Playfair Display',serif; font-size:30px; font-weight:700; line-height:1; margin-bottom:6px; }
   .margen-pos { color: var(--green); }
   .margen-neg { color: var(--red); }
-.ventas-btn {
-    background: linear-gradient(135deg, var(--gold), var(--accent));
-    color: #0f0e0c;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    transition: transform .2s;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
 
-  .ventas-btn:hover { transform: translateY(-1px); }
   /* CHARTS */
   .charts-main { display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:14px; }
   .charts-row  { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
@@ -160,6 +137,30 @@
     font-size:11px; color:var(--green); background:rgba(106,170,122,.1);
     border:1px solid rgba(106,170,122,.2); padding:3px 10px; border-radius:20px; font-weight:500; white-space:nowrap;
   }
+ 
+  .logo-img{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  object-fit:cover;
+  border:1px solid rgba(201,168,76,.25);
+  box-shadow:0 4px 12px rgba(0,0,0,.25);
+}
+
+  .ventas-btn {
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    color: #0f0e0c;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  } 
 
   /* DONUT */
   .donut-wrap { display:flex; flex-direction:column; gap:8px; margin-top:18px; }
@@ -276,8 +277,8 @@
   <div class="kpi-grid">
     <div class="kpi-card"><div class="kpi-icon">💸</div><div class="kpi-label">Gastos Totales</div><div class="kpi-value" id="kpi-gastos">—</div><div class="kpi-sub">en soles (S/)</div></div>
     <div class="kpi-card"><div class="kpi-icon">🧾</div><div class="kpi-label">Transacciones</div><div class="kpi-value" id="kpi-trans">—</div><div class="kpi-sub">registros de gasto</div></div>
-    <div class="kpi-card"><div class="kpi-icon">📦</div><div class="kpi-label">Mayor Gasto Categoría</div><div class="kpi-value" id="kpi-categoria">—</div><div class="kpi-sub" id="kpi-categoria-sub">tipo de gasto top</div></div>
-    <div class="kpi-card"><div class="kpi-icon">🏭</div><div class="kpi-label">Mayor Gasto Proveedor</div><div class="kpi-value" id="kpi-proveedor">—</div><div class="kpi-sub" id="kpi-proveedor-sub">proveedor top</div></div>
+    <div class="kpi-card"><div class="kpi-icon">📦</div><div class="kpi-label">Mayor Categoría</div><div class="kpi-value" id="kpi-categoria">—</div><div class="kpi-sub" id="kpi-categoria-sub">tipo de gasto top</div></div>
+    <div class="kpi-card"><div class="kpi-icon">🏭</div><div class="kpi-label">Mayor Proveedor</div><div class="kpi-value" id="kpi-proveedor">—</div><div class="kpi-sub" id="kpi-proveedor-sub">proveedor top</div></div>
   </div>
 
   <!-- Gastos vs Ventas mensuales -->
@@ -379,7 +380,19 @@ let paginaActual    = 1;
 let chartComparativo, chartMargen, chartTipoDonut, chartEvolucion;
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
-const money = n => 'S/ ' + parseFloat(n||0).toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:0});
+// Parsea números que pueden venir con coma decimal ("34,82") o punto ("34.82")
+function parseNum(n) {
+  if (n === null || n === undefined || n === '') return 0;
+  const s = String(n).trim().replace(/\s/g, '');
+  // Formato miles con punto y decimal con coma: "1.234,56"
+  if (s.includes('.') && s.includes(',')) return parseFloat(s.replace(/\./g, '').replace(',', '.'));
+  // Solo coma → decimal con coma: "34,82"
+  if (s.includes(',')) return parseFloat(s.replace(',', '.'));
+  return parseFloat(s) || 0;
+}
+// Todos los montos con 2 decimales fijos para precisión
+const money    = n => 'S/ ' + parseNum(n).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const moneyDec = money;
 
 function parseFecha(v) {
   if (!v || String(v).trim() === '' || String(v).trim() === '0') return null;
@@ -414,7 +427,7 @@ function getAnioGasto(g) {
   const dt = parseFecha(g['FECHA DE PAGO']);
   return dt ? dt.getFullYear() : null;
 }
-function getCostoTotal(g) { return parseFloat(g['COSTO TOTAL'] || 0); }
+function getCostoTotal(g) { return parseNum(g['COSTO TOTAL']); }
 
 // Para ventas, reusar la misma lógica del dashboard de ventas
 function getMesVenta(v) {
@@ -425,7 +438,7 @@ function getAnioVenta(v) {
   const dt = parseFecha(v['FECHA VENTA']);
   return dt ? dt.getFullYear() : null;
 }
-function getPrecioVenta(v) { return parseFloat(v['PRECIO FINAL'] || 0); }
+function getPrecioVenta(v) { return parseNum(v['PRECIO FINAL']); }
 
 // ── CARGA DATOS ───────────────────────────────────────────────────────────────
 async function cargarDatos() {
@@ -441,12 +454,12 @@ async function cargarDatos() {
     // Separar registros de gastos (tienen COSTO TOTAL) y ventas (tienen PRECIO FINAL)
     gastosGlobal = datos.filter(d =>
       d['COSTO TOTAL'] !== undefined && d['COSTO TOTAL'] !== null &&
-      d['COSTO TOTAL'] !== '' && parseFloat(d['COSTO TOTAL'] || 0) > 0
+      d['COSTO TOTAL'] !== '' && parseNum(d['COSTO TOTAL']) > 0
     );
 
     ventasGlobal = datos.filter(d =>
       d['PRECIO FINAL'] !== undefined && d['PRECIO FINAL'] !== null &&
-      d['PRECIO FINAL'] !== '' && parseFloat(d['PRECIO FINAL'] || 0) > 0
+      d['PRECIO FINAL'] !== '' && parseNum(d['PRECIO FINAL']) > 0
     );
 
     if (gastosGlobal.length === 0)
@@ -600,12 +613,12 @@ function renderComparativo() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#e8dfc8',
-          callbacks: { label: c => ` ${c.dataset.label}: S/ ${c.raw.toLocaleString('es-PE')}` }
+          callbacks: { label: c => ` ${c.dataset.label}: S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
         }
       },
       scales: {
         x: { ticks:{color:'#7a7060',font:{size:11},maxRotation:45}, grid:{color:'rgba(46,43,38,.5)'} },
-        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+v.toLocaleString('es-PE')}, grid:{color:'rgba(46,43,38,.8)'} }
+        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+parseNum(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}, grid:{color:'rgba(46,43,38,.8)'} }
       }
     }
   });
@@ -644,12 +657,12 @@ function renderMargen() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#e8dfc8',
-          callbacks: { label: c => ` Margen: S/ ${c.raw.toLocaleString('es-PE')}` }
+          callbacks: { label: c => ` Margen: S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
         }
       },
       scales: {
         x: { ticks:{color:'#7a7060',font:{size:10},maxRotation:45}, grid:{color:'rgba(46,43,38,.5)'} },
-        y: { ticks:{color:'#7a7060',font:{size:10},callback:v=>'S/ '+v.toLocaleString('es-PE')}, grid:{color:'rgba(46,43,38,.8)'} }
+        y: { ticks:{color:'#7a7060',font:{size:10},callback:v=>'S/ '+parseNum(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}, grid:{color:'rgba(46,43,38,.8)'} }
       }
     }
   });
@@ -736,7 +749,7 @@ function renderTipoDonut() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#d4845a',
-          callbacks: { label: c => ` S/ ${c.raw.toLocaleString('es-PE')}` }
+          callbacks: { label: c => ` S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
         }
       }
     }
@@ -786,12 +799,12 @@ function renderEvolucion() {
         tooltip: {
           backgroundColor:'#211f1b', borderColor:'#2e2b26', borderWidth:1,
           titleColor:'#e8dfc8', bodyColor:'#d4845a',
-          callbacks: { label: c => ` S/ ${c.raw.toLocaleString('es-PE')}` }
+          callbacks: { label: c => ` S/ ${parseNum(c.raw).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
         }
       },
       scales: {
         x: { ticks:{color:'#7a7060',font:{size:11},maxRotation:45}, grid:{color:'rgba(46,43,38,.5)'} },
-        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+v.toLocaleString('es-PE')}, grid:{color:'rgba(46,43,38,.8)'} }
+        y: { ticks:{color:'#7a7060',font:{size:11},callback:v=>'S/ '+parseNum(v).toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2})}, grid:{color:'rgba(46,43,38,.8)'} }
       }
     }
   });
@@ -842,8 +855,8 @@ function renderTabla() {
           <td>${g['PROVEEDOR']||'—'}</td>
           <td>${g['CANT.']||'—'}</td>
           <td>${g['UNIDAD']||'—'}</td>
-          <td class="td-money">${g['COSTO/U'] ? money(g['COSTO/U']) : '—'}</td>
-          <td class="td-money">${money(getCostoTotal(g))}</td>
+          <td class="td-money">${g['COSTO/U'] ? moneyDec(g['COSTO/U']) : '—'}</td>
+          <td class="td-money">${moneyDec(getCostoTotal(g))}</td>
         </tr>`;
       }).join('')
     : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sin resultados</td></tr>';
