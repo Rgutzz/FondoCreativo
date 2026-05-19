@@ -867,9 +867,19 @@ function renderCards(containerId, pedidos) {
     card.onclick = () => mostrarDetalle(p);
 
     let img = p.Imagen ? p.Imagen.trim() : '';
-    if (img && !/\.(png|jpg|jpeg|gif)$/i.test(img)) {
-      img = img + '.png';
-    }
+
+// Si es Google Drive, usar normal
+if (img.includes('drive.google.com')) {
+  // no hacer nada
+}
+
+// Si es Imgur y no tiene extensión
+else if (
+  img.includes('imgur.com') &&
+  !/\.(png|jpg|jpeg|gif|webp)$/i.test(img)
+) {
+  img = img + '.png';
+}
 
     const estado = (p.Estado || '—').toUpperCase();
     const statusClass = getStatusClass(estado);
@@ -963,9 +973,19 @@ function filtrarHistorial() {
 // ── MODAL ───────────────────────────────────────────────────────────────────
 function mostrarDetalle(p) {
   let img = p.Imagen ? p.Imagen.trim() : '';
-  if (img && !/\.(png|jpg|jpeg|gif)$/i.test(img)) {
-    img = img + '.png';
-  }
+
+// Si es Google Drive, usar normal
+if (img.includes('drive.google.com')) {
+  // no hacer nada
+}
+
+// Si es Imgur y no tiene extensión
+else if (
+  img.includes('imgur.com') &&
+  !/\.(png|jpg|jpeg|gif|webp)$/i.test(img)
+) {
+  img = img + '.png';
+}
 
   const estado = (p.Estado || '—').toUpperCase();
   const noPedido = p.NoPedido || '—';
