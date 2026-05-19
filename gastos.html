@@ -124,7 +124,22 @@
   .kpi-margen-value { font-family:'Playfair Display',serif; font-size:30px; font-weight:700; line-height:1; margin-bottom:6px; }
   .margen-pos { color: var(--green); }
   .margen-neg { color: var(--red); }
+.ventas-btn {
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    color: #0f0e0c;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
 
+  .ventas-btn:hover { transform: translateY(-1px); }
   /* CHARTS */
   .charts-main { display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:14px; }
   .charts-row  { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
@@ -231,7 +246,7 @@
     </div>
   </div>
   <div class="nav-links">
-    <a href="/ventas" class="back-link">📈 Ventas</a>
+    <a href="https://fondocreativo.netlify.app/ventas" class="ventas-btn">📊 Ventas</a>
     <a href="https://fondocreativo.netlify.app/" class="back-link">⬅ Volver</a>
   </div>
 </header>
