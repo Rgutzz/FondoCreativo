@@ -965,11 +965,21 @@ function filtrarHistorial() {
   const mesFilt = document.getElementById('filterMes').value;
   const estFilt = document.getElementById('filterEstado').value;
 
+  const ESTADOS_ACTIVOS = ['ENVIADO', 'EN RUTA', 'EN DESTINO'];
+
   let filtrados = historialCompleto.filter(p => {
     const { mes, anio } = extraerMesAnio(p.Fecha);
     return (anoFilt === 'all' || anio == anoFilt) &&
            (mesFilt === 'all' || mes == mesFilt) &&
            (estFilt === 'all' || p.Estado === estFilt);
+  });
+
+  // Ordenar: primero activos (ENVIADO / EN RUTA / EN DESTINO), luego finalizados — ambos grupos por NoPedido desc
+  filtrados.sort((a, b) => {
+    const aActivo = ESTADOS_ACTIVOS.includes(a.Estado) ? 0 : 1;
+    const bActivo = ESTADOS_ACTIVOS.includes(b.Estado) ? 0 : 1;
+    if (aActivo !== bActivo) return aActivo - bActivo;
+    return (Number(b.NoPedido) || 0) - (Number(a.NoPedido) || 0);
   });
 
   document.getElementById('countHistorial').textContent = filtrados.length;
