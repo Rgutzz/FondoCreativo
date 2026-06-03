@@ -818,10 +818,7 @@ function llenarFiltros() {
     if (mes) meses.add(mes);
   });
 
-const anioActual = new Date().getFullYear();
-if ([...anos].includes(anioActual)) {
-  selectAnio.value = anioActual;
-}
+
   const selectAnio = document.getElementById('filterAno');
   [...anos].sort().forEach(a => {
     const opt = document.createElement('option');
@@ -829,7 +826,10 @@ if ([...anos].includes(anioActual)) {
     opt.textContent = a;
     selectAnio.appendChild(opt);
   });
-
+const anioActual = new Date().getFullYear();
+if ([...anos].includes(anioActual)) {
+  selectAnio.value = anioActual;
+}
   const selectMes = document.getElementById('filterMes');
   [...meses].sort((a,b)=>a-b).forEach(m => {
     const opt = document.createElement('option');
