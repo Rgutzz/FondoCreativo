@@ -818,6 +818,10 @@ function llenarFiltros() {
     if (mes) meses.add(mes);
   });
 
+const anioActual = new Date().getFullYear();
+if ([...anos].includes(anioActual)) {
+  selectAnio.value = anioActual;
+}
   const selectAnio = document.getElementById('filterAno');
   [...anos].sort().forEach(a => {
     const opt = document.createElement('option');
