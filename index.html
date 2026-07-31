@@ -1183,11 +1183,20 @@ else if (
   document.getElementById('modalBody').innerHTML = html;
   document.getElementById('modalOverlay').style.display = 'flex';
   document.body.classList.add('modal-open');
+
+  // Agrega una entrada al historial para poder interceptar el gesto de "atrás"
+  history.pushState({ modalOpen: true }, '');
 }
 
-function closeModal() { 
+function closeModal(fromPopState) {
   document.getElementById('modalOverlay').style.display = 'none';
-  document.body.classList.remove('modal-open'); 
+  document.body.classList.remove('modal-open');
+
+  // Si el cierre viene del botón/click (no del gesto de retroceso),
+  // y quedó la entrada extra en el historial, la removemos volviendo atrás.
+  if (!fromPopState && history.state && history.state.modalOpen) {
+    history.back();
+  }
 }
 
 function configurarBusqueda() {
@@ -1210,6 +1219,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('modalOverlay').addEventListener('click', e => {
     if (e.target.id === 'modalOverlay') closeModal();
+  });
+
+  // Gesto/botón de retroceso: si el modal está abierto, lo cerramos
+  // en lugar de dejar que el navegador salga de la página.
+  window.addEventListener('popstate', () => {
+    if (document.getElementById('modalOverlay').style.display === 'flex') {
+      closeModal(true);
+    }
   });
 });
 </script>
